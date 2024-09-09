@@ -63,16 +63,16 @@ calc_GVs <- function(df, options){
     # Otherwise, write a note if any of the observations are out of the fitting
     # bounds
     
-    GV <- data.frame(matrix(nrow=1, ncol=length(pcs)))
-    GV_labels = paste("Cu", pcs, sep="")
-    names(GV) = GV_labels
+     GV <- data.frame(matrix(nrow=1, ncol=length(pcs)))
+     GV_labels = paste("Cu", pcs, sep="")
+     names(GV) = GV_labels
     
-    #GV <- data.frame(matrix(nrow=1, ncol=length(pcs)+1))
-    #GV_labels = paste("Cu", pcs, sep="")
-    #names(GV) = c(GV_labels, "CuNote")
+    # GV <- data.frame(matrix(nrow=1, ncol=length(pcs)+1))
+    # GV_labels = paste("Cu", pcs, sep="")
+    # names(GV) = c(GV_labels, "CuNote")
     
-    if(is.na(input$DOC | !is.numeric(input$DOC)) #| is.na(input$pH) #| is.na(input$Hardness)
-       ) {
+    if(is.na(input$DOC)) #| is.na(input$pH) #| is.na(input$Hardness)
+        {
       
       CuNote <- "DOC missing"
       
@@ -93,17 +93,18 @@ calc_GVs <- function(df, options){
    
     
     # Apply equation form
+      
+     if ("PC99" %in% pcs) GV$CuPC99 <- ifelse(0.20*(input$DOC/0.5)^0.977 <1, 
+                                              round(max(0.2, 0.20*(input$DOC/0.5)^0.977),1),
+       signif(max(0.2, 0.20*(input$DOC/0.5)^0.977),2))
+     if ("PC95" %in% pcs) GV$CuPC95 <- ifelse(0.47*(input$DOC/0.5)^0.977 <1, 
+                                              round(max(0.47, 0.47*(input$DOC/0.5)^0.977),1),
+                                              signif(max(0.47, 0.47*(input$DOC/0.5)^0.977),2))
+     
+     if ("PC90" %in% pcs) GV$CuPC90 <- signif(max(0.73, 0.73*(input$DOC/0.5)^0.977),2)
+     if ("PC80" %in% pcs) GV$CuPC80 <- signif(max(1.3, 1.3*(input$DOC/0.5)^0.977),2)
     
-    if ("PC99" %in% pcs) GV$CuPC99 <- ifelse(0.20*(input$DOC/0.5)^0.977 <1, 
-                                             round(max(0.2, 0.20*(input$DOC/0.5)^0.977),1),
-      signif(max(0.2, 0.20*(input$DOC/0.5)^0.977),2))
-    if ("PC95" %in% pcs) GV$CuPC95 <- ifelse(0.47*(input$DOC/0.5)^0.977 <1, 
-                                             round(max(0.47, 0.47*(input$DOC/0.5)^0.977),1),
-                                             signif(max(0.47, 0.47*(input$DOC/0.5)^0.977),2))
-
-    if ("PC90" %in% pcs) GV$CuPC90 <- signif(max(0.73, 0.73*(input$DOC/0.5)^0.977),2)
-    if ("PC80" %in% pcs) GV$CuPC80 <- signif(max(1.3, 1.3*(input$DOC/0.5)^0.977),2)
-    
+      }
     myoutput <- cbind(input, CuNote, GV)
 
     if (calc_biof & ("PC95" %in% pcs)) {
@@ -128,7 +129,7 @@ calc_GVs <- function(df, options){
     return(myoutput)
     
     }
-  }
+ 
   
   # Zinc, with MLR adjustment
   
@@ -362,7 +363,7 @@ calc_GVs <- function(df, options){
       
       i = nrow(summary)
       summary[i+1,"metal"] <<- "Copper"
-      summary[i+1,"nExcluded"] <<- nrow(Cu.output[which(Cu.output$CuNote=="TMFs missing"),])
+      summary[i+1,"nExcluded"] <<- nrow(Cu.output[which(Cu.output$CuNote=="DOC missing"),])
       summary[i+1,"nGVs"] <<- nrow(Cu.output) - summary[i+1,"nExcluded"]
     }
     
