@@ -31,16 +31,6 @@ calc_GVs <- function(df, options){
   
   pcs_vals = pcs_vals_all[pcs_all %in% pcs]
   
-  df <- df |>
-    mutate(Copper = as.numeric(Copper),
-           Nickel = as.numeric(Nickel),
-           Zinc = as.numeric(Zinc),
-           DOC = as.numeric(DOC),
-           pH = as.numeric(pH),
-           Hardness = as.numeric(Hardness),
-           Ca = as.numeric(Ca),
-           Mg = as.numeric(Mg)
-           )
   # Zinc
   
   if ("Zn" %in% metals){
@@ -81,7 +71,7 @@ calc_GVs <- function(df, options){
     #GV_labels = paste("Cu", pcs, sep="")
     #names(GV) = c(GV_labels, "CuNote")
     
-    if(is.na(input$DOC) #| is.na(input$pH) #| is.na(input$Hardness)
+    if(is.na(input$DOC | !is.numeric(input$DOC)) #| is.na(input$pH) #| is.na(input$Hardness)
        ) {
       
       CuNote <- "DOC missing"
@@ -223,7 +213,7 @@ calc_GVs <- function(df, options){
       
       myoutput <- myoutput |>
         mutate(ZnBioF = case_when(is.na(ZnPC95) ~ NA,  # Calc Bioavailable fraction
-                                  3.5/ZnPC95 > 1 ~ 1,  # Make 1 if > 1
+                                  4.1/ZnPC95 > 1 ~ 1,  # Make 1 if > 1
                                   TRUE ~ 4.1/ZnPC95),
       ZnBio = case_when(is.na(ZnPC95) ~ NA,
                         is.na(ZnBioF) ~ NA,
@@ -348,7 +338,18 @@ calc_GVs <- function(df, options){
   }
   
   GetAllGVs <- function(myTMF.df, Cucol, Zncol, Nicol) {
-    myTMF.df <- myTMF.df |> mutate(row = row_number())
+     myTMF.df <- myTMF.df |> mutate(row = row_number(),
+                                    Copper = as.numeric(Copper),
+              Nickel = as.numeric(Nickel),
+              Zinc = as.numeric(Zinc),
+              DOC = as.numeric(DOC),
+              pH = as.numeric(pH),
+              Hardness = as.numeric(Hardness),
+              Ca = as.numeric(Ca),
+              Mg = as.numeric(Mg)
+      )
+    
+    
     Alloutput = myTMF.df
     
     if ("Cu" %in% metals) {
