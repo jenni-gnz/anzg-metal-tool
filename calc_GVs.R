@@ -57,7 +57,7 @@ calc_GVs <- function(df, options){
   
   # Copper, just an equation
   
-  GetCuGuidelines <- function(input, Cucol){
+  GetCuGuidelines <- function(input){
     
     # Check input data. If data is missing do nothing, but keep the row.
     # Otherwise, write a note if any of the observations are out of the fitting
@@ -132,7 +132,7 @@ calc_GVs <- function(df, options){
   
   # Zinc, with MLR adjustment
   
-  GetZnGuidelines <- function(sens=ZnSSD.df, tMLR=ZnMLR.coeffs, input, Zncol){
+  GetZnGuidelines <- function(sens=ZnSSD.df, tMLR=ZnMLR.coeffs, input){
     
     # Check input data. If data is missing do nothing, but keep the row.
     # Otherwise, write a note if any of the observations are out of the fitting
@@ -237,7 +237,7 @@ calc_GVs <- function(df, options){
   
   # Nickel, with MLR adjustment
   
-  GetNiGuidelines <- function(sens=NiSSD.df, tMLR=NiMLR.coeffs, input, Nicol){
+  GetNiGuidelines <- function(sens=NiSSD.df, tMLR=NiMLR.coeffs, input){
     
     # Check input data. If data is missing do nothing, but keep the row.
     # Otherwise, write a note if any of the observations are out of the fitting
@@ -337,7 +337,7 @@ calc_GVs <- function(df, options){
     
   }
   
-  GetAllGVs <- function(myTMF.df, Cucol, Zncol, Nicol) {
+  GetAllGVs <- function(myTMF.df) {
      myTMF.df <- myTMF.df |> mutate(row = row_number(),
                                     Copper = as.numeric(Copper),
               Nickel = as.numeric(Nickel),
@@ -354,7 +354,7 @@ calc_GVs <- function(df, options){
     
     if ("Cu" %in% metals) {
       
-      Cu.output <- ddply(myTMF.df,.(row), function(x) GetCuGuidelines(input=x, Cucol=Cu_ugL))
+      Cu.output <- ddply(myTMF.df,.(row), function(x) GetCuGuidelines(input=x))
       GV_labels = paste("Cu", pcs, sep="")
       if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "CuBio")
       if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Cu_HQ")
@@ -368,7 +368,7 @@ calc_GVs <- function(df, options){
     
     if ("Zn" %in% metals) {
       
-      Zn.output <- ddply(myTMF.df,.(row), function(x) GetZnGuidelines(input=x, Zncol=Zncol))
+      Zn.output <- ddply(myTMF.df,.(row), function(x) GetZnGuidelines(input=x))
       GV_labels = paste("Zn", pcs, sep="")
       if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "ZnBio")
       if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Zn_HQ")
@@ -382,7 +382,7 @@ calc_GVs <- function(df, options){
     
     if ("Ni" %in% metals) {
       
-      Ni.output <- ddply(myTMF.df,.(row), function(x) GetNiGuidelines(input=x, Nicol=Nicol))
+      Ni.output <- ddply(myTMF.df,.(row), function(x) GetNiGuidelines(input=x))
       GV_labels = paste("Ni", pcs, sep="")
       if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "NiBio")
       if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Ni_HQ")
@@ -399,7 +399,7 @@ calc_GVs <- function(df, options){
     
   }
   
-  AllMetals <- GetAllGVs(myTMF.df=df, Cucol="Copper", Zncol="Zinc", Nicol="Nickel")
+  AllMetals <- GetAllGVs(myTMF.df=df)
   
   print(AllMetals)
   print(summary)
