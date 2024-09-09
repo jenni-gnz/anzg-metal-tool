@@ -31,6 +31,16 @@ calc_GVs <- function(df, options){
   
   pcs_vals = pcs_vals_all[pcs_all %in% pcs]
   
+  df <- df |>
+    mutate(Copper = as.numeric(Copper),
+           Nickel = as.numeric(Nickel),
+           Zinc = as.numeric(Zinc),
+           DOC = as.numeric(DOC),
+           pH = as.numeric(pH),
+           Hardness = as.numeric(Hardness),
+           Ca = as.numeric(Ca),
+           Mg = as.numeric(Mg)
+           )
   # Zinc
   
   if ("Zn" %in% metals){
@@ -115,8 +125,9 @@ calc_GVs <- function(df, options){
                CuBio = case_when(is.na(CuPC95) ~ NA,
                                  is.na(CuBioF) ~ NA,
                                  !is.numeric(Copper) ~ NA,
-                                 is.numeric(Copper) ~ signif(Copper*CuBioF,2))                # Bioavailable Cu
-        )
+                                 is.numeric(Copper) ~ signif(Copper*CuBioF,2)
+                                 )                # Bioavailable Cu
+       )
     }
     
     if (rcr & ("PC95" %in% pcs)) {
