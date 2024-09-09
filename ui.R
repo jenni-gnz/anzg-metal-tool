@@ -243,6 +243,7 @@ ui <- fluidPage(
              column(width=7,
                     fluidRow(id="check-panel",
                              tags$table(style="width:100%",
+                                        tags$tr(tags$td(style="width:45%", p("Note: for large data sets this may take some time to display"))),
                                         tags$tr(tags$td(rowspan=3, style="width:15%; text-align:center", uiOutput("issuesIcon")),
                                                 tags$td(style="width:45%; font-size:22pt", uiOutput("issuesText1")),
                                                 tags$td(rowspan=3, style="width:40%")
