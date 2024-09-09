@@ -10,8 +10,12 @@ check_data <- function(df, options){
   
   # Check that df contains the required columns
   
-  cols = c("pH", "DOC")                                                          # all metals require pH and DOC
-  
+  cols = c("DOC")                                                          # all metals require DOC
+
+  if ("Ni" %in% options$metals | "Zn" %in% options$metals) {                   # Ni and Zn require pH
+        cols = c(cols, "pH")                                               
+  }
+    
   if ("Ni" %in% options$metals) {
     cols = c(cols, "Ca", "Mg")                                                   # Ni requires Ca and Mg
   }
