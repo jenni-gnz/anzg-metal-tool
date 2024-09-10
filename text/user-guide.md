@@ -11,7 +11,7 @@ This app **calculates chronic default guideline values for copper, nickel and zi
 * Each row should contain a different set of data (e.g., different site or different date). 
 * Your data must include **DOC** (*labelled "DOC"*) to calculate copper guideline values (*if pH and hardness are provided, the tool will check whether the DGVs are suitable for use*)
 * Your data must include **DOC** (*labelled "DOC"*), **pH** (*labelled "pH"*) and **hardness** (*labelled "Hardness"*) to calculate zinc guideline values 
-* Your data must include **DOC** (*labelled "DOC"*), **pH** (*labelled "pH"*) and**calcium** (*labelled "Ca"*) and **magnesium** (*labelled "Mg"*) to calculate nickel guideline values 
+* Your data must include **DOC** (*labelled "DOC"*), **pH** (*labelled "pH"*) and **calcium** (*labelled "Ca"*) and **magnesium** (*labelled "Mg"*) to calculate nickel guideline values 
 * Optionally, other columns like Site name and Date can be included, which will be retained with your output. These are not used by any functions.
 
 ### Step 2: Select options
@@ -25,26 +25,10 @@ If you have selected the option to calculate bioavailable metals, but you have *
 
 ### Step 4: Review and download results
 This page shows your results for review before downloading. 
-
-This shows a mu symbol:
-Test 1 $\mu$g/L
+Metal DGVs are provided in $\mu$g/L
 
 
 
-*example of a table in markdown*
-<center>
 
-Concentration&nbsp;&nbsp; | Species&nbsp;&nbsp; | Group &nbsp;
---- | --- | ---
-2.1 | Oncorhynchus mykiss &nbsp; | Fish
-2.4 | Ictalurus punctatus &nbsp;| Fish  
-4.1 | Micropterus salmoides &nbsp;| Fish
-10  | Brachydanio rerio &nbsp;| Fish
-15.6 | Carassius auratus &nbsp;| Fish
-18.3 | Pimephales promelas &nbsp;| Fish 
-6 | Daphnia magna &nbsp;| Invertebrate
-10 | Opercularia bimarginata &nbsp;| Invertebrate
-
-</center>
 
 

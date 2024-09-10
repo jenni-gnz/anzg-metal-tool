@@ -15,7 +15,7 @@ No specific column labels are needed for these. The information will be included
 * bioavailable metal concentrations (for comparing to the tier 1 guideline values)
 * hazard quotient. In the output a Hazard Quotient >1 is highlighted <span style="color:#FF0000">red</span> (indicating a hazard).
 
-8. Your results file will also indicate where guideline values cannot be calculated because DOC, pH, hardness, calcium and/or magnesium are outside the range of the bioavailability models. The results file will provide a reason in the notes column, and further explanation and guidance can be found in the <a href="https://unsplash.com/@alisonpang">User Guide</a>.
+8. Your results file will also indicate where guideline values cannot be calculated because DOC, pH, hardness, calcium and/or magnesium are outside the range of the bioavailability models. The results file will provide a reason in the notes column, and further explanation and guidance can be found in the <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">User Guide</a>.
 
 
 
