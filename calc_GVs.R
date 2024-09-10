@@ -66,7 +66,7 @@ calc_GVs <- function(df, options){
      GV <- data.frame(matrix(nrow=1, ncol=length(pcs)))
      GV_labels = paste("Cu", pcs, sep="")
      names(GV) = GV_labels
-    
+
     # GV <- data.frame(matrix(nrow=1, ncol=length(pcs)+1))
     # GV_labels = paste("Cu", pcs, sep="")
     # names(GV) = c(GV_labels, "CuNote")
@@ -339,18 +339,20 @@ calc_GVs <- function(df, options){
   }
   
   GetAllGVs <- function(myTMF.df) {
-     myTMF.df <- myTMF.df |> mutate(row = row_number(),
-                                    Copper = as.numeric(Copper),
-              Nickel = as.numeric(Nickel),
-              Zinc = as.numeric(Zinc),
-              DOC = as.numeric(DOC),
-              pH = as.numeric(pH),
-              Hardness = as.numeric(Hardness),
-              Ca = as.numeric(Ca),
-              Mg = as.numeric(Mg)
-      )
     
+    myTMF.df <- myTMF.df |> mutate(row = row_number()) ## Row number is required for the ddply code
     
+    # Specify the columns to convert (if present)
+    columns_to_convert <- c("DOC","pH", "Hardness", "Ca", "Mg", "Copper", "Nickel", "Zinc")  # columns we use
+    
+    # Convert columns to numeric only if they are present in the df (should avoid crashing)
+     myTMF.df[intersect(columns_to_convert, names(myTMF.df))] <- lapply(myTMF.df[intersect(columns_to_convert, 
+                                                                                           names(myTMF.df))], as.numeric)
+     # Convert data to NA if they were zero (only if cols are present in the df to avoid crashing)
+     myTMF.df[intersect(columns_to_convert, names(myTMF.df))] <- lapply(myTMF.df[intersect(columns_to_convert, 
+                                                                                           names(myTMF.df))], 
+                                                                        function(x) ifelse(x == 0, NA, x))
+     
     Alloutput = myTMF.df
     
     if ("Cu" %in% metals) {
