@@ -75,7 +75,8 @@ ui <- fluidPage(
       title = h4(id="page1-title", "1. Upload your file"),
       br(),
       fluidRow(id="welcome-panel",
-               column(width=8, align="left", h2(id="welcome-title", "Welcome to the ANZG metal DGV tool"),
+               column(width=8, align="left", h2(id="welcome-title", 
+                                                "Welcome to the ANZG bioavailability-based metals default guideline values (DGVs) tool"),
                       br(),
                       p(withMathJax(includeMarkdown("text/page-1-description.md")))
                       ),
@@ -155,7 +156,7 @@ ui <- fluidPage(
                                                 value = FALSE,
                                                 label = HTML('<p 
                     style="position:  relative; top: -36px; left: 30px;">
-                  Do you want to calculate bioavailable metals?
+                  Do you want to estimate the concentration of the bioavailable metal fraction?
                    </p>')
                                                 )
                                   # tooltip(checkboxGroupInput(inputId="calc_biof",
