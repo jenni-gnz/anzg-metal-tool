@@ -10,12 +10,12 @@ check_data <- function(df, options){
   
   # Check that df contains the required columns
   
-  cols = c("DOC")                                                          # all metals require DOC
-
-  if ("Ni" %in% options$metals | "Zn" %in% options$metals) {                   # Ni and Zn require pH
-        cols = c(cols, "pH")                                               
+  cols = c("DOC")                                                                # all metals require DOC
+  
+  if ("Ni" %in% options$metals | "Zn" %in% options$metals) {                     # Ni and Zn require pH
+    cols = c(cols, "pH")                                               
   }
-    
+  
   if ("Ni" %in% options$metals) {
     cols = c(cols, "Ca", "Mg")                                                   # Ni requires Ca and Mg
   }
@@ -35,6 +35,8 @@ check_data <- function(df, options){
     N = nrow(issue_df)
     issue_df[N+1,] = c(0, 0, "error", paste("Error: missing column", cols[i], sep=" "))
   }
+  issue_df$row = as.numeric(issue_df$row)
+  issue_df$col = as.numeric(issue_df$col)
   
   # Identify any missing data in required columns that are in the dataset
   
@@ -43,7 +45,7 @@ check_data <- function(df, options){
   missing = which(is.na(df[cols_in]), arr.ind=TRUE)
   
   if (nrow(missing) > 0) {
-    issue_df = rbind(issue_df, data.frame("row"=missing[,1], "col"=missing[,2], "type"="warning", "message"=paste("Warning: missing data in column", cols_in[missing[,2]], sep=" ")))
+    issue_df = rbind(issue_df, data.frame("row"=missing[,1], "col"=missing[,2], "type"="error", "message"=paste("Warning: missing data in column", cols_in[missing[,2]], sep=" ")))
   }
   
   # Check for non-numeric data in required columns that are in the dataset
@@ -54,7 +56,15 @@ check_data <- function(df, options){
   non_numeric = dplyr::setdiff(data.frame(na_vals), data.frame(missing))         # indices of na values excluding missing data
   
   if (nrow(non_numeric) > 0) {
-    issue_df = rbind(issue_df, data.frame("row"=non_numeric[,1], "col"=non_numeric[,2], "type"="error", "message"=paste("Error: non-numeric data in column", cols_in[non_numeric[,2]], sep=" ")))
+    issue_df = rbind(issue_df, data.frame("row"=non_numeric[,1], "col"=non_numeric[,2], "type"="warning", "message"=paste0("Warning: non-numeric data in column ", cols_in[non_numeric[,2]], ", will be converted to NA")))
+  }
+  
+  # Check for zero data in required columns that are in the dataset
+  
+  zeros = which(df[cols_in]==0, arr.ind=TRUE)
+  
+  if (nrow(zeros) > 0) {
+    issue_df = rbind(issue_df, data.frame("row"=zeros[,1], "col"=zeros[,2], "type"="warning", "message"=paste0("Warning: values of zero in column ", cols_in[zeros[,2]], ", will be converted to NA")))
   }
   
   # Check for negative data in required columns that are in the dataset
@@ -62,10 +72,11 @@ check_data <- function(df, options){
   negative = which(df[cols_in]<0, arr.ind=TRUE)
   
   if (nrow(negative) > 0) {
-    issue_df = rbind(issue_df, data.frame("row"=negative[,1], "col"=negative[,2], "type"="error", "message"=paste("Error: negative data in column", cols_in[negative[,2]], sep=" ")))
+    issue_df = rbind(issue_df, data.frame("row"=negative[,1], "col"=negative[,2], "type"="error", "message"=paste0("Error: negative data in column ", cols_in[negative[,2]])))
   }
   
   results = list("cols_in"=cols_in, "issue_df"=issue_df)
+  
   return(results)
   
 }
