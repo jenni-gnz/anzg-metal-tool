@@ -80,7 +80,7 @@ calc_GVs <- function(df, options){
       #GV[1,"CuNote"] = CuNote
       
     } else {
-      
+       if("pH" %in% names(input) & "Hardness" %in% names(input)) {
         if(is.na(input$pH) | is.na(input$Hardness)){
         CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
             
@@ -90,7 +90,8 @@ calc_GVs <- function(df, options){
       } else {
         CuNote <- "TMF data in range, GV suitable"   
       }
-   
+      } else {    CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
+    }
     
     # Apply equation form
       
@@ -110,7 +111,7 @@ calc_GVs <- function(df, options){
     if (calc_biof & ("PC95" %in% pcs)) {
       
       myoutput <- myoutput |>
-        mutate(CuBioF = case_when(is.na(CuPC95) ~ NA,
+        dplyr::mutate(CuBioF = case_when(is.na(CuPC95) ~ NA,
                                   0.47/CuPC95 > 1 ~ 1,
                                   TRUE ~ 0.47/CuPC95),     # Bioavailable fraction
                CuBio = case_when(is.na(CuPC95) ~ NA,
@@ -123,7 +124,7 @@ calc_GVs <- function(df, options){
     
     if (rcr & ("PC95" %in% pcs)) {
       myoutput <- myoutput |>
-        mutate(Cu_HQ = ifelse((is.na(CuPC95)|is.na(Copper)), NA, signif(Copper/CuPC95,2))     # RCR Cu
+        dplyr::mutate(Cu_HQ = ifelse((is.na(CuPC95)|is.na(Copper)), NA, signif(Copper/CuPC95,2))     # RCR Cu
         )
     }
     return(myoutput)
@@ -196,7 +197,7 @@ calc_GVs <- function(df, options){
         GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=10)[,3]))
         print(GV_temp)
         GV_temp <- GV_temp |>
-          mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
+          dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
                                                TRUE ~ signif(.x, 2))))
         
         rownames(GV_temp) <- NULL
@@ -213,7 +214,7 @@ calc_GVs <- function(df, options){
     if (calc_biof & ("PC95" %in% pcs)) {
       
       myoutput <- myoutput |>
-        mutate(ZnBioF = case_when(is.na(ZnPC95) ~ NA,  # Calc Bioavailable fraction
+        dplyr::mutate(ZnBioF = case_when(is.na(ZnPC95) ~ NA,  # Calc Bioavailable fraction
                                   4.1/ZnPC95 > 1 ~ 1,  # Make 1 if > 1
                                   TRUE ~ 4.1/ZnPC95),
       ZnBio = case_when(is.na(ZnPC95) ~ NA,
@@ -227,7 +228,7 @@ calc_GVs <- function(df, options){
     if (rcr & ("PC95" %in% pcs)) {
 
       myoutput <- myoutput |>
-        mutate(Zn_HQ = ifelse((is.na(ZnPC95)|is.na(Zinc)), NA, signif(Zinc/ZnPC95,2))     # RCR Zn
+        dplyr::mutate(Zn_HQ = ifelse((is.na(ZnPC95)|is.na(Zinc)), NA, signif(Zinc/ZnPC95,2))     # RCR Zn
         )
       
     }
@@ -299,7 +300,7 @@ calc_GVs <- function(df, options){
         
         GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=100)[,3])) 
         GV_temp <- GV_temp |>
-          mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
+          dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
                                                TRUE ~ signif(.x, 2))))
           rownames(GV_temp) <- NULL
       }
@@ -315,7 +316,7 @@ calc_GVs <- function(df, options){
     if (calc_biof & ("PC95" %in% pcs)) {
       
       myoutput <- myoutput |>
-        mutate(NiBioF = case_when(is.na(NiPC95) ~ NA,  # Calc bioavailable fraction
+        dplyr::mutate(NiBioF = case_when(is.na(NiPC95) ~ NA,  # Calc bioavailable fraction
                                   1.1/NiPC95 > 1 ~ 1,  # Make 1 if > 1
                                   TRUE ~ 1.1/NiPC95),  
                NiBio = case_when(is.na(NiPC95) ~ NA,
@@ -331,7 +332,7 @@ calc_GVs <- function(df, options){
     if (rcr & ("PC95" %in% pcs)) {
       
       myoutput <- myoutput |>
-        mutate(Ni_HQ = ifelse((is.na(NiPC95)|is.na(Nickel)), NA, signif(Nickel/NiPC95,2))     # RCR Ni
+        dplyr::mutate(Ni_HQ = ifelse((is.na(NiPC95)|is.na(Nickel)), NA, signif(Nickel/NiPC95,2))     # RCR Ni
         )
     }
     return (myoutput)
@@ -340,7 +341,7 @@ calc_GVs <- function(df, options){
   
   GetAllGVs <- function(myTMF.df) {
     
-    myTMF.df <- myTMF.df |> mutate(row = row_number()) ## Row number is required for the ddply code
+    myTMF.df <- myTMF.df |> dplyr::mutate(row = row_number()) ## Row number is required for the ddply code
     
     # Specify the columns to convert (if present)
     columns_to_convert <- c("DOC","pH", "Hardness", "Ca", "Mg", "Copper", "Nickel", "Zinc")  # columns we use
@@ -352,7 +353,7 @@ calc_GVs <- function(df, options){
      myTMF.df[intersect(columns_to_convert, names(myTMF.df))] <- lapply(myTMF.df[intersect(columns_to_convert, 
                                                                                            names(myTMF.df))], 
                                                                         function(x) ifelse(x == 0, NA, x))
-     
+     ## Add a bit in here to calculate Hardness 
     Alloutput = myTMF.df
     
     if ("Cu" %in% metals) {

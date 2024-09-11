@@ -2,7 +2,7 @@
 # the GVs. For now, just do some simple checks
 
 check_data <- function(df, options){
-  
+ 
   # Initialize dataframe which will return information about any issues
   # identified in df
   
@@ -25,7 +25,7 @@ check_data <- function(df, options){
   }
   
   metal_labels = c("Cu"="Copper", "Ni"="Nickel", "Zn"="Zinc")
-  if (options$calc_biof) {                                                      # if calculating bioavailable metals,
+  if (options$calc_biof == TRUE | options$rcr == TRUE) {                                                      # if calculating bioavailable metals,
     cols = c(cols, metal_labels[options$metals])                                 # metal columns are also required
   }
   
@@ -45,7 +45,7 @@ check_data <- function(df, options){
   missing = which(is.na(df[cols_in]), arr.ind=TRUE)
   
   if (nrow(missing) > 0) {
-    issue_df = rbind(issue_df, data.frame("row"=missing[,1], "col"=missing[,2], "type"="error", "message"=paste("Warning: missing data in column", cols_in[missing[,2]], sep=" ")))
+    issue_df = rbind(issue_df, data.frame("row"=missing[,1], "col"=missing[,2], "type"="warning", "message"=paste("Warning: missing data in column", cols_in[missing[,2]], sep=" ")))
   }
   
   # Check for non-numeric data in required columns that are in the dataset

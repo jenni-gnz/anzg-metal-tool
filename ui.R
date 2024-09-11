@@ -12,6 +12,7 @@ library(fontawesome)
 library(r2symbols)
 library(shiny)
 library(shinyjs)
+library(shinycssloaders)
 library(DT)  ## load after shiny
 library(bslib)
 library(bsicons)
@@ -31,7 +32,7 @@ fileInputOnlyButton <- function(..., label="") {
   temp
   
 }
-
+options(spinner.color="#FF931E", spinner.color.background="#ffffff", spinner.size=2)
 
 ui <- fluidPage(
   #theme = shinytheme("flatly"),
@@ -252,6 +253,7 @@ ui <- fluidPage(
                     fluidRow(id="check-panel",
                              tags$table(style="width:100%",
                                         tags$tr(tags$td(style="width:45%", p("Note: for large data sets this may take some time to display"))),
+
                                         tags$tr(tags$td(rowspan=3, style="width:15%; text-align:center", uiOutput("issuesIcon")),
                                                 tags$td(style="width:45%; font-size:22pt", uiOutput("issuesText1")),
                                                 tags$td(rowspan=3, style="width:40%")
@@ -270,7 +272,7 @@ ui <- fluidPage(
                        ),
              ),
              fluidRow(column(width=7, align="left",
-                             reactableOutput("issue_table"),
+                             withSpinner(reactableOutput("issue_table"), type =5)
                              )),
              fluidRow(column(width=12, align="left",
                              p(includeMarkdown("text/page-3-instructions.md")))),
@@ -319,7 +321,7 @@ ui <- fluidPage(
               fluidRow(id="results-table",
                        column(width=12,
                               br(), br(),
-                              reactableOutput("GVs"))
+                              withSpinner(reactableOutput("GVs"), type =5))
                        )
               
         ), # end of page 4 nav_panel

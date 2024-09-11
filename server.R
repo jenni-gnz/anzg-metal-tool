@@ -7,12 +7,12 @@
 # https://shiny.posit.co/
 
 
-library(formattable)
+#library(formattable)
 library(reactable)
 library(shiny)
 library(shinyjs)
 library(DT)  ## load DT after shiny so that the DT functions are used
-
+library(tidyverse)
 source("check_data.R")
 source("calc_GVs.R")
 
@@ -105,15 +105,15 @@ server <- function(input, output, session) {
       shinyjs::disable("check_btn")
     }
     
-  }) # end obsereEvent when loading demo data ---------------------------------------------------------------
+  }) # end observeEvent when loading demo data
   
-  # Check data when "check data" action button pressed
+  # Check data when "check data" action button pressed---------------------------
   
   observeEvent(input$check_btn, {
-    
+    df_checked = NULL
     # Get selected options
     
-    GV_options = list("metals"=input$metals, "calc_biof"=input$calc_biof)
+    GV_options = list("metals"=input$metals, "calc_biof"=input$calc_biof, "rcr" = input$rcr)
     
     # Call function to check the data
     
@@ -162,10 +162,15 @@ server <- function(input, output, session) {
     })
     
     # Display issue table
+    issue_summary <- data.frame(Issue = issues[order(issues$message),"message"])  #order errors first
     
+    issue_summary <- issue_summary |>
+      dplyr::group_by(Issue) |>
+      dplyr::summarise(N = n()) 
+      
     output$issue_table = renderReactable({
       if (nrow(issues) > 0) {
-        reactable(data.frame(Issue=issues[order(issues$message),"message"]),
+        reactable(data.frame(Issue=paste0(issue_summary$Issue, " (", issue_summary$N, ")")),
                   compact=TRUE)
       }
     })
@@ -252,20 +257,14 @@ server <- function(input, output, session) {
     
     # Get selected options
     
-    if (is.null(input$rcr)) {
-      rcr_option = FALSE
-      
-    } else if (input$rcr=="Yes") {
-      rcr_option = TRUE
-    }
-    
+   
     GV_options = list("metals"=input$metals,
                       "calc_biof"=input$calc_biof,
                       "pcs"=input$pcs,
-                      "rcr"=rcr_option)
+                      "rcr"=input$rcr)
     
-    GVs <<- calc_GVs(df, GV_options)
-    
+     GVs <<- calc_GVs(df, GV_options)
+ 
     output$resultsText = renderUI({
       for (i in c(1:nrow(GVs$summary))) {
         GVs$summary[i,"message"] = paste(GVs$summary[i,"metal"],
@@ -279,14 +278,45 @@ server <- function(input, output, session) {
       
     })
     
-    cols = names(results[grepl("PC", names(results)) | grepl("Bio", names(results)) | grepl("HQ", names(results))])
-    hq_cols = names(results[grepl("HQ", names(results))])
-    
+    #cols = names(results[grepl("PC", names(results)) | grepl("Bio", names(results)) | grepl("HQ", names(results))])
+    #hq_cols = names(results[grepl("HQ", names(results))])
+    # 
+    # styleHQFn <- function(value, name) {
+    #   
+    #   color <- "black"
+    #   
+    #   # Set font color to black unless column is in the list of HQs and 
+    #   # value is > 1
+    #   # then make it red
+    #   
+    #   if (name %in% hq_cols & value > 1) {
+    #     color <- "red"
+    #     fontWeight <- "bold"
+    #   }
+    #        list(color=color#, fontWeight = fontWeight
+    #         )
+    # }
+    # 
+    # colDefList <- list(
+    #   reactable::colDef(style=styleHQFn,
+    #                     format=colFormat(digits=1),
+    #                     headerStyle=list(background="#bacdda"))
+    # )
+    # 
+    #  colDefList <- rep(colDefList, ncol(GVs$results))
+    #  names(colDefList) <- names(GVs$results)
+    # 
     output$GVs = renderReactable({
       reactable(GVs$results, resizable=TRUE, showPageSizeOptions=TRUE,
                 showPagination=TRUE, bordered=TRUE, wrap=FALSE,
-                defaultColDef=colDef(format=colFormat(digits=1),
-                                     headerStyle=list(background="#bacdda")))
+               
+                defaultColDef=colDef(#colDefList
+                                     format=colFormat(digits=1),
+                                     #style=styleHQFn,
+                                     headerStyle=list(background="#bacdda")
+                                     )
+            
+      )
     })
     
     
