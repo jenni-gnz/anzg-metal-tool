@@ -193,11 +193,19 @@ ui <- fluidPage(
                                # placement = "right"
                                #    )
                                
-                               checkboxGroupInput(inputId="rcr",
-                                                                      width = "100%",
-                                                                      label = "Do you want to calculate a Hazard Quotient (HQ)?",
-                                                                      choices = c("Yes"="Yes")
-                                                                      )
+                               # checkboxGroupInput(inputId="rcr",
+                               #                                        width = "100%",
+                               #                                        label = "Do you want to calculate a Hazard Quotient (HQ)?",
+                               #                                        choices = c("Yes"="Yes")
+                               #                                        )
+                               
+                               checkboxInput("rcr", # "",
+                                             value = FALSE,
+                                             label = HTML('<p 
+                    style="position:  relative; top: -36px; left: 30px;">
+                Do you want to calculate a Hazard Quotient (HQ)?
+                   </p>')
+                               )
                                
                         )
                         ) ## end top fluid row
