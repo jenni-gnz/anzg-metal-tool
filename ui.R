@@ -53,7 +53,8 @@ ui <- fluidPage(
                          )
               ),
   
-  tags$style(".btn-file {background-color:#376894; border-color:#376894; width:280px}",
+  tags$style(".btn-file {background-color:#376894; border-color:#376894}",
+             #".btn-file {background-color:#376894; border-color:#376894; width:280px}"
              ".fa-arrow-up {color:white}",
              ".fa-arrow-right {font-size:30px}",
              HTML("#data table {width: 800px;}
@@ -66,41 +67,37 @@ ui <- fluidPage(
   page_navbar(id="tabs",
     bg = "#bacdda",
     
-    nav_spacer(),
-    nav_spacer(),
+  #  nav_spacer(),
+  #  nav_spacer(),
     nav_spacer(),
     
     # 1. Intro and file upload --------------------------------------------------------------------------
     nav_panel(value="upload-page",
-      title = h4(id="page1-title", "1. Upload your file"),
+      title = h5(id="page1-title", "1. Upload your file"),
       br(),
       fluidRow(id="welcome-panel",
-               column(width=8, align="left", h2(id="welcome-title", 
+               column(width=8, style="padding-right:55px", align="left", h2(id="welcome-title", 
                                                 "Welcome to the ANZG bioavailability-based metals default guideline values (DGVs) tool"),
                       br(),
                       p(withMathJax(includeMarkdown("text/page-1-description.md")))
                       ),
-               column(width=4, align="left",
-                      fluidRow(id="upload-panel",
-                               column(width=6,
-                                      fileInputOnlyButton("target_upload",
-                                                          buttonLabel=
-                                                            
-                                                            div(class="button-inner", h4("Upload CSV file", style="color:white"), icon("arrow-up")),
-                                                          
-                                                          #buttonLabel=div(class="button-inner", span(id="button-inner-text", h4("Upload CSV file", style="color:white")), icon("arrow-up")),
-                                                          accept=c("text/csv", "text/comma-separated-values", ".csv"), width='100%'
-                                                          )
-                                      ),
-                               column(width=6,
-                                      actionButton("sample_btn", div(class='button-inner', h4("Use demo table"), icon("forward")),
-                                                                     width="280px",
-                                                   style="color:white; background-color:#86a3bb; border-color:#86a3bb")
-                                      )
-                              ),
-                      
-                      fluidRow(id="upload-info",
-                               helpText(includeMarkdown("text/page-1-instructions.md")))
+               
+               column(width=4,
+                      fluidRow(
+                      tags$table(tags$tr(tags$td(style="width:50%; padding-right:15px", align="right",
+                                                 fileInputOnlyButton(
+                                                   "target_upload",
+                                                   buttonLabel=div(class="button-inner", h4("Upload CSV file", style="color:white"), icon("arrow-up")),
+                                                   accept=c("text/csv", "text/comma-separated-values", ".csv"), width="90%")
+                                                 ),
+                                         tags$td(style="width:50%; padding-bottom:33px", align="center",
+                                                 actionButton("sample_btn",
+                                                              div(class="button-inner", h4("Use demo table"), icon("forward")),
+                                                              style="color:white; background-color:#86a3bb; border-color:#86a3bb", width="90%")
+                                                 )
+                                         )
+                                 )),
+                      fluidRow(id="upload-info", align="right", helpText(includeMarkdown("text/page-1-instructions.md")))
                       )
                ),
       hr(),
@@ -124,7 +121,7 @@ ui <- fluidPage(
                  )
                )
     ),  ## end page 1 nav_panel  --------------------------------  
-    nav_spacer(),
+   # nav_spacer(),
     
     nav_panel(value="arrow1",
       title=tags$img(src="icons/arrow.svg")
@@ -134,7 +131,7 @@ ui <- fluidPage(
     
     # 2. Select options ------------------------------------------------------------------------
     nav_panel(value="select-page",
-      title = h4(id="page2-title", "2. Select options"),
+      title = h5(id="page2-title", "2. Select options"),
       br(),
       fluidRow(id="options-panel",
                  column(width=10, align="left", h2("Please review your data (displayed below) and select options"),
@@ -237,7 +234,7 @@ ui <- fluidPage(
                )
       ),  #end of page 2 nav_panel -----------------------
    
-    nav_spacer(),
+  #  nav_spacer(),
     
     nav_panel(value="arrow2",
       title=tags$img(src="icons/arrow.svg")
@@ -247,14 +244,14 @@ ui <- fluidPage(
     
     # 3. Check data page -----------------------------------------------------------------------------
     nav_panel(value="check-page",
-              title = h4(id="page3-title", "3. Check data"),
+              title = h5(id="page3-title", "3. Check data"),
               br(),
              fluidRow(id="check-panel",
              column(width=7,
+                    fluidRow(p("Note: for large data sets this may take some time to display")),
+                    br(),
                     fluidRow(id="check-panel",
                              tags$table(style="width:100%",
-                                        tags$tr(tags$td(style="width:45%", p("Note: for large data sets this may take some time to display"))),
-
                                         tags$tr(tags$td(rowspan=3, style="width:15%; text-align:center", uiOutput("issuesIcon")),
                                                 tags$td(style="width:45%; font-size:22pt", uiOutput("issuesText1")),
                                                 tags$td(rowspan=3, style="width:40%")
@@ -287,7 +284,7 @@ ui <- fluidPage(
                       ),
     ), # end of page 3 nav_panel ------------------
     
-    nav_spacer(),
+#    nav_spacer(),
     
     nav_panel(value="arrow3",
       title=tags$img(src="icons/arrow.svg")
@@ -297,11 +294,11 @@ ui <- fluidPage(
     
     # 4. Display & download GVs page-----------------------------------------------------------------
     nav_panel(value="GV-page",
-              title=h4(id="page4-title", "4. View & download results"),
+              title=h5(id="page4-title", "4. View & download results"),
               br(),
               fluidRow(id="results-panel",
                        column(width=7, align="left",
-                              h2("Guideline values calculated successfully"),
+                              uiOutput("resultsHeading"),
                               br(),
                               uiOutput("resultsText")
                               ),
@@ -339,7 +336,7 @@ ui <- fluidPage(
     #                    )
     # ), # end page 5 nav_panel
     nav_panel(value="user-page",
-                         title=h4(id="page4-title", "User guide"),
+                         title=h5(id="page4-title", "User guide"),
               page_sidebar(
       h2("User guide to the ANZG metal DGV tool"),
       

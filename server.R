@@ -35,10 +35,11 @@ server <- function(input, output, session) {
   
   shinyjs::disable("check_btn")
   
-  # Initialize dataframes for data and GVs
+  # Initialize output variables for data and GVs
   
-  df = NULL
-  results = NULL
+  df <- NULL                                                                     # original data
+  df_checked <- NULL                                                             # checked and processed data
+  GVs <- NULL
   
   # Load dataset when file uploaded ------------------------------------------------------------------------
   
@@ -65,7 +66,7 @@ server <- function(input, output, session) {
     
     output$data = renderReactable({
       reactable(df, resizable=TRUE, showPageSizeOptions=TRUE, showPagination=TRUE,
-                bordered=TRUE,
+                bordered=TRUE, wrap=FALSE,
                 defaultColDef=colDef(format=colFormat(digits=1),
                                      headerStyle=list(background="#bacdda")))
     })
@@ -86,7 +87,7 @@ server <- function(input, output, session) {
     
     output$data = renderReactable({
       reactable(df, resizable=TRUE, showPageSizeOptions=TRUE, showPagination=TRUE,
-                bordered=TRUE,
+                bordered=TRUE, wrap=FALSE,
                 defaultColDef=colDef(format=colFormat(digits=1),
                                      headerStyle=list(background="#bacdda")))
     })
@@ -110,7 +111,7 @@ server <- function(input, output, session) {
   # Check data when "check data" action button pressed---------------------------
   
   observeEvent(input$check_btn, {
-    df_checked = NULL
+    
     # Get selected options
     
     GV_options = list("metals"=input$metals, "calc_biof"=input$calc_biof, "rcr" = input$rcr)
@@ -120,6 +121,7 @@ server <- function(input, output, session) {
     x = check_data(df, GV_options)
     issues = x$issue_df                                                          # issues dataframe
     cols_in = x$cols_in                                                          # required columns that are in the data
+    df_checked <<- x$df_checked                                                  # data, may include new column with Hardness calculated from Ca and Mg if applicable
     
     Nerrs = nrow(issues[which(issues$type=="error"),])                           # number of issues identified as errors
     Nwarn = nrow(issues[which(issues$type=="warning"),])                         # number of issues identified as warnings
@@ -132,7 +134,6 @@ server <- function(input, output, session) {
     } else {
       shinyjs::enable("GV_btn")
     }
-    
     
     # Render icon and text based on whether any issues have been identified
     
@@ -162,6 +163,7 @@ server <- function(input, output, session) {
     })
     
     # Display issue table
+    
     issue_summary <- data.frame(Issue = issues[order(issues$message),"message"])  #order errors first
     
     issue_summary <- issue_summary |>
@@ -177,14 +179,15 @@ server <- function(input, output, session) {
     
     # Display data in table
     
-    df_checked = df
     msg = ""                                                                     # warning or error message to display
     
     # Create a lookup copy of df_checked for reference with table formatting
     # If any issues were found, replace the corresponding cell in the lookup
     # dataframe with the issue type (i.e., error/warning)
     
-    lookup = df_checked
+    lookup = df
+    
+    #lookup = df_checked
     if (nrow(issues) > 0) {
       for (i in c(1:nrow(issues))) {
         ir = issues[i,"row"]                                                     # index of issue row in data
@@ -227,21 +230,24 @@ server <- function(input, output, session) {
                         headerStyle=list(background="#bacdda"))
     )
     
-    colDefList <- rep(colDefList, ncol(df_checked))
-    names(colDefList) <- names(df_checked)
+    colDefList <- rep(colDefList, ncol(df))
+    names(colDefList) <- names(df)
+    
+    # colDefList <- rep(colDefList, ncol(df_checked))
+    # names(colDefList) <- names(df_checked)
     
     output$data_checked = renderReactable({
-      reactable(df_checked, resizable=TRUE, showPageSizeOptions=TRUE,
-                showPagination=TRUE, bordered=TRUE,
+      reactable(df, resizable=TRUE, showPageSizeOptions=TRUE,
+                showPagination=TRUE, bordered=TRUE, wrap=FALSE,
                 columns=colDefList)
+      # reactable(df_checked, resizable=TRUE, showPageSizeOptions=TRUE,
+      #           showPagination=TRUE, bordered=TRUE, wrap=FALSE,
+      #           columns=colDefList)
     })
     
     output$issueMessage <- renderText({
       sprintf("%s", msg)
     })
-    
-    
-    # NEED TO DISABLE CALCULATE BUTTON UNLESS DATA OK...
     
     updateNavbarPage(session, "tabs", selected="check-page")
     
@@ -257,14 +263,23 @@ server <- function(input, output, session) {
     
     # Get selected options
     
-   
     GV_options = list("metals"=input$metals,
                       "calc_biof"=input$calc_biof,
                       "pcs"=input$pcs,
                       "rcr"=input$rcr)
     
-     GVs <<- calc_GVs(df, GV_options)
- 
+    # Call function to calculate GVs
+    
+    GVs <<- calc_GVs(df_checked, GV_options)
+    
+    # Update ui
+    
+    output$resultsHeading = renderUI({
+      if (!is.null(GVs)){
+        h2("Guideline values calculated successfully")
+      }
+    })
+     
     output$resultsText = renderUI({
       for (i in c(1:nrow(GVs$summary))) {
         GVs$summary[i,"message"] = paste(GVs$summary[i,"metal"],
@@ -278,56 +293,43 @@ server <- function(input, output, session) {
       
     })
     
-    #cols = names(results[grepl("PC", names(results)) | grepl("Bio", names(results)) | grepl("HQ", names(results))])
-    #hq_cols = names(results[grepl("HQ", names(results))])
-    # 
-    # styleHQFn <- function(value, name) {
-    #   
-    #   color <- "black"
-    #   
-    #   # Set font color to black unless column is in the list of HQs and 
-    #   # value is > 1
-    #   # then make it red
-    #   
-    #   if (name %in% hq_cols & value > 1) {
-    #     color <- "red"
-    #     fontWeight <- "bold"
-    #   }
-    #        list(color=color#, fontWeight = fontWeight
-    #         )
-    # }
-    # 
-    # colDefList <- list(
-    #   reactable::colDef(style=styleHQFn,
-    #                     format=colFormat(digits=1),
-    #                     headerStyle=list(background="#bacdda"))
-    # )
-    # 
-    #  colDefList <- rep(colDefList, ncol(GVs$results))
-    #  names(colDefList) <- names(GVs$results)
-    # 
+    styleFn <- function(value, index, name) {
+      
+      # Set default font colour to black
+      
+      color <- "black"
+      fontWeight <- "normal"
+      
+      # Set font colour to red if the column is a hazard quotient and the
+      # value is greater than 1
+      
+      if (!is.na(value)) {
+        if (grepl("_HQ",name) & value > 1) {
+          color <- "#e00000"
+          fontWeight <- "bold"
+        }
+      }
+      
+      list(color=color, fontWeight=fontWeight)
+    }
+    
+    colDefList <- list(
+      reactable::colDef(style=styleFn,
+                        format=colFormat(digits=1),
+                        headerStyle=list(background="#bacdda"))
+    )
+    
+    colDefList <- rep(colDefList, ncol(GVs$results))
+    names(colDefList) <- names(GVs$results)
+    
     output$GVs = renderReactable({
       reactable(GVs$results, resizable=TRUE, showPageSizeOptions=TRUE,
                 showPagination=TRUE, bordered=TRUE, wrap=FALSE,
-               
-                defaultColDef=colDef(#colDefList
-                                     format=colFormat(digits=1),
-                                     #style=styleHQFn,
-                                     headerStyle=list(background="#bacdda")
-                                     )
-            
-      )
+                columns=colDefList)
     })
     
-    
-    
-    # output$GVs = renderDT({
-    #   datatable(results) %>% formatRound(cols, 1) %>% 
-    #      formatStyle(hq_cols, color = styleInterval(1, c('black', 'red')),
-    #                                                                     fontWeight = 'bold')
-    # }, options=list(scrollX=TRUE, bFilter=0))  #, scrollY = TRUE
-
   })
+  
   ## Page 4----------------------------
   # Summary of results 
   #no.CuGVs <- length(results$CuPC95)
