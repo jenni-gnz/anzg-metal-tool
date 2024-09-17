@@ -56,11 +56,11 @@ server <- function(input, output, session) {
     fpath = inFile$datapath
     
     msg = tryCatch({
-      df <<- read.csv(fpath, header=TRUE, stringsAsFactors=FALSE, fileEncoding="UTF-8")
+      df <<- utils::read.csv(fpath, header=TRUE, stringsAsFactors=FALSE, fileEncoding="UTF-8")
     },error=function(e) e, warning=function(w) w)
     
     if (is(msg, "warning")){
-      df <<- read.csv(fpath, header=TRUE, stringsAsFactors=FALSE, fileEncoding="WINDOWS-1252")
+      df <<- utils::read.csv(fpath, header=TRUE, stringsAsFactors=FALSE, fileEncoding="WINDOWS-1252")
     }
     
     output$data = renderReactable({
@@ -82,7 +82,7 @@ server <- function(input, output, session) {
   observeEvent(input$sample_btn, {
     
     df <<- NULL
-    df <<- read.csv("data/exampleinputdata.csv", header=TRUE, stringsAsFactors=FALSE)
+    df <<- utils::read.csv("data/exampleinputdata.csv", header=TRUE, stringsAsFactors=FALSE)
     
     output$data = renderReactable({
       reactable(df, resizable=TRUE, showPageSizeOptions=TRUE, showPagination=TRUE,
