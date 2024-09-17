@@ -25,7 +25,7 @@ check_data <- function(df, options){
   }
   
   metal_labels = c("Cu"="Copper", "Ni"="Nickel", "Zn"="Zinc")
-  if (options$calc_biof == TRUE | options$rcr == TRUE) {                         # if calculating bioavailable metals,
+  if (options$calc_biof == TRUE | options$rcr == TRUE) {                                                      # if calculating bioavailable metals,
     cols = c(cols, metal_labels[options$metals])                                 # metal columns are also required
   }
   
@@ -38,24 +38,9 @@ check_data <- function(df, options){
   issue_df$row = as.numeric(issue_df$row)
   issue_df$col = as.numeric(issue_df$col)
   
-  # If Hardness is identified as missing, and Ca and Mg are available, calculate
-  # Hardness from Ca and Mg and update the issue dataframe
-  
-  i = which(grepl("Error: missing column Hardness", issue_df$message))
-  
-  if (length(i) > 0) {
-    if ("Ca" %in% names(df) & "Mg" %in% names(df)) {
-      Ca = as.numeric(df$Ca)
-      Mg = as.numeric(df$Mg)
-      df$Hardness = 2.497*Ca + 4.118*Mg
-      issue_df$type[i] = "warning"
-      issue_df$message[i] = "Warning: missing column Hardness, will be calculated from Ca and Mg"
-    }
-  }
-  
   # Identify any missing data in required columns that are in the dataset
   
-  cols_in = cols[cols %in% names(df)]                                            # required columns that exist in the dataset
+  cols_in = cols[cols %in% names(df)]
   
   missing = which(is.na(df[cols_in]), arr.ind=TRUE)
   
@@ -90,7 +75,7 @@ check_data <- function(df, options){
     issue_df = rbind(issue_df, data.frame("row"=negative[,1], "col"=negative[,2], "type"="error", "message"=paste0("Error: negative data in column ", cols_in[negative[,2]])))
   }
   
-  results = list("cols_in"=cols_in, "issue_df"=issue_df, "df_checked"=df)
+  results = list("cols_in"=cols_in, "issue_df"=issue_df)
   
   return(results)
   
