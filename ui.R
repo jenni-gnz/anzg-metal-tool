@@ -149,62 +149,63 @@ ui <- fluidPage(
                                              ),
                                              br(), br(), br(),
                                              
-                                  checkboxInput("calc_biof", # "",
-                                                value = FALSE,
-                                                label = HTML('<p 
-                    style="position:  relative; top: -36px; left: 30px;">
-                  Do you want to estimate the concentration of the bioavailable metal fraction?
-                   </p>')
-                                                )
-                                  # tooltip(checkboxGroupInput(inputId="calc_biof",
-                                  #                            width = "100%",
-                                  #                            label = "Do you want to calculate bioavailable metals?",
-                                  #                            bsicons::bs_icon("info-circle"),
-                                  #                            choices = c("Yes"="Yes")
-                                  #                            ),
-                                  #
-                                 # "These can be compared to a fixed guideline value. \nYou'll need to supply metal concentrations",
-                                  #placement = "right"
-                                  #)
+                   #                 checkboxInput("calc_biof", # "",
+                   #                               value = FALSE,
+                   #                               label = HTML('<p 
+                   #   style="position:  relative; top: -36px; left: 30px;">
+                   # Do you want to estimate the concentration of the bioavailable metal fraction?
+                   #  </p>')
+                   #                               )
+                                    tooltip(checkboxInput("calc_biof",
+                                                          value = FALSE,
+                                                          label = HTML('<p 
+                                                             style="position:  relative; top: -36px; left: 30px;">
+                                                           Do you want to estimate the concentration of the bioavailable metal fraction?
+                                                            </p>'#,# bsicons::bs_icon("info-circle")
+                                                              
+                                                               )),
+                                  
+                                  "These can be compared to a fixed guideline value. \nYou'll need to supply metal concentrations",
+                                  placement = "right"
+                                  )
                         ),
                         column(width=5, align = "left",
                                
-                                checkboxGroupInput(inputId="pcs", width="100%",
+                               tooltip(checkboxGroupInput(inputId="pcs", width="100%",
                                                    label="What levels of species protection do you want to include?",
                                                    choices=c("99% protection" = "PC99",
                                                              "95% protection" = "PC95",
                                                              "90% protection" = "PC90",
                                                              "80% protection" = "PC80"),
                                                    selected = "PC95"),
+                                       "95% protection is the default for slightly-moderately disturbed sites. \nSee ANZG website for more details",
+                                       placement = "right"
+                               ),
                                #             
                                br(), 
                                
                                ## Uncomment the option below when we know why its breaking
                                ## This displays correctly but then the tool breaks!!
                                
-                               # tooltip(checkboxGroupInput(inputId="rcr",
-                               #                    width = "100%",
-                               #                    label = "Do you want to calculate a Hazard Quotient (HQ)?",
-                               #                    choices = c("Yes"="Yes")
-                               #                    ),
-                               # 
-                               # "These indicate where risks to aquatic ecosystems are possible. \nYou'll need to supply metal concentrations",
-                               # placement = "right"
-                               #    )
+                               tooltip(checkboxInput("rcr",
+                                                  value = FALSE,
+                                                  label = HTML('<p 
+                     style="position:  relative; top: -36px; left: 30px;">
+                 Do you want to calculate a Hazard Quotient (HQ)?
+                    </p>')
+                                                  ),
+
+                               "These indicate where risks to aquatic ecosystems are possible. \nYou'll need to supply metal concentrations",
+                               placement = "right"
+                                  )
                                
-                               # checkboxGroupInput(inputId="rcr",
-                               #                                        width = "100%",
-                               #                                        label = "Do you want to calculate a Hazard Quotient (HQ)?",
-                               #                                        choices = c("Yes"="Yes")
-                               #                                        )
-                               
-                               checkboxInput("rcr", # "",
-                                             value = FALSE,
-                                             label = HTML('<p 
-                    style="position:  relative; top: -36px; left: 30px;">
-                Do you want to calculate a Hazard Quotient (HQ)?
-                   </p>')
-                               )
+                #                checkboxInput("rcr", # "",
+                #                              value = FALSE,
+                #                              label = HTML('<p 
+                #     style="position:  relative; top: -36px; left: 30px;">
+                # Do you want to calculate a Hazard Quotient (HQ)?
+                #    </p>')
+                #                )
                                
                         )
                         ) ## end top fluid row
