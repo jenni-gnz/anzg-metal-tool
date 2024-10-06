@@ -15,15 +15,15 @@ library(DT)  ## load DT after shiny so that the DT functions are used
 library(tidyverse)
 source("check_data.R")
 source("calc_GVs.R")
-
+source("plot_SSDs.R")
 
 server <- function(input, output, session) {
   
-      showModal(modalDialog(
-     #   title = "Important message",
-        "This app has not been optimised for use on mobile devices",
-        easyClose = TRUE
-      ))
+     #  showModal(modalDialog(
+     # #   title = "Important message",
+     #    "This app has not been optimised for use on mobile devices",
+     #    easyClose = TRUE
+     #  ))
   
   # Disable arrow tabs ------------------------------------------------------------------------------------
   
@@ -39,7 +39,10 @@ server <- function(input, output, session) {
   
   df <- NULL                                                                     # original data
   df_checked <- NULL                                                             # checked and processed data
-  GVs <- NULL
+ 
+  GVs <- NULL                                                                    # list of outputs returned from calc_GVs function
+  results <- NULL                                                                # GV results dataframe
+  plots <- NULL                                                                  # list of SSD plots
   
   # Load dataset when file uploaded ------------------------------------------------------------------------
   
@@ -215,9 +218,11 @@ server <- function(input, output, session) {
       
       if (!is.na(lookup[index,name])) {
         if (lookup[index,name] == "error") {
-          color <- "#fecdcd"
-        } else if (lookup[index,name] == "warning") {
-          color <- "#ffebcc"
+          list(fontWeight = "bold", color <- "#fecdcd")
+         } else if (lookup[index,name] == "warning") {
+           fontWeight = "bold"
+           color <- "#ffebcc"
+
         }
       }
       
@@ -253,9 +258,9 @@ server <- function(input, output, session) {
     
   }) # end observeEvent for check data
   
-  # Calculate GVs when "Calculate GVs" action button pressed  -----------------------------------------------
-  
+    # Calculate GVs when "Calculate GVs" action button pressed  -----------------------------------------------
   observeEvent(input$GV_btn, {
+    show_modal_spinner(spin = "hollow-dots", color ="#FF931E") # show the modal window
     
     # NOTE: NEED A PROGRESS BAR OR SOME OTHER INDICATOR
     
@@ -271,6 +276,9 @@ server <- function(input, output, session) {
     # Call function to calculate GVs
     
     GVs <<- calc_GVs(df_checked, GV_options)
+    results <<- GVs$results
+    plots <<- GVs$plots
+    remove_modal_spinner() # remove it when done
     
     # Update ui
     
@@ -348,49 +356,65 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       write.csv(GVs$results, file, row.names=FALSE)
-      # https://shiny.posit.co/r/articles/build/download/
     }
   )
 
-###Might use this?---
-#   output$mytable = DT::renderDataTable({
-#     results
-#   })
-
-  # Button to download ssds
-#  mydata <- list(cars,pressure,airquality)
-#  nplots <- length(mydata)
-# 
-#   observeEvent(input$downloadssds, {
-#     lapply(1:nplots, function(i){
-#       ggsave(paste0("yplot",i,".png"), plot(mydata[[i]]))
-#     })
-#   }, ignoreInit = TRUE)
-
+  # Button that makes SSD plots
   
-output$downloadssds <- downloadHandler(
+  observeEvent(input$SSDplots, { 
+    show_modal_spinner(spin = "hollow-dots", color ="#FF931E") # show the modal window
     
-     filename = function() {
-       paste(input$metal, input$row, Sys.Date(), ".png", sep="")
-     },
-     content = function(file) {
-       png(file, width = 980, height = 400, units = "px", pointsize = 12,
-       bg = "white", res = NA)
-       ## Need to replace this dummy plot with a call to the ssd plot function
-       x =  seq(1,10, by=1)
-       y = seq(2,20, by= 2)
-       top6.plot <- plot(x ~ y)
-print(top6.plot)
-dev.off()
+    # Get selected options
+    
+    GV_options = list("metals"=input$metals)
+    
+    # Call function to create the plots
+    
+    x = plot_SSDs(df_checked, GV_options)
+    
+    remove_modal_spinner() # remove it when plots created
+    
+    # Then need to make the download button visible
+    # shinyjs::enable("downloadssds")
+    # runjs("$('#downloadData')[0].click();") # DOWNLOAD BUTTON
+    # 
+    # 
+    # if (Nerrs > 0) {
+    #   shinyjs::disable("GV_btn")
+    # } else {
+    #   shinyjs::enable("GV_btn")
+    # }
+    
+    
+    })
+  
+  # Button to download SSD plots
+  
+  output$downloadssds <-    downloadHandler(
+    
+    filename = function() {
+      paste0("MySSDs-", Sys.Date(), ".zip")
+    },
+    content = function(file) {
+      
+      temp_directory <- file.path(tempdir(), as.integer(Sys.time()))
+      dir.create(temp_directory)
+      
+      pnames = paste0(names(plots), ".png")
+      for (i in seq_along(plots)) {
+        ggsave(file.path(temp_directory, pnames[i]), plots[[i]], "png")
+      }
+      
+      zip::zip(
+        zipfile = file,
+        files = dir(temp_directory),
+        root = temp_directory
+      )
+      
+      unlink(temp_directory, recursive = TRUE)
+    },
+    contentType = "application/zip"
+  )
 
-### end replacement here?
-},
-contentType = 'image/png'
-)
 
-  
-  
-  
-  
-  
 }

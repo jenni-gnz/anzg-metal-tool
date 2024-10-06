@@ -286,7 +286,7 @@ ui <- fluidPage(
                              reactableOutput("data_checked")
                       )
                       ),
-             add_busy_spinner(spin = "fading-circle")
+             add_busy_spinner(spin = "fading-circle", color = "#FF931E")
     ), # end of page 3 nav_panel ------------------
     
 #    nav_spacer(),
@@ -313,10 +313,27 @@ ui <- fluidPage(
                               br(), br(),
                               column(width=5, helpText("This exports a comma-separated (csv) file including your input data and results")),
                               br(),
+                              
+                              actionButton("SSDplots", width="280px",
+                                           div(class='button-inner', h4("Generate & download SSD plots")),
+                                           style="color:white; background-color:#376894; border-color:#376894"),
+                              br(),
+                              # conditionalPanel(
+                              #   condition = "message" == 'complete',
+                              #   #"false", # always hide the download button
                               downloadButton("downloadssds", "Download SSDs", icon = icon("images"), width="280px",
-                                             style="color:white; background-color:#376894; border-color:#376894"),
+                                              style="color:white; background-color:#376894; border-color:#376894"),
+                              #),
+                              # useShinyjs(),
+                              # 
+                              #   downloadButton("downloadPlots")
+                              # ),
+                              # actionButton("button", "MakePlots"),
+                              # #gt_output(outputId = "table"),
                               br(), br(),
-                              helpText("Note this button currently does nothing")
+                              helpText("This exports a zip file containing species sensitivity distribution (SSD) plots",
+                                       br(), 
+                                       "Expect this to take around 1-2 minutes for every 10 rows of data")
                               
                               )
                        ),
@@ -324,55 +341,43 @@ ui <- fluidPage(
               fluidRow(id="results-table",
                        column(width=12,
                               br(), br(),
-                              withSpinner(reactableOutput("GVs"), type =5))
+                              withSpinner(reactableOutput("GVs"), type =5),
+                              helpText("The columns are resizeable - hover over border in the header row & drag to resize"))
                        )
               
         ), # end of page 4 nav_panel
 
     nav_spacer(),
     ###Page 5 -----------------------------------------------------
-    #  nav_panel(value="user-page",
-    #           title=h4(id="page4-title", "User guide"),
-    #           br(),
-    #           fluidRow(id="user-guide",
-    #                    h2(id="user-title", "User guide to the ANZG metal DGV tool"),
-    #                           br(),
-    #                           p(withMathJax(includeMarkdown("text/user-guide.md")))
-    #                    )
-    # ), # end page 5 nav_panel
-    nav_panel(value="user-page",
-                         title=h5(id="page4-title", "User guide"),
-              page_sidebar(
-      h2("User guide to the ANZG metal DGV tool"),
-      
-      sidebar = sidebar(
-        bg = "#bacdda",
-        accordion(
-          accordion_panel(
-            "User guide",
-        #    color_by
-          ),
-          accordion_panel(
-            "Worked example",
-            "More sections go here"
+nav_panel(value="user-page",
+          title=h4(id="page4-title", "User guide"),
+          
+          h2("User guide to the ANZG metal DGV tool"),
+          accordion(
+            open = FALSE,
+            accordion_panel(
+              "1. Upload your file",
+              p(withMathJax(includeMarkdown("text/user-guide.md")))
+            ),
+            accordion_panel(
+              "2. Select options",
+              p("Some content here brought in from a R Markdown file")
+            ),    
+            accordion_panel(
+              "3. Check data",
+              p("Some content here brought in from a R Markdown file")
+            ),   
+            accordion_panel(
+              "4. View & download results",
+              p("Some content here brought in from a R Markdown file")
+            ),         
+            accordion_panel(
+              "Worked example",
+              p(withMathJax(includeMarkdown("text/worked-example.md")))  
+            )
           )
-        )
-      ),
-      
-      accordion(
-        open = FALSE,
-        accordion_panel(
-          "User guide",
-          p(withMathJax(includeMarkdown("text/user-guide.md")))
-        ),
-        accordion_panel(
-          "Example",
-          p(withMathJax(includeMarkdown("text/worked-example.md")))  
-        ),
-
-      )
-    )
-    ),
+          
+),
     ## Links ------------------------------------------------------------
     # nav_menu(
     #      title = h4("User guide & links"),
