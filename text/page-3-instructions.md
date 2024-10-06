@@ -1,5 +1,5 @@
 In the table below, columns shaded blue will be used to calculate DGVs based on your selected options. &nbsp;
-Errors identified are highlighted red (except where the error is a column that is not present) and warnings are highlighted orange.
+Errors are usually a column that is not present, or negative values (highlighted in red). Warnings (such as missing values or text) are highlighted orange.
 
 If your data contains **errors**, the calculations will not proceed. Please correct the errors (check for spelling mistakes, and the correct capitalisation) and re-upload the file, or select different options (e.g., change metals).
 

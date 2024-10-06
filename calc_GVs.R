@@ -304,30 +304,30 @@ calc_GVs <- function(df, options){
                                                TRUE ~ signif(.x, 2))))
           rownames(GV_temp) <- NULL
           
-         ## Real ssd plot
-          Nissd.pred <- predict(res, ci = TRUE)
-
-          fig_Ni <- ssd_plot(sens, Nissd.pred, ribbon = TRUE,
-                             label = "PlotLabel",
-                             color = "Model.used") +
-            ggtitle(paste("Row: ", input$row)) +
-            labs(subtitle = "Nickel species sensitivity distribution",
-                 caption = paste("SSD for DOC=", round(myDOC,1), " pH=", round(mypH,1),
-                                 " Ca=", round(myCa,1), " Mg=", round(myMg,1))) +
-            theme_bw() +
-            theme(legend.position.inside = c(0.2, 0.8),
-                  legend.background = element_rect(color = "black", linewidth = 0.1),
-                  legend.text=element_text(size=8),
-                  legend.key.size = unit(0.5, 'cm'),
-                  plot.caption.position = "plot",
-                  plot.caption = element_text(hjust = 0)
-            )
-
-          p_name <- paste0("Ni_SSD_", input$row)
-          temp <- c(names(plots), p_name)
-
-          plots <<- append(plots, list(fig_Ni))
-          names(plots) <<- temp
+         # ## Real ssd plot
+         #  Nissd.pred <- predict(res, ci = TRUE)
+         # 
+         #  fig_Ni <- ssd_plot(sens, Nissd.pred, ribbon = TRUE,
+         #                     label = "PlotLabel",
+         #                     color = "Model.used") +
+         #    ggtitle(paste("Row: ", input$row)) +
+         #    labs(subtitle = "Nickel species sensitivity distribution",
+         #         caption = paste("SSD for DOC=", round(myDOC,1), " pH=", round(mypH,1),
+         #                         " Ca=", round(myCa,1), " Mg=", round(myMg,1))) +
+         #    theme_bw() +
+         #    theme(legend.position.inside = c(0.2, 0.8),
+         #          legend.background = element_rect(color = "black", linewidth = 0.1),
+         #          legend.text=element_text(size=8),
+         #          legend.key.size = unit(0.5, 'cm'),
+         #          plot.caption.position = "plot",
+         #          plot.caption = element_text(hjust = 0)
+         #    )
+         # 
+         #  p_name <- paste0("Ni_SSD_", input$row)
+         #  temp <- c(names(plots), p_name)
+         # 
+         #  plots <<- append(plots, list(fig_Ni))
+         #  names(plots) <<- temp
 
           # # Make dummy plot and update list of plots to return
           # fig_Ni <- ggplot(input, aes(DOC, Hardness)) + geom_point()
