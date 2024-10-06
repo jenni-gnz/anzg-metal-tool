@@ -277,7 +277,7 @@ server <- function(input, output, session) {
     
     GVs <<- calc_GVs(df_checked, GV_options)
     results <<- GVs$results
-    plots <<- GVs$plots
+   # plots <<- GVs$plots
     remove_modal_spinner() # remove it when done
     
     # Update ui
@@ -362,30 +362,21 @@ server <- function(input, output, session) {
   # Button that makes SSD plots
   
   observeEvent(input$SSDplots, { 
-    show_modal_spinner(spin = "hollow-dots", color ="#FF931E") # show the modal window
-    
+    #add_busy_spinner(spin = "hollow-dots", color ="#FF931E") # this one doesn't show up for some reason
+    show_modal_spinner(spin = "hollow-dots", color ="#FF931E")
     # Get selected options
     
     GV_options = list("metals"=input$metals)
     
     # Call function to create the plots
     
-    x = plot_SSDs(df_checked, GV_options)
-    
+    CompletedPlots <<- plot_SSDs(df_checked, GV_options)
+    plots <<-CompletedPlots$plots
     remove_modal_spinner() # remove it when plots created
     
     # Then need to make the download button visible
-    # shinyjs::enable("downloadssds")
     # runjs("$('#downloadData')[0].click();") # DOWNLOAD BUTTON
-    # 
-    # 
-    # if (Nerrs > 0) {
-    #   shinyjs::disable("GV_btn")
-    # } else {
-    #   shinyjs::enable("GV_btn")
-    # }
-    
-    
+
     })
   
   # Button to download SSD plots
