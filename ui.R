@@ -19,6 +19,8 @@ library(bsicons)
 library(reactable)
 library(shinythemes)
 library(markdown)
+library(tippy)
+library(shinybusy)
 
 fileInputOnlyButton <- function(..., label="") {
   
@@ -45,7 +47,7 @@ ui <- fluidPage(
                                          ),
                                  tags$td(style="width:33%; height:120px", align="center",
                                          h1(id="main-title", style="color:white;",
-                                            "ANZG metal DGV tool")
+                                            "ANZG metal freshwater DGV tool")
                                          ),
                                  tags$td(style="width:33%"
                                          )
@@ -77,9 +79,10 @@ ui <- fluidPage(
       br(),
       fluidRow(id="welcome-panel",
                column(width=8, style="padding-right:55px", align="left", h2(id="welcome-title", 
-                                                "Welcome to the ANZG bioavailability-based metals default guideline values (DGVs) tool"),
+                                                "Welcome to the ANZG bioavailability-based metals freshwater default guideline values (DGVs) tool"),
                       br(),
-                      p(withMathJax(includeMarkdown("text/page-1-description.md")))
+                      p(includeMarkdown("text/page-1-description.md"),
+                       )
                       ),
                
                column(width=4,
@@ -142,7 +145,7 @@ ui <- fluidPage(
                                       
                                                     #style="background-color:#f0f1f1;",
                                              checkboxGroupInput(inputId="metals", width="100%",
-                                                                label="Which metals do you want to generate guideline values for?",
+                                                                label="Which metals do you want to generate DGVs for?",
                                                                 choices=c("Copper" = "Cu",
                                                                           "Nickel" = "Ni",
                                                                           "Zinc" = "Zn")
@@ -165,7 +168,7 @@ ui <- fluidPage(
                                                               
                                                                )),
                                   
-                                  "These can be compared to a fixed guideline value. \nYou'll need to supply metal concentrations",
+                                  "These can be compared to a fixed DGV. \nYou'll need to supply metal concentrations",
                                   placement = "right"
                                   )
                         ),
@@ -183,9 +186,6 @@ ui <- fluidPage(
                                ),
                                #             
                                br(), 
-                               
-                               ## Uncomment the option below when we know why its breaking
-                               ## This displays correctly but then the tool breaks!!
                                
                                tooltip(checkboxInput("rcr",
                                                   value = FALSE,
@@ -215,7 +215,7 @@ ui <- fluidPage(
                            #                         style="color:white; background-color:#376894; border-color:#376894"),
                         actionButton("check_btn",  div(class='button-inner', h4("Check input data"), icon("forward")),
                                                      width="280px", style="color:white; background-color:#376894; border-color:#376894"),
-                                      br(), br(),
+                                                                      br(), br(),
                       helpText("The next step checks your uploaded data against your selections"),
                                                                    ),
                     
@@ -253,11 +253,14 @@ ui <- fluidPage(
                     br(),
                     fluidRow(id="check-panel",
                              tags$table(style="width:100%",
-                                        tags$tr(tags$td(rowspan=3, style="width:15%; text-align:center", uiOutput("issuesIcon")),
+                                        tags$tr(tags$td(rowspan=3, style="width:15%; text-align:center", 
+                                                        uiOutput("issuesIcon")),
                                                 tags$td(style="width:45%; font-size:22pt", uiOutput("issuesText1")),
                                                 tags$td(rowspan=3, style="width:40%")
                                                 ),
-                                        tags$tr(tags$td(style="width:45%", uiOutput("issuesText2"))),
+                                        tags$tr(tags$td(style="width:45%", 
+                                                        tooltip(uiOutput("issuesText2"),
+                                                                "If there are errors, check for typos & capitals in heading names"))), 
                                         tags$tr(tags$td(style="width:45%", p("(See table below)")))
                                         ),
                              ),
@@ -283,6 +286,7 @@ ui <- fluidPage(
                              reactableOutput("data_checked")
                       )
                       ),
+             add_busy_spinner(spin = "fading-circle")
     ), # end of page 3 nav_panel ------------------
     
 #    nav_spacer(),

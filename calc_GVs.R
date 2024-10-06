@@ -15,7 +15,7 @@ calc_GVs <- function(df, options){
   #####################################################################
   ## Libraries and data files needed
   
-  library(plyr)                        ## Required
+ # library(plyr)                        ## Required
   library(tidyverse)                   ## Required
   library(ssdtools)                    ## Required
   
@@ -63,16 +63,16 @@ calc_GVs <- function(df, options){
     # Otherwise, write a note if any of the observations are out of the fitting
     # bounds
     
-     GV <- data.frame(matrix(nrow=1, ncol=length(pcs)))
-     GV_labels = paste("Cu", pcs, sep="")
-     names(GV) = GV_labels
-
+    GV <- data.frame(matrix(nrow=1, ncol=length(pcs)))
+    GV_labels = paste("Cu", pcs, sep="")
+    names(GV) = GV_labels
+    
     # GV <- data.frame(matrix(nrow=1, ncol=length(pcs)+1))
     # GV_labels = paste("Cu", pcs, sep="")
     # names(GV) = c(GV_labels, "CuNote")
     
     if(is.na(input$DOC)) #| is.na(input$pH) #| is.na(input$Hardness)
-        {
+    {
       
       CuNote <- "DOC missing"
       
@@ -80,41 +80,41 @@ calc_GVs <- function(df, options){
       #GV[1,"CuNote"] = CuNote
       
     } else {
-       if("pH" %in% names(input) & "Hardness" %in% names(input)) {
+      if("pH" %in% names(input) & "Hardness" %in% names(input)) {
         if(is.na(input$pH) | is.na(input$Hardness)){
-        CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
-            
-       } else if (input$DOC>30 | input$pH<6 |input$pH > 8.5 | input$Hardness<2 | input$Hardness>200){
-        CuNote <- "pH, hardness or DOC outside DGV range"
-        
-      } else {
-        CuNote <- "TMF data in range, GV suitable"   
-      }
+          CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
+          
+        } else if (input$DOC>30 | input$pH<6 |input$pH > 8.5 | input$Hardness<2 | input$Hardness>200){
+          CuNote <- "pH, hardness or DOC outside DGV range"
+          
+        } else {
+          CuNote <- "TMF data in range, GV suitable"   
+        }
       } else {    CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
-    }
-    
-    # Apply equation form
-      
-     if ("PC99" %in% pcs) GV$CuPC99 <- ifelse(0.20*(input$DOC/0.5)^0.977 <1, 
-                                              round(max(0.2, 0.20*(input$DOC/0.5)^0.977),1),
-       signif(max(0.2, 0.20*(input$DOC/0.5)^0.977),2))
-     if ("PC95" %in% pcs) GV$CuPC95 <- ifelse(0.47*(input$DOC/0.5)^0.977 <1, 
-                                              round(max(0.47, 0.47*(input$DOC/0.5)^0.977),1),
-                                              signif(max(0.47, 0.47*(input$DOC/0.5)^0.977),2))
-     
-     if ("PC90" %in% pcs) GV$CuPC90 <- signif(max(0.73, 0.73*(input$DOC/0.5)^0.977),2)
-     if ("PC80" %in% pcs) GV$CuPC80 <- signif(max(1.3, 1.3*(input$DOC/0.5)^0.977),2)
-    
       }
+      
+      # Apply equation form
+      
+      if ("PC99" %in% pcs) GV$CuPC99 <- ifelse(0.20*(input$DOC/0.5)^0.977 <1, 
+                                               round(max(0.2, 0.20*(input$DOC/0.5)^0.977),1),
+                                               signif(max(0.2, 0.20*(input$DOC/0.5)^0.977),2))
+      if ("PC95" %in% pcs) GV$CuPC95 <- ifelse(0.47*(input$DOC/0.5)^0.977 <1, 
+                                               round(max(0.47, 0.47*(input$DOC/0.5)^0.977),1),
+                                               signif(max(0.47, 0.47*(input$DOC/0.5)^0.977),2))
+      
+      if ("PC90" %in% pcs) GV$CuPC90 <- signif(max(0.73, 0.73*(input$DOC/0.5)^0.977),2)
+      if ("PC80" %in% pcs) GV$CuPC80 <- signif(max(1.3, 1.3*(input$DOC/0.5)^0.977),2)
+      
+    }
     myoutput <- cbind(input, CuNote, GV)
-
+    
     if (calc_biof & ("PC95" %in% pcs)) {
       
       myoutput <- myoutput |>
         dplyr::mutate(CuBioF = case_when(is.na(CuPC95) ~ NA,
-                                  0.47/CuPC95 > 1 ~ 1,
-                                  TRUE ~ 0.47/CuPC95),     # Bioavailable fraction
-               CuBio = case_when(is.na(CuPC95) ~ NA,
+                                         0.47/CuPC95 > 1 ~ 1,
+                                         TRUE ~ 0.47/CuPC95),     # Bioavailable fraction
+                      CuBio = case_when(is.na(CuPC95) ~ NA,
                                  is.na(CuBioF) ~ NA,
                                  !is.numeric(Copper) ~ NA,
                                  is.numeric(Copper) ~ signif(Copper*CuBioF,2)
@@ -134,7 +134,7 @@ calc_GVs <- function(df, options){
   
   # Zinc, with MLR adjustment
   
-  GetZnGuidelines <- function(sens=ZnSSD.df, tMLR=ZnMLR.coeffs, input){
+  GetZnGuidelines <- function(input, sens=ZnSSD.df, tMLR=ZnMLR.coeffs){
     
     # Check input data. If data is missing do nothing, but keep the row.
     # Otherwise, write a note if any of the observations are out of the fitting
@@ -239,7 +239,7 @@ calc_GVs <- function(df, options){
   
   # Nickel, with MLR adjustment
   
-  GetNiGuidelines <- function(sens=NiSSD.df, tMLR=NiMLR.coeffs, input){
+  GetNiGuidelines <- function(input, sens=NiSSD.df, tMLR=NiMLR.coeffs){
     
     # Check input data. If data is missing do nothing, but keep the row.
     # Otherwise, write a note if any of the observations are out of the fitting
@@ -275,7 +275,7 @@ calc_GVs <- function(df, options){
       }
       
       myDOC <- input$DOC
-      myH   <- input$Hardness
+     # myH   <- input$Hardness
       mypH  <- input$pH
       myCa  <- input$Ca
       myMg  <- input$Mg
@@ -357,8 +357,12 @@ calc_GVs <- function(df, options){
     Alloutput = myTMF.df
     
     if ("Cu" %in% metals) {
+      Cu.output <- myTMF.df |>
+        dplyr::group_split(row) |>
+        purrr::map(GetCuGuidelines) |>
+        purrr::list_rbind()
       
-      Cu.output <- ddply(myTMF.df,.(row), function(x) GetCuGuidelines(input=x))
+    #  Cu.output <- ddply(myTMF.df,.(row), function(x) GetCuGuidelines(input=x))
       GV_labels = paste("Cu", pcs, sep="")
       if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "CuBio")
       if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Cu_HQ")
@@ -372,7 +376,11 @@ calc_GVs <- function(df, options){
     
     if ("Zn" %in% metals) {
       
-      Zn.output <- ddply(myTMF.df,.(row), function(x) GetZnGuidelines(input=x))
+      Zn.output <- myTMF.df |>
+        dplyr::group_split(row) |>
+        purrr::map(GetZnGuidelines) |>
+        purrr::list_rbind()
+      #     Zn.output <- ddply(myTMF.df,.(row), function(x) GetZnGuidelines(input=x))
       GV_labels = paste("Zn", pcs, sep="")
       if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "ZnBio")
       if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Zn_HQ")
@@ -386,7 +394,12 @@ calc_GVs <- function(df, options){
     
     if ("Ni" %in% metals) {
       
-      Ni.output <- ddply(myTMF.df,.(row), function(x) GetNiGuidelines(input=x))
+      
+      Ni.output <- myTMF.df |>
+        dplyr::group_split(row) |>
+        purrr::map(GetNiGuidelines) |>
+        purrr::list_rbind()
+    #  Ni.output <- ddply(myTMF.df,.(row), function(x) GetNiGuidelines(input=x))
       GV_labels = paste("Ni", pcs, sep="")
       if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "NiBio")
       if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Ni_HQ")
