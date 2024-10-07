@@ -80,8 +80,10 @@ plot_SSDs <- function(df, options){
       
       } else {
 
+        print(paste0("Plotting row ", input$row))
+        
         Nissd.pred <- predict(res, ci = TRUE)
-
+        
         fig_Ni <- ssd_plot(sens, Nissd.pred, ribbon = TRUE,
                            label = "PlotLabel",
                           color = "Model.used") +
@@ -133,9 +135,11 @@ plot_SSDs <- function(df, options){
     
     if ("Zn" %in% metals) {
       
-      Zn.output <- myTMF.df |>
-        dplyr::group_split(row) |>
-        purrr::map(DoZnSSDPlots) 
+      ## do nothing at present
+      
+      # Zn.output <- myTMF.df |>
+      #   dplyr::group_split(row) |>
+      #   purrr::map(DoZnSSDPlots) 
     }
     
     if ("Ni" %in% metals) {
@@ -151,7 +155,7 @@ plot_SSDs <- function(df, options){
   }
   
   AllPlots <- GetAllSSDPlots(myTMF.df=df)
-    return ("plots"=plots)
+    return (list("plots"=plots))
   
 
 }  
