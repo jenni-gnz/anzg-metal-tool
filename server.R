@@ -371,7 +371,7 @@ server <- function(input, output, session) {
     # Call function to create the plots
     
     CompletedPlots <<- plot_SSDs(df_checked, GV_options)
-    plots <<-CompletedPlots$plots
+    plots <<- CompletedPlots$plots
     remove_modal_spinner() # remove it when plots created
     
     # Then need to make the download button visible
