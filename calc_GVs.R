@@ -122,11 +122,22 @@ calc_GVs <- function(df, options){
        )
     }
     
-    if (rcr & ("PC95" %in% pcs)) {
-      myoutput <- myoutput |>
-        dplyr::mutate(Cu_HQ = ifelse((is.na(CuPC95)|is.na(Copper)), NA, signif(Copper/CuPC95,2))     # RCR Cu
-        )
+    # Hazard quotient
+    
+    if (rcr) {
+      for (p in pcs) {
+        x = gsub("PC","",p)
+        col = paste0("Cu",p)
+        myoutput <- myoutput |>
+          dplyr::mutate("CuHQ{x}" := ifelse((is.na(.data[[col]])|is.na(Copper)), NA, signif(Copper/.data[[col]],2)))
+      }
     }
+    
+    # if (rcr & ("PC95" %in% pcs)) {
+    #   myoutput <- myoutput |>
+    #     dplyr::mutate(Cu_HQ = ifelse((is.na(CuPC95)|is.na(Copper)), NA, signif(Copper/CuPC95,2))     # RCR Cu
+    #     )
+    # }
     return(myoutput)
     
     }
@@ -225,13 +236,23 @@ calc_GVs <- function(df, options){
       )
     }
     
-    if (rcr & ("PC95" %in% pcs)) {
-
-      myoutput <- myoutput |>
-        dplyr::mutate(Zn_HQ = ifelse((is.na(ZnPC95)|is.na(Zinc)), NA, signif(Zinc/ZnPC95,2))     # RCR Zn
-        )
-      
+    # Hazard quotient
+    
+    if (rcr) {
+      for (p in pcs) {
+        x = gsub("PC","",p)
+        col = paste0("Zn",p)
+        myoutput <- myoutput |>
+          dplyr::mutate("ZnHQ{x}" := ifelse((is.na(.data[[col]])|is.na(Zinc)), NA, signif(Zinc/.data[[col]],2)))
+      }
     }
+    
+    
+    # if (rcr & ("PC95" %in% pcs)) {
+    #   myoutput <- myoutput |>
+    #     dplyr::mutate(Zn_HQ = ifelse((is.na(ZnPC95)|is.na(Zinc)), NA, signif(Zinc/ZnPC95,2))     # RCR Zn
+    #     )
+    # }
     
     return (myoutput)
    
@@ -364,12 +385,23 @@ calc_GVs <- function(df, options){
       
     }
     
-    if (rcr & ("PC95" %in% pcs)) {
-      
-      myoutput <- myoutput |>
-        dplyr::mutate(Ni_HQ = ifelse((is.na(NiPC95)|is.na(Nickel)), NA, signif(Nickel/NiPC95,2))     # RCR Ni
-        )
+    # Hazard quotient
+    
+    if (rcr) {
+      for (p in pcs) {
+        x = gsub("PC","",p)
+        col = paste0("Ni",p)
+        myoutput <- myoutput |>
+          dplyr::mutate("NiHQ{x}" := ifelse((is.na(.data[[col]])|is.na(Nickel)), NA, signif(Nickel/.data[[col]],2)))
+      }
     }
+    
+    # if (rcr & ("PC95" %in% pcs)) {
+    #   myoutput <- myoutput |>
+    #     dplyr::mutate(Ni_HQ = ifelse((is.na(NiPC95)|is.na(Nickel)), NA, signif(Nickel/NiPC95,2))     # RCR Ni
+    #     )
+    # }
+    
     return (myoutput)
     
   }
@@ -400,7 +432,8 @@ calc_GVs <- function(df, options){
     #  Cu.output <- ddply(myTMF.df,.(row), function(x) GetCuGuidelines(input=x))
       GV_labels = paste("Cu", pcs, sep="")
       if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "CuBio")
-      if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Cu_HQ")
+      if (rcr) GV_labels = c(GV_labels, paste0("Cu",gsub("PC","HQ",pcs)))
+      #if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Cu_HQ")
       Alloutput <- cbind(Alloutput, Cu.output %>% dplyr::select(all_of(c(GV_labels, "CuNote"))))
       
       i = nrow(summary)
@@ -418,7 +451,8 @@ calc_GVs <- function(df, options){
       #     Zn.output <- ddply(myTMF.df,.(row), function(x) GetZnGuidelines(input=x))
       GV_labels = paste("Zn", pcs, sep="")
       if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "ZnBio")
-      if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Zn_HQ")
+      if (rcr) GV_labels = c(GV_labels, paste0("Zn",gsub("PC","HQ",pcs)))
+      #if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Zn_HQ")
       Alloutput <- cbind(Alloutput, Zn.output %>% dplyr::select(all_of(c(GV_labels, "ZnNote"))))
       
       i = nrow(summary)
@@ -437,7 +471,8 @@ calc_GVs <- function(df, options){
     #  Ni.output <- ddply(myTMF.df,.(row), function(x) GetNiGuidelines(input=x))
       GV_labels = paste("Ni", pcs, sep="")
       if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "NiBio")
-      if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Ni_HQ")
+      if (rcr) GV_labels = c(GV_labels, paste0("Ni",gsub("PC","HQ",pcs)))
+      #if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Ni_HQ")
       Alloutput <- cbind(Alloutput, Ni.output %>% dplyr::select(all_of(c(GV_labels, "NiNote"))))
       
       i = nrow(summary)
