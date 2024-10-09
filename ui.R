@@ -310,14 +310,14 @@ ui <- fluidPage(
                        column(width=5, align="right",
                               downloadButton("downloadGVs", h4("Download results"), width="280px",
                                              style="color:white; background-color:#376894; border-color:#376894"),
-                              br(), br(),
+                              br(), #br(),
                               column(width=5, helpText("This exports a comma-separated (csv) file including your input data and results")),
                               br(),
                               
                               # actionButton("SSDplots", width="280px",
                               #              div(class='button-inner', h4("Generate & download SSD plots")),
                               #              style="color:white; background-color:#376894; border-color:#376894"),
-                              br(),
+                              #br(),
                               # conditionalPanel(
                               #   condition = "message" == 'complete',
                               #   #"false", # always hide the download button
@@ -330,9 +330,9 @@ ui <- fluidPage(
                               # ),
                               # actionButton("button", "MakePlots"),
                               # #gt_output(outputId = "table"),
-                              br(), br(),
-                              column(width=5, helpText("This generates species sensitivity distribution (SSD) plots and exports them as a zip file",
-                                                       br(), "Expect this to take around 1-2 minutes for every 10 rows of data")),
+                              #br(), br(),
+                              column(width=5, helpText("Generate species sensitivity distribution (SSD) plots & download in a zip file",
+                                                       br(), "This takes ~1-2 mins for 10 rows of data")),
                               #helpText("This exports a zip file containing species sensitivity distribution (SSD) plots",
                               #         br(), 
                               #         "Expect this to take around 1-2 minutes for every 10 rows of data")
