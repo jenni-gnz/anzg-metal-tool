@@ -312,7 +312,7 @@ server <- function(input, output, session) {
       # value is greater than 1
       
       if (!is.na(value)) {
-        if (grepl("_HQ",name) & value > 1) {
+        if (grepl("HQ",name) & value > 1) {
           color <- "#e00000"
           fontWeight <- "bold"
         }
