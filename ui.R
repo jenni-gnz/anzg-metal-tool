@@ -314,9 +314,9 @@ ui <- fluidPage(
                               column(width=5, helpText("This exports a comma-separated (csv) file including your input data and results")),
                               br(),
                               
-                              actionButton("SSDplots", width="280px",
-                                           div(class='button-inner', h4("Generate & download SSD plots")),
-                                           style="color:white; background-color:#376894; border-color:#376894"),
+                              # actionButton("SSDplots", width="280px",
+                              #              div(class='button-inner', h4("Generate & download SSD plots")),
+                              #              style="color:white; background-color:#376894; border-color:#376894"),
                               br(),
                               # conditionalPanel(
                               #   condition = "message" == 'complete',
@@ -331,9 +331,11 @@ ui <- fluidPage(
                               # actionButton("button", "MakePlots"),
                               # #gt_output(outputId = "table"),
                               br(), br(),
-                              helpText("This exports a zip file containing species sensitivity distribution (SSD) plots",
-                                       br(), 
-                                       "Expect this to take around 1-2 minutes for every 10 rows of data")
+                              column(width=5, helpText("This generates species sensitivity distribution (SSD) plots and exports them as a zip file",
+                                                       br(), "Expect this to take around 1-2 minutes for every 10 rows of data")),
+                              #helpText("This exports a zip file containing species sensitivity distribution (SSD) plots",
+                              #         br(), 
+                              #         "Expect this to take around 1-2 minutes for every 10 rows of data")
                               
                               )
                        ),
