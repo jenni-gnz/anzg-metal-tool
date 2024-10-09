@@ -359,34 +359,46 @@ server <- function(input, output, session) {
     }
   )
 
-  # Button that makes SSD plots
+  # Button that makes SSD plots - commented out as combining with download button for now
   
-  observeEvent(input$SSDplots, { 
-    #add_busy_spinner(spin = "hollow-dots", color ="#FF931E") # this one doesn't show up for some reason
-    show_modal_spinner(spin = "hollow-dots", color ="#FF931E")
-    # Get selected options
-    
-    GV_options = list("metals"=input$metals)
-    
-    # Call function to create the plots
-    
-    CompletedPlots <<- plot_SSDs(df_checked, GV_options)
-    plots <<- CompletedPlots$plots
-    remove_modal_spinner() # remove it when plots created
-    
-    # Then need to make the download button visible
-    # runjs("$('#downloadData')[0].click();") # DOWNLOAD BUTTON
-
-    })
+  # observeEvent(input$SSDplots, { 
+  #   #add_busy_spinner(spin = "hollow-dots", color ="#FF931E") # this one doesn't show up for some reason
+  #   show_modal_spinner(spin = "hollow-dots", color ="#FF931E")
+  #   # Get selected options
+  #   
+  #   GV_options = list("metals"=input$metals)
+  #   
+  #   # Call function to create the plots
+  #   
+  #   CompletedPlots <<- plot_SSDs(df_checked, GV_options)
+  #   plots <<- CompletedPlots$plots
+  #   remove_modal_spinner() # remove it when plots created
+  #   
+  #   # Then need to make the download button visible
+  #   # runjs("$('#downloadData')[0].click();") # DOWNLOAD BUTTON
+  # 
+  #   })
   
   # Button to download SSD plots
   
-  output$downloadssds <-    downloadHandler(
+  output$downloadssds <- downloadHandler(
     
     filename = function() {
       paste0("MySSDs-", Sys.Date(), ".zip")
     },
     content = function(file) {
+      
+      show_modal_spinner(spin = "hollow-dots", color ="#FF931E")
+      
+      # Call function to create the plots
+      
+      GV_options = list("metals"=input$metals)
+      CompletedPlots <<- plot_SSDs(df_checked, GV_options)
+      plots <<- CompletedPlots$plots
+      
+      remove_modal_spinner()                                   # remove spinner when plots created
+      
+      # Create temporary directory and save plots to file
       
       temp_directory <- file.path(tempdir(), as.integer(Sys.time()))
       dir.create(temp_directory)
@@ -395,6 +407,8 @@ server <- function(input, output, session) {
       for (i in seq_along(plots)) {
         ggsave(file.path(temp_directory, pnames[i]), plots[[i]], "png")
       }
+      
+      # Zip file and save to user specified location
       
       zip::zip(
         zipfile = file,
