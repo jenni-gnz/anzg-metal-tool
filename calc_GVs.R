@@ -31,12 +31,17 @@ calc_GVs <- function(df, options){
   
   pcs_vals = pcs_vals_all[pcs_all %in% pcs]
   
+  refGV_cu_nz <- 0.6
+  refGV_cu_aus <- 0.8
+  refGV_ni_nz <-  2.3
+  refGV_ni_aus  <-  3.1
+  
   # Zinc
   
-  if ("Zn" %in% metals){
-    load(file="data/ZnMLRcoeffs.Rdata")
-    load(file="data/ZnSSD.Rdata")
-  }
+  # if ("Zn" %in% metals){
+  #   load(file="data/ZnMLRcoeffs.Rdata")
+  #   load(file="data/ZnSSD.Rdata")
+  # }
   
   # Nickel
   
@@ -108,12 +113,13 @@ calc_GVs <- function(df, options){
     }
     myoutput <- cbind(input, CuNote, GV)
     
+    # if (calc_biof & ("aus" %in% country)) {  # need to change functions as per country
     if (calc_biof & ("PC95" %in% pcs)) {
       
       myoutput <- myoutput |>
         dplyr::mutate(CuBioF = case_when(is.na(CuPC95) ~ NA,
-                                         0.47/CuPC95 > 1 ~ 1,
-                                         TRUE ~ 0.47/CuPC95),     # Bioavailable fraction
+                                         refGV_cu_nz/CuPC95 > 1 ~ 1,
+                                         TRUE ~ refGV_cu_nz/CuPC95),     # Bioavailable fraction
                       CuBio = case_when(is.na(CuPC95) ~ NA,
                                  is.na(CuBioF) ~ NA,
                                  !is.numeric(Copper) ~ NA,
@@ -373,8 +379,8 @@ calc_GVs <- function(df, options){
       
       myoutput <- myoutput |>
         dplyr::mutate(NiBioF = case_when(is.na(NiPC95) ~ NA,  # Calc bioavailable fraction
-                                  1.1/NiPC95 > 1 ~ 1,  # Make 1 if > 1
-                                  TRUE ~ 1.1/NiPC95),  
+                                  refGV_ni_nz/NiPC95 > 1 ~ 1,  # Make 1 if > 1
+                                  TRUE ~ refGV_ni_nz/NiPC95),  
                NiBio = case_when(is.na(NiPC95) ~ NA,
                                  is.na(NiBioF) ~ NA,
                                  !is.numeric(Nickel) ~ NA,
@@ -442,24 +448,24 @@ calc_GVs <- function(df, options){
       summary[i+1,"nGVs"] <<- nrow(Cu.output) - summary[i+1,"nExcluded"]
     }
     
-    if ("Zn" %in% metals) {
-      
-      Zn.output <- myTMF.df |>
-        dplyr::group_split(row) |>
-        purrr::map(GetZnGuidelines) |>
-        purrr::list_rbind()
-      #     Zn.output <- ddply(myTMF.df,.(row), function(x) GetZnGuidelines(input=x))
-      GV_labels = paste("Zn", pcs, sep="")
-      if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "ZnBio")
-      if (rcr) GV_labels = c(GV_labels, paste0("Zn",gsub("PC","HQ",pcs)))
-      #if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Zn_HQ")
-      Alloutput <- cbind(Alloutput, Zn.output %>% dplyr::select(all_of(c(GV_labels, "ZnNote"))))
-      
-      i = nrow(summary)
-      summary[i+1,"metal"] <<- "Zinc"
-      summary[i+1,"nExcluded"] <<- nrow(Zn.output[which(Zn.output$ZnNote=="TMFs missing"),])
-      summary[i+1,"nGVs"] <<- nrow(Zn.output) - summary[i+1,"nExcluded"]
-    }
+    # if ("Zn" %in% metals) {
+    #   
+    #   Zn.output <- myTMF.df |>
+    #     dplyr::group_split(row) |>
+    #     purrr::map(GetZnGuidelines) |>
+    #     purrr::list_rbind()
+    #   #     Zn.output <- ddply(myTMF.df,.(row), function(x) GetZnGuidelines(input=x))
+    #   GV_labels = paste("Zn", pcs, sep="")
+    #   if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "ZnBio")
+    #   if (rcr) GV_labels = c(GV_labels, paste0("Zn",gsub("PC","HQ",pcs)))
+    #   #if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Zn_HQ")
+    #   Alloutput <- cbind(Alloutput, Zn.output %>% dplyr::select(all_of(c(GV_labels, "ZnNote"))))
+    #   
+    #   i = nrow(summary)
+    #   summary[i+1,"metal"] <<- "Zinc"
+    #   summary[i+1,"nExcluded"] <<- nrow(Zn.output[which(Zn.output$ZnNote=="TMFs missing"),])
+    #   summary[i+1,"nGVs"] <<- nrow(Zn.output) - summary[i+1,"nExcluded"]
+    # }
     
     if ("Ni" %in% metals) {
       

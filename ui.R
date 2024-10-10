@@ -76,7 +76,7 @@ ui <- fluidPage(
     # 1. Intro and file upload --------------------------------------------------------------------------
     nav_panel(value="upload-page",
       title = h5(id="page1-title", "1. Upload your file"),
-      br(),
+     # br(),
       fluidRow(id="welcome-panel",
                column(width=8, style="padding-right:55px", align="left", h2(id="welcome-title", 
                                                 "Welcome to the ANZG bioavailability-based metals freshwater default guideline values (DGVs) tool"),
@@ -135,79 +135,67 @@ ui <- fluidPage(
     # 2. Select options ------------------------------------------------------------------------
     nav_panel(value="select-page",
       title = h5(id="page2-title", "2. Select options"),
-      br(),
+    #  br(),
       fluidRow(id="options-panel",
-                 column(width=10, align="left", h2("Please review your data (displayed below) and select options"),
-                                      #em("Add some more text here?"),
-                        fluidRow(em("Choose the options for your analysis:"),
+                 column(width=10, align="left", h2("Review your data (displayed below) and select options for your analysis"),
+                                                         fluidRow(#em("Choose the options for your analysis:"),
                                  column(width=5, align = "left",
                                   #     br(),
                                       
                                                     #style="background-color:#f0f1f1;",
-                                             checkboxGroupInput(inputId="metals", width="100%",
+                                  tooltip(checkboxGroupInput(inputId="metals", width="80%",
                                                                 label="Which metals do you want to generate DGVs for?",
                                                                 choices=c("Copper" = "Cu",
-                                                                          "Nickel" = "Ni",
-                                                                          "Zinc" = "Zn")
-                                             ),
-                                             br(), br(), br(),
+                                                                          "Nickel" = "Ni")
+                                                                          #"Zinc" = "Zn")
+                                             ), "Zinc will be available in the future"),
+                                           #  br(),#  br(),
+                                  tooltip(checkboxGroupInput(inputId="pcs", width="80%",
+                                                             label="What levels of species protection do you want to include?",
+                                                             choices=c("99% protection" = "PC99",
+                                                                       "95% protection" = "PC95",
+                                                                       "90% protection" = "PC90",
+                                                                       "80% protection" = "PC80"),
+                                                             selected = "PC95"),
+                                          "95% protection is the default for slightly-moderately disturbed sites. \nSee ANZG website for more details",
+                                          placement = "right"
+                                  ),
+                                  br(),
+                                  tooltip(checkboxInput("rcr",
+                                                        value = FALSE,
+                                                        label = HTML('<p 
+                     style="position:  relative; top: -36px; left: 30px;">
+                 Do you want to calculate Hazard Quotients (HQs)?
+                    </p>')
+                                  ),
+                                  "These indicate where risks to aquatic ecosystems are possible. \nYou'll need to supply metal concentrations",
+                                  placement = "right"
+                                  )
                                              
-                   #                 checkboxInput("calc_biof", # "",
-                   #                               value = FALSE,
-                   #                               label = HTML('<p 
-                   #   style="position:  relative; top: -36px; left: 30px;">
-                   # Do you want to estimate the concentration of the bioavailable metal fraction?
-                   #  </p>')
-                   #                               )
-                                    tooltip(checkboxInput("calc_biof",
-                                                          value = FALSE,
-                                                          label = HTML('<p 
+                              ),
+                        column(width=5, align = "left",
+                               br(),
+                                tooltip(checkboxInput("calc_biof",
+                                                     value = FALSE,
+                                                     label = HTML('<p 
                                                              style="position:  relative; top: -36px; left: 30px;">
                                                            Do you want to estimate the concentration of the bioavailable metal fraction?
                                                             </p>'#,# bsicons::bs_icon("info-circle")
-                                                              
-                                                               )),
-                                  
-                                  "These can be compared to a fixed DGV. \nYou'll need to supply metal concentrations",
-                                  placement = "right"
-                                  )
-                        ),
-                        column(width=5, align = "left",
-                               
-                               tooltip(checkboxGroupInput(inputId="pcs", width="100%",
-                                                   label="What levels of species protection do you want to include?",
-                                                   choices=c("99% protection" = "PC99",
-                                                             "95% protection" = "PC95",
-                                                             "90% protection" = "PC90",
-                                                             "80% protection" = "PC80"),
-                                                   selected = "PC95"),
-                                       "95% protection is the default for slightly-moderately disturbed sites. \nSee ANZG website for more details",
+                                                                  
+                                                     )),
+                                          "These can be compared to a fixed DGV. 
+                                        \nYou'll need to supply metal concentrations 
+                                        \nand select the country where you are applying these",
                                        placement = "right"
                                ),
-                               #             
+                               tooltip(radioButtons("country", label = "Select your country for application:", 
+                                                    choices = c("Australia" = "aus", "New Zealand" = "nz")),
+                                       "Country of application is required for comparing bioavailable metals to reference DGVs",
+                                       placement = "right"),#             
                                br(), 
                                
-                               tooltip(checkboxInput("rcr",
-                                                  value = FALSE,
-                                                  label = HTML('<p 
-                     style="position:  relative; top: -36px; left: 30px;">
-                 Do you want to calculate a Hazard Quotient (HQ)?
-                    </p>')
-                                                  ),
-
-                               "These indicate where risks to aquatic ecosystems are possible. \nYou'll need to supply metal concentrations",
-                               placement = "right"
-                                  )
                                
-                #                checkboxInput("rcr", # "",
-                #                              value = FALSE,
-                #                              label = HTML('<p 
-                #     style="position:  relative; top: -36px; left: 30px;">
-                # Do you want to calculate a Hazard Quotient (HQ)?
-                #    </p>')
-                #                )
-                               
-                        )
+                      )
                         ) ## end top fluid row
                  ), ##end width 10 column
                column(width=2, align="right",
@@ -246,7 +234,7 @@ ui <- fluidPage(
     # 3. Check data page -----------------------------------------------------------------------------
     nav_panel(value="check-page",
               title = h5(id="page3-title", "3. Check data"),
-              br(),
+      #        br(),
              fluidRow(id="check-panel",
              column(width=7,
                     fluidRow(p("Note: for large data sets this may take some time to display")),
@@ -300,7 +288,7 @@ ui <- fluidPage(
     # 4. Display & download GVs page-----------------------------------------------------------------
     nav_panel(value="GV-page",
               title=h5(id="page4-title", "4. View & download results"),
-              br(),
+       #       br(),
               fluidRow(id="results-panel",
                        column(width=7, align="left",
                               uiOutput("resultsHeading"),
