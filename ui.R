@@ -79,10 +79,36 @@ ui <- fluidPage(
      # br(),
       fluidRow(id="welcome-panel",
                column(width=8, style="padding-right:55px", align="left", h2(id="welcome-title", 
-                                                "Welcome to the ANZG bioavailability-based metals freshwater default guideline values (DGVs) tool"),
+                                                "Welcome to the ANZG bioavailability-based metals default guideline values (DGVs) tool"),
                       br(),
-                      p(includeMarkdown("text/page-1-description.md"),
-                       )
+                      span("This tool estimates potential risks to freshwater aquatic 
+                      environments posed by ", strong("copper"), " and ", strong("nickel"), " after considering bioavailability",
+                      tooltip(bs_icon("info-circle"), "Definition of bioaval", placement = "bottom"),".",
+                      br(),  br(),
+                      "This tool has been developed to assist in implementation of the ", 
+                      tags$a("ANZG",  href="https://www.waterquality.gov.au/anz-guidelines", target="_blank"),
+                      "toxicant default guideline values (DGVs) within a tiered risk assessment framework.",
+                      tooltip(bs_icon("info-circle"), "add a link", placement = "bottom"),
+                      br(), br(),
+                      strong("Use the tool when your dissolved metal concentrations ", em("exceed"), 
+                      "the tier 1 DGVs"), 
+                      popover(bs_icon("info-circle"), title = "Tier 1 DGVs", "add the DGVs in a table"),
+                      br(),  br(),
+                      includeMarkdown("text/page-1-description.md"), 
+                      "If you  include metal concentrations, the tool can also 
+                      estimate the bioavailable fraction of the metal",
+                      tooltip(bs_icon("info-circle"), "pop out", placement = "bottom"),
+                      ", and calculate a hazard quotient",
+                      tooltip(bs_icon("info-circle"), "pop out", placement = "bottom"), br(),
+                    "Upload a ", a("comma-separated table (csv) ",target="_blank",href="myfile.csv"), 
+                    "with your water chemistry data or test the 
+                    calculator with the example dataset provided.", br(), br(), 
+                    "For more instructions see ", a("the user guide with worked examples",target="_blank",href="myfile.pdf"),
+                    "and the ", strong("FAQs"), " below.", br(),
+                    "Details on the DGVs, the tiered approach to implementation" ,
+                    " and a description of the science underpinning the tool's development is provided in ",
+                    a("this document.",target="_blank",href="myfile.pdf"))
+                      
                       ),
                
                column(width=4,
