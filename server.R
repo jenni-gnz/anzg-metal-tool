@@ -277,6 +277,13 @@ server <- function(input, output, session) {
     
     GVs <<- calc_GVs(df_checked, GV_options)
     results <<- GVs$results
+    
+    # Overwrite original data in results so that issues removed as part of
+    # checking (e.g. non-numeric values) are preserved when the results are
+    # displayed and/or downloaded
+    
+    results[,match(names(df),names(results))] <<- df
+    
    # plots <<- GVs$plots
     remove_modal_spinner() # remove it when done
     
@@ -327,11 +334,11 @@ server <- function(input, output, session) {
                         headerStyle=list(background="#bacdda"))
     )
     
-    colDefList <- rep(colDefList, ncol(GVs$results))
-    names(colDefList) <- names(GVs$results)
+    colDefList <- rep(colDefList, ncol(results))
+    names(colDefList) <- names(results)
     
     output$GVs = renderReactable({
-      reactable(GVs$results, resizable=TRUE, showPageSizeOptions=TRUE,
+      reactable(results, resizable=TRUE, showPageSizeOptions=TRUE,
                 showPagination=TRUE, bordered=TRUE, wrap=FALSE,
                 columns=colDefList)
     })
