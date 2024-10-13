@@ -238,16 +238,10 @@ server <- function(input, output, session) {
     colDefList <- rep(colDefList, ncol(df))
     names(colDefList) <- names(df)
     
-    # colDefList <- rep(colDefList, ncol(df_checked))
-    # names(colDefList) <- names(df_checked)
-    
     output$data_checked = renderReactable({
       reactable(df, resizable=TRUE, showPageSizeOptions=TRUE,
                 showPagination=TRUE, bordered=TRUE, wrap=FALSE,
                 columns=colDefList)
-      # reactable(df_checked, resizable=TRUE, showPageSizeOptions=TRUE,
-      #           showPagination=TRUE, bordered=TRUE, wrap=FALSE,
-      #           columns=colDefList)
     })
     
     output$issueMessage <- renderText({
@@ -258,8 +252,10 @@ server <- function(input, output, session) {
     
   }) # end observeEvent for check data
   
-    # Calculate GVs when "Calculate GVs" action button pressed  -----------------------------------------------
+  # Calculate GVs when "Calculate GVs" action button pressed  -----------------------------------------------
+  
   observeEvent(input$GV_btn, {
+    
     show_modal_spinner(spin = "hollow-dots", color ="#FF931E") # show the modal window
     
     # NOTE: NEED A PROGRESS BAR OR SOME OTHER INDICATOR
@@ -271,7 +267,8 @@ server <- function(input, output, session) {
     GV_options = list("metals"=input$metals,
                       "calc_biof"=input$calc_biof,
                       "pcs"=input$pcs,
-                      "rcr"=input$rcr)
+                      "rcr"=input$rcr,
+                      "country"=input$country)
     
     # Call function to calculate GVs
     
