@@ -25,16 +25,31 @@ calc_GVs <- function(df, options){
   calc_biof = options$calc_biof
   pcs = options$pcs
   rcr = options$rcr
+  country = options$country
+  
+  # include PC95 if not selected in options so that bioavailable fraction can
+  # be calculated
+  
+  pcs_calc = pcs
+  if (calc_biof) pcs_calc = unique(c(pcs,"PC95"))
   
   pcs_all = c("PC99", "PC95", "PC90", "PC80")
   pcs_vals_all = c(1, 5, 10, 20)
   
-  pcs_vals = pcs_vals_all[pcs_all %in% pcs]
+  pcs_vals = pcs_vals_all[pcs_all %in% pcs_calc]
   
   refGV_cu_nz <- 0.6
   refGV_cu_aus <- 0.8
-  refGV_ni_nz <-  2.3
-  refGV_ni_aus  <-  3.1
+  refGV_ni_nz <- 2.3
+  refGV_ni_aus <- 3.1
+  
+  refGV_cu <- refGV_cu_aus
+  refGV_ni <- refGV_ni_aus
+  
+  if (country == "nz") {
+    refGV_cu <- refGV_cu_nz
+    refGV_ni <- refGV_ni_nz
+  }
   
   # Zinc
   
@@ -95,37 +110,37 @@ calc_GVs <- function(df, options){
         } else {
           CuNote <- "TMF data in range, GV suitable"   
         }
-      } else {    CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
+      } else {
+        CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
       }
       
       # Apply equation form
       
-      if ("PC99" %in% pcs) GV$CuPC99 <- ifelse(0.20*(input$DOC/0.5)^0.977 <1, 
-                                               round(max(0.2, 0.20*(input$DOC/0.5)^0.977),1),
-                                               signif(max(0.2, 0.20*(input$DOC/0.5)^0.977),2))
-      if ("PC95" %in% pcs) GV$CuPC95 <- ifelse(0.47*(input$DOC/0.5)^0.977 <1, 
-                                               round(max(0.47, 0.47*(input$DOC/0.5)^0.977),1),
-                                               signif(max(0.47, 0.47*(input$DOC/0.5)^0.977),2))
+      if ("PC99" %in% pcs_calc) GV$CuPC99 <- ifelse(0.20*(input$DOC/0.5)^0.977 <1,
+                                                    round(max(0.2, 0.20*(input$DOC/0.5)^0.977),1),
+                                                    signif(max(0.2, 0.20*(input$DOC/0.5)^0.977),2))
       
-      if ("PC90" %in% pcs) GV$CuPC90 <- signif(max(0.73, 0.73*(input$DOC/0.5)^0.977),2)
-      if ("PC80" %in% pcs) GV$CuPC80 <- signif(max(1.3, 1.3*(input$DOC/0.5)^0.977),2)
+      if ("PC95" %in% pcs_calc) GV$CuPC95 <- ifelse(0.47*(input$DOC/0.5)^0.977 <1,
+                                                    round(max(0.47, 0.47*(input$DOC/0.5)^0.977),1),
+                                                    signif(max(0.47, 0.47*(input$DOC/0.5)^0.977),2))
+
+      if ("PC90" %in% pcs_calc) GV$CuPC90 <- signif(max(0.73, 0.73*(input$DOC/0.5)^0.977),2)
+      if ("PC80" %in% pcs_calc) GV$CuPC80 <- signif(max(1.3, 1.3*(input$DOC/0.5)^0.977),2)
       
     }
     myoutput <- cbind(input, CuNote, GV)
     
-    # if (calc_biof & ("aus" %in% country)) {  # need to change functions as per country
-    if (calc_biof & ("PC95" %in% pcs)) {
+    if (calc_biof) {
       
       myoutput <- myoutput |>
         dplyr::mutate(CuBioF = case_when(is.na(CuPC95) ~ NA,
-                                         refGV_cu_nz/CuPC95 > 1 ~ 1,
-                                         TRUE ~ refGV_cu_nz/CuPC95),     # Bioavailable fraction
+                                         refGV_cu/CuPC95 > 1 ~ 1,
+                                         TRUE ~ refGV_cu/CuPC95),                         # Bioavailable fraction
                       CuBio = case_when(is.na(CuPC95) ~ NA,
-                                 is.na(CuBioF) ~ NA,
-                                 !is.numeric(Copper) ~ NA,
-                                 is.numeric(Copper) ~ signif(Copper*CuBioF,2)
-                                 )                # Bioavailable Cu
-       )
+                                        is.na(CuBioF) ~ NA,
+                                        !is.numeric(Copper) ~ NA,
+                                        is.numeric(Copper) ~ signif(Copper*CuBioF,2))     # Bioavailable Cu
+                      )
     }
     
     # Hazard quotient
@@ -139,11 +154,6 @@ calc_GVs <- function(df, options){
       }
     }
     
-    # if (rcr & ("PC95" %in% pcs)) {
-    #   myoutput <- myoutput |>
-    #     dplyr::mutate(Cu_HQ = ifelse((is.na(CuPC95)|is.na(Copper)), NA, signif(Copper/CuPC95,2))     # RCR Cu
-    #     )
-    # }
     return(myoutput)
     
     }
@@ -157,8 +167,8 @@ calc_GVs <- function(df, options){
     # Otherwise, write a note if any of the observations are out of the fitting
     # bounds
     
-    GV <- data.frame(matrix(nrow=1, ncol=length(pcs)+1))
-    GV_labels = paste("Zn", pcs, sep="")
+    GV <- data.frame(matrix(nrow=1, ncol=length(pcs_calc)+1))
+    GV_labels = paste("Zn", pcs_calc, sep="")
     names(GV) = c(GV_labels, "ZnNote")
     
     if(is.na(input$DOC) | is.na(input$pH) | is.na(input$Hardness)) {
@@ -212,7 +222,6 @@ calc_GVs <- function(df, options){
         
       } else {
         GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=10)[,3]))
-        print(GV_temp)
         GV_temp <- GV_temp |>
           dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
                                                TRUE ~ signif(.x, 2))))
@@ -228,18 +237,19 @@ calc_GVs <- function(df, options){
     names(GV) <- c(GV_labels, "ZnNote")
     myoutput <- cbind(input, GV)
     
-    if (calc_biof & ("PC95" %in% pcs)) {
+    if (calc_biof) {
+    #if (calc_biof & ("PC95" %in% pcs)) {
       
       myoutput <- myoutput |>
-        dplyr::mutate(ZnBioF = case_when(is.na(ZnPC95) ~ NA,  # Calc Bioavailable fraction
-                                  4.1/ZnPC95 > 1 ~ 1,  # Make 1 if > 1
-                                  TRUE ~ 4.1/ZnPC95),
-      ZnBio = case_when(is.na(ZnPC95) ~ NA,
-                        is.na(ZnBioF) ~ NA,
-                        !is.numeric(Zinc) ~ NA,
-                        is.numeric(Zinc) ~ signif(Zinc*ZnBioF,2)                # Bioavailable Zn
-      )
-      )
+        dplyr::mutate(ZnBioF = case_when(is.na(ZnPC95) ~ NA,                       # Calc Bioavailable fraction
+                                         4.1/ZnPC95 > 1 ~ 1,                       # Make 1 if > 1
+                                         TRUE ~ 4.1/ZnPC95),
+                      ZnBio = case_when(is.na(ZnPC95) ~ NA,
+                                        is.na(ZnBioF) ~ NA,
+                                        !is.numeric(Zinc) ~ NA,
+                                        is.numeric(Zinc) ~ signif(Zinc*ZnBioF,2)   # Bioavailable Zn
+                                        )
+                      )
     }
     
     # Hazard quotient
@@ -252,7 +262,6 @@ calc_GVs <- function(df, options){
           dplyr::mutate("ZnHQ{x}" := ifelse((is.na(.data[[col]])|is.na(Zinc)), NA, signif(Zinc/.data[[col]],2)))
       }
     }
-    
     
     # if (rcr & ("PC95" %in% pcs)) {
     #   myoutput <- myoutput |>
@@ -272,8 +281,8 @@ calc_GVs <- function(df, options){
     # Otherwise, write a note if any of the observations are out of the fitting
     # bounds
     
-    GV <- data.frame(matrix(nrow=1, ncol=length(pcs)+1))
-    GV_labels = paste("Ni", pcs, sep="")
+    GV <- data.frame(matrix(nrow=1, ncol=length(pcs_calc)+1))
+    GV_labels = paste("Ni", pcs_calc, sep="")
     names(GV) = c(GV_labels, "NiNote")
     
     if (is.na(input$DOC) | is.na(input$pH) | is.na(input$Ca) |is.na(input$Mg)) {
@@ -374,21 +383,17 @@ calc_GVs <- function(df, options){
     names(GV) <- c(GV_labels, "NiNote")
     myoutput <- cbind(input, GV)
     
-
-    if (calc_biof & ("PC95" %in% pcs)) {
+    if (calc_biof) {
       
       myoutput <- myoutput |>
-        dplyr::mutate(NiBioF = case_when(is.na(NiPC95) ~ NA,  # Calc bioavailable fraction
-                                  refGV_ni_nz/NiPC95 > 1 ~ 1,  # Make 1 if > 1
-                                  TRUE ~ refGV_ni_nz/NiPC95),  
-               NiBio = case_when(is.na(NiPC95) ~ NA,
-                                 is.na(NiBioF) ~ NA,
-                                 !is.numeric(Nickel) ~ NA,
-                                 is.numeric(Nickel) ~ signif(Nickel*NiBioF,2)
-               )
-               )               # Bioavailable Ni
-                
-      
+        dplyr::mutate(NiBioF = case_when(is.na(NiPC95) ~ NA,                             # Calc bioavailable fraction
+                                         refGV_ni/NiPC95 > 1 ~ 1,                        # Make 1 if > 1
+                                         TRUE ~ refGV_ni/NiPC95),
+                      NiBio = case_when(is.na(NiPC95) ~ NA,
+                                        is.na(NiBioF) ~ NA,
+                                        !is.numeric(Nickel) ~ NA,
+                                        is.numeric(Nickel) ~ signif(Nickel*NiBioF,2))    # Bioavailable Ni
+                      )
     }
     
     # Hazard quotient
@@ -437,9 +442,8 @@ calc_GVs <- function(df, options){
       
     #  Cu.output <- ddply(myTMF.df,.(row), function(x) GetCuGuidelines(input=x))
       GV_labels = paste("Cu", pcs, sep="")
-      if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "CuBio")
+      if (calc_biof) GV_labels = c(GV_labels, "CuBio")
       if (rcr) GV_labels = c(GV_labels, paste0("Cu",gsub("PC","HQ",pcs)))
-      #if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Cu_HQ")
       Alloutput <- cbind(Alloutput, Cu.output %>% dplyr::select(all_of(c(GV_labels, "CuNote"))))
       
       i = nrow(summary)
@@ -456,9 +460,8 @@ calc_GVs <- function(df, options){
     #     purrr::list_rbind()
     #   #     Zn.output <- ddply(myTMF.df,.(row), function(x) GetZnGuidelines(input=x))
     #   GV_labels = paste("Zn", pcs, sep="")
-    #   if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "ZnBio")
+    #   if (calc_biof) GV_labels = c(GV_labels, "ZnBio")
     #   if (rcr) GV_labels = c(GV_labels, paste0("Zn",gsub("PC","HQ",pcs)))
-    #   #if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Zn_HQ")
     #   Alloutput <- cbind(Alloutput, Zn.output %>% dplyr::select(all_of(c(GV_labels, "ZnNote"))))
     #   
     #   i = nrow(summary)
@@ -469,16 +472,14 @@ calc_GVs <- function(df, options){
     
     if ("Ni" %in% metals) {
       
-      
       Ni.output <- myTMF.df |>
         dplyr::group_split(row) |>
         purrr::map(GetNiGuidelines) |>
         purrr::list_rbind()
     #  Ni.output <- ddply(myTMF.df,.(row), function(x) GetNiGuidelines(input=x))
       GV_labels = paste("Ni", pcs, sep="")
-      if (calc_biof & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "NiBio")
+      if (calc_biof) GV_labels = c(GV_labels, "NiBio")
       if (rcr) GV_labels = c(GV_labels, paste0("Ni",gsub("PC","HQ",pcs)))
-      #if (rcr & ("PC95" %in% pcs)) GV_labels = c(GV_labels, "Ni_HQ")
       Alloutput <- cbind(Alloutput, Ni.output %>% dplyr::select(all_of(c(GV_labels, "NiNote"))))
       
       i = nrow(summary)
