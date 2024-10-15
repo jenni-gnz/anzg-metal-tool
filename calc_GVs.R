@@ -139,7 +139,8 @@ calc_GVs <- function(df, options){
                       CuBio = case_when(is.na(CuPC95) ~ NA,
                                         is.na(CuBioF) ~ NA,
                                         !is.numeric(Copper) ~ NA,
-                                        is.numeric(Copper) ~ signif(Copper*CuBioF,2))     # Bioavailable Cu
+                                        is.numeric(Copper) ~ signif(Copper*CuBioF,2)),     # Bioavailable Cu
+                      CuRefGV = refGV_cu
                       )
     }
     
@@ -392,7 +393,8 @@ calc_GVs <- function(df, options){
                       NiBio = case_when(is.na(NiPC95) ~ NA,
                                         is.na(NiBioF) ~ NA,
                                         !is.numeric(Nickel) ~ NA,
-                                        is.numeric(Nickel) ~ signif(Nickel*NiBioF,2))    # Bioavailable Ni
+                                        is.numeric(Nickel) ~ signif(Nickel*NiBioF,2)),   # Bioavailable Ni
+                      NiRefGV = refGV_ni
                       )
     }
     
@@ -442,7 +444,7 @@ calc_GVs <- function(df, options){
       
     #  Cu.output <- ddply(myTMF.df,.(row), function(x) GetCuGuidelines(input=x))
       GV_labels = paste("Cu", pcs, sep="")
-      if (calc_biof) GV_labels = c(GV_labels, "CuBio")
+      if (calc_biof) GV_labels = c(GV_labels, "CuBio", "CuRefGV")
       if (rcr) GV_labels = c(GV_labels, paste0("Cu",gsub("PC","HQ",pcs)))
       Alloutput <- cbind(Alloutput, Cu.output %>% dplyr::select(all_of(c(GV_labels, "CuNote"))))
       
@@ -478,7 +480,7 @@ calc_GVs <- function(df, options){
         purrr::list_rbind()
     #  Ni.output <- ddply(myTMF.df,.(row), function(x) GetNiGuidelines(input=x))
       GV_labels = paste("Ni", pcs, sep="")
-      if (calc_biof) GV_labels = c(GV_labels, "NiBio")
+      if (calc_biof) GV_labels = c(GV_labels, "NiBio", "NiRefGV")
       if (rcr) GV_labels = c(GV_labels, paste0("Ni",gsub("PC","HQ",pcs)))
       Alloutput <- cbind(Alloutput, Ni.output %>% dplyr::select(all_of(c(GV_labels, "NiNote"))))
       
