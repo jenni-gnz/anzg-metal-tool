@@ -181,8 +181,8 @@ ui <- fluidPage(
                                                              choices=c("99% protection" = "PC99",
                                                                        "95% protection" = "PC95",
                                                                        "90% protection" = "PC90",
-                                                                       "80% protection" = "PC80"),
-                                                             selected = "PC95"),
+                                                                       "80% protection" = "PC80")),
+                                                             #selected = "PC95"),
                                           "95% protection is the default for slightly-moderately disturbed sites. \nSee ANZG website for more details",
                                           placement = "right"
                                   ),
