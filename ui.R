@@ -100,7 +100,7 @@ ui <- fluidPage(
                       tooltip(bs_icon("info-circle"), "pop out", placement = "bottom"),
                       ", and calculate a hazard quotient",
                       tooltip(bs_icon("info-circle"), "pop out", placement = "bottom"), br(),
-                    "Upload a ", a("comma-separated table (csv) ",target="_blank",href="myfile.csv"), 
+                    "Upload a comma-separated table (csv)", a(" (template provided if needed) ",target="_blank",href="myfile.csv"), 
                     "with your water chemistry data or test the 
                     calculator with the example dataset provided.", br(), br(), 
                     "For more instructions see ", a("the user guide with worked examples",target="_blank",href="myfile.pdf"),
@@ -205,7 +205,7 @@ ui <- fluidPage(
                                                      value = FALSE,
                                                      label = HTML('<p 
                                                              style="position:  relative; top: -36px; left: 30px;">
-                                                           Do you want to estimate the concentration of the bioavailable metal fraction?
+                                                           Do you want to estimate the bioavailable metal concentration?
                                                             </p>'#,# bsicons::bs_icon("info-circle")
                                                                   
                                                      )),
@@ -364,7 +364,7 @@ ui <- fluidPage(
         ), # end of page 4 nav_panel
 
     nav_spacer(),
-    ###Page 5 -----------------------------------------------------
+    #5. User guide and documents-----------------------------------------------------
 nav_panel(value="user-page",
           title=h4(id="page4-title", "User guide"),
           
@@ -404,9 +404,8 @@ nav_panel(value="user-page",
     #      nav_item(tags$a("ANZG website", href = "https://www.waterquality.gov.au/anz-guidelines/about"))
     # ),
     
-    nav_spacer(),
-    nav_spacer(),
-    
+    nav_spacer()
+
    ), # end of page_navbar
   
   # Define footer ------------------------------------------------------------------------------------------
