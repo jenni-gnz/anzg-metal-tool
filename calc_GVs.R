@@ -38,17 +38,27 @@ calc_GVs <- function(df, options){
   
   pcs_vals = pcs_vals_all[pcs_all %in% pcs_calc]
   
-  refGV_cu_nz <- 0.6
-  refGV_cu_aus <- 0.8
-  refGV_ni_nz <- 2.3
-  refGV_ni_aus <- 3.1
+  ### For each metal, there are 4 values for each country. 
+  ### Depending on the PCs selected, we need to provide these values with the returned table
+  ### Something like below?? 
   
-  refGV_cu <- refGV_cu_aus
-  refGV_ni <- refGV_ni_aus
+  CuDGVvals_all <- data.frame("nz" = c("PC99" = 0.4, "PC95" = 0.753, "PC90" = 0.9, "PC80" = 1.3),
+                              "aus" = c("PC99" = 0.4, "PC95" = 0.753, "PC90" = 0.9, "PC80" = 1.3))
+  
+  NiDGVvals_all <- data.frame("aus" = c("PC99" = 0.6, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
+                              "nz" = c("PC99" = 0.4, "PC95" = 2.3, "PC90" = 4.8, "PC80" = 10))
+  cuDGV_vals = CuDGVvals_all[pcs_all %in% pcs_calc]    
+  # DGV_cu_nz <- 0.6
+  # DGV_cu_aus <- 0.8
+  # DGV_ni_nz <- 2.3
+  # DGV_ni_aus <- 3.1
+  
+  DGV_cu <- DGV_cu_aus
+  DGV_ni <- DGV_ni_aus
   
   if (country == "nz") {
-    refGV_cu <- refGV_cu_nz
-    refGV_ni <- refGV_ni_nz
+    DGV_cu <- DGV_cu_nz
+    DGV_ni <- DGV_ni_nz
   }
   
   # Zinc
@@ -79,7 +89,7 @@ calc_GVs <- function(df, options){
   
   GetCuGuidelines <- function(input){
     
-    # Check input data. If data is missing do nothing, but keep the row.
+    # Check input data. If data are missing, do nothing, but keep the row.
     # Otherwise, write a note if any of the observations are out of the fitting
     # bounds
     
@@ -95,7 +105,17 @@ calc_GVs <- function(df, options){
     {
       
       CuNote <- "DOC missing"
+      GV[1,GV_labels] = NA
       
+    } if (input$DOC>30 | input$pH<6 |input$pH > 8.5 | input$Hardness<2 | input$Hardness>340){
+       CuNote <- case_when(DOC > 30 ~ "DOC above upper applicability limit",
+                              pH <6 ~ "pH below lower applicability limit", 
+                              pH >8.5 ~ "pH above upper applicability limit",
+                              Hardness <2 ~ "Hardness below lower applicability limit", 
+                              Hardness >340 ~ "Hardness above upper applicability limit")  
+       ## this wont work as intended if two things out of range. 
+       ## need to make a new note everytime and then use paste to join?  
+          
       GV[1,GV_labels] = NA
       #GV[1,"CuNote"] = CuNote
       
@@ -103,29 +123,25 @@ calc_GVs <- function(df, options){
       if("pH" %in% names(input) & "Hardness" %in% names(input)) {
         if(is.na(input$pH) | is.na(input$Hardness)){
           CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
-          
-        } else if (input$DOC>30 | input$pH<6 |input$pH > 8.5 | input$Hardness<2 | input$Hardness>200){
-          CuNote <- "pH, hardness or DOC outside DGV range"
-          
-        } else {
+   
+       } else {
           CuNote <- "TMF data in range, GV suitable"   
         }
-      } else {
-        CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
-      }
-      
-      # Apply equation form
-      
-      if ("PC99" %in% pcs_calc) GV$CuPC99 <- ifelse(0.20*(input$DOC/0.5)^0.977 <1,
-                                                    round(max(0.2, 0.20*(input$DOC/0.5)^0.977),1),
-                                                    signif(max(0.2, 0.20*(input$DOC/0.5)^0.977),2))
-      
-      if ("PC95" %in% pcs_calc) GV$CuPC95 <- ifelse(0.47*(input$DOC/0.5)^0.977 <1,
-                                                    round(max(0.47, 0.47*(input$DOC/0.5)^0.977),1),
-                                                    signif(max(0.47, 0.47*(input$DOC/0.5)^0.977),2))
 
-      if ("PC90" %in% pcs_calc) GV$CuPC90 <- signif(max(0.73, 0.73*(input$DOC/0.5)^0.977),2)
-      if ("PC80" %in% pcs_calc) GV$CuPC80 <- signif(max(1.3, 1.3*(input$DOC/0.5)^0.977),2)
+      # Apply equation form -  
+      ## SHARLEEN -------------------****************
+        ## USE THE cu-DGVs here so its easier to update in one place only 
+        ## ***********************************
+      if ("PC99" %in% pcs_calc) GV$CuPC99 <- ifelse(0.20*(input$DOC/0.5)^1.00 <1,
+                                                    round(max(0.2, 0.20*(input$DOC/0.5)^1.00),1),
+                                                    signif(max(0.2, 0.20*(input$DOC/0.5)^1.00),2))
+      
+      if ("PC95" %in% pcs_calc) GV$CuPC95 <- ifelse(DGV_cu*(input$DOC/0.5)^1.00 <1,
+                                                    round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),1),
+                                                    signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),2))
+
+      if ("PC90" %in% pcs_calc) GV$CuPC90 <- signif(max(0.73, 0.73*(input$DOC/0.5)^1.00),2)
+      if ("PC80" %in% pcs_calc) GV$CuPC80 <- signif(max(1.3, 1.3*(input$DOC/0.5)^1.00),2)
       
     }
     myoutput <- cbind(input, CuNote, GV)
@@ -134,13 +150,13 @@ calc_GVs <- function(df, options){
       
       myoutput <- myoutput |>
         dplyr::mutate(CuBioF = case_when(is.na(CuPC95) ~ NA,
-                                         refGV_cu/CuPC95 > 1 ~ 1,
-                                         TRUE ~ refGV_cu/CuPC95),                         # Bioavailable fraction
+                                         DGV_cu/CuPC95 > 1 ~ 1,
+                                         TRUE ~ DGV_cu/CuPC95),                         # Bioavailable fraction
                       CuBio = case_when(is.na(CuPC95) ~ NA,
                                         is.na(CuBioF) ~ NA,
                                         !is.numeric(Copper) ~ NA,
                                         is.numeric(Copper) ~ signif(Copper*CuBioF,2)),     # Bioavailable Cu
-                      CuRefGV = refGV_cu
+                      CuDGV = DGV_cu
                       )
     }
     
@@ -388,13 +404,13 @@ calc_GVs <- function(df, options){
       
       myoutput <- myoutput |>
         dplyr::mutate(NiBioF = case_when(is.na(NiPC95) ~ NA,                             # Calc bioavailable fraction
-                                         refGV_ni/NiPC95 > 1 ~ 1,                        # Make 1 if > 1
-                                         TRUE ~ refGV_ni/NiPC95),
+                                         DGV_ni/NiPC95 > 1 ~ 1,                        # Make 1 if > 1
+                                         TRUE ~ DGV_ni/NiPC95),
                       NiBio = case_when(is.na(NiPC95) ~ NA,
                                         is.na(NiBioF) ~ NA,
                                         !is.numeric(Nickel) ~ NA,
                                         is.numeric(Nickel) ~ signif(Nickel*NiBioF,2)),   # Bioavailable Ni
-                      NiRefGV = refGV_ni
+                      NiDGV = DGV_ni
                       )
     }
     
@@ -444,7 +460,7 @@ calc_GVs <- function(df, options){
       
     #  Cu.output <- ddply(myTMF.df,.(row), function(x) GetCuGuidelines(input=x))
       GV_labels = paste("Cu", pcs, sep="")
-      if (calc_biof) GV_labels = c(GV_labels, "CuBio", "CuRefGV")
+      if (calc_biof) GV_labels = c(GV_labels, "CuBio", "CuDGV")
       if (rcr) GV_labels = c(GV_labels, paste0("Cu",gsub("PC","HQ",pcs)))
       Alloutput <- cbind(Alloutput, Cu.output %>% dplyr::select(all_of(c(GV_labels, "CuNote"))))
       
@@ -480,7 +496,7 @@ calc_GVs <- function(df, options){
         purrr::list_rbind()
     #  Ni.output <- ddply(myTMF.df,.(row), function(x) GetNiGuidelines(input=x))
       GV_labels = paste("Ni", pcs, sep="")
-      if (calc_biof) GV_labels = c(GV_labels, "NiBio", "NiRefGV")
+      if (calc_biof) GV_labels = c(GV_labels, "NiBio", "NiDGV")
       if (rcr) GV_labels = c(GV_labels, paste0("Ni",gsub("PC","HQ",pcs)))
       Alloutput <- cbind(Alloutput, Ni.output %>% dplyr::select(all_of(c(GV_labels, "NiNote"))))
       
