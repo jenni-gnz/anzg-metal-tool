@@ -59,7 +59,7 @@ calc_GVs <- function(df, options){
   DGV_ni_aus <- 3.1
   
   # DGV_cu <- DGV_cu_aus
-  # DGV_ni <- DGV_ni_aus
+  DGV_ni <- DGV_ni_aus
   # 
   if (country == "nz") {
   #   DGV_cu <- DGV_cu_nz
