@@ -128,19 +128,16 @@ calc_GVs <- function(df, options){
         
       } else if (input$DOC>30 | input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
         
-        CuNote <- case_when(input$DOC>30 ~ "DOC above upper applicability limit",
-                            input$pH<6 ~ "pH below lower applicability limit",
+        DOCnote <-ifelse(input$DOC>30, "DOC above upper applicability limit","")
+        pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
                             input$pH>8.5 ~ "pH above upper applicability limit",
-                            input$Hardness<2 ~ "Hardness below lower applicability limit",
-                            input$Hardness >340 ~ "Hardness above upper applicability limit")
+                           TRUE ~ "")
+        Hnote <-case_when(input$Hardness<2 ~ "Hardness below lower applicability limit",
+                            input$Hardness >340 ~ "Hardness above upper applicability limit",
+                          TRUE ~ "")
         
-        # CuNote <- case_when(DOC > 30 ~ "DOC above upper applicability limit",
-        #                     pH <6 ~ "pH below lower applicability limit", 
-        #                     pH >8.5 ~ "pH above upper applicability limit",
-        #                     Hardness <2 ~ "Hardness below lower applicability limit", 
-        #                     Hardness >340 ~ "Hardness above upper applicability limit")  
-        ## this wont work as intended if two things out of range. 
-        ## need to make a new note everytime and then use paste to join?  
+        CuNote <- paste(DOCnote,pHnote, Hnote, sep=", ")
+      
         
         GV[1,GV_labels] = NA
         #GV[1,"CuNote"] = CuNote
@@ -169,61 +166,9 @@ calc_GVs <- function(df, options){
                                        round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),1),
                                        signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),2))
       }
-      
-      # if ("PC99" %in% pcs_calc) GV$CuPC99 <- ifelse(0.20*(input$DOC/0.5)^1.00 <1,
-      #                                               round(max(0.2, 0.20*(input$DOC/0.5)^1.00),1),
-      #                                               signif(max(0.2, 0.20*(input$DOC/0.5)^1.00),2))
-      # 
-      # if ("PC95" %in% pcs_calc) GV$CuPC95 <- ifelse(DGV_cu*(input$DOC/0.5)^1.00 <1,
-      #                                               round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),1),
-      #                                               signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),2))
-      # 
-      # if ("PC90" %in% pcs_calc) GV$CuPC90 <- signif(max(0.73, 0.73*(input$DOC/0.5)^1.00),2)
-      # if ("PC80" %in% pcs_calc) GV$CuPC80 <- signif(max(1.3, 1.3*(input$DOC/0.5)^1.00),2)
-      
+     
     }
     
-    
-    
-    
-    
-    # if (input$DOC>30 | input$pH<6 |input$pH > 8.5 | input$Hardness<2 | input$Hardness>340){
-    #    CuNote <- case_when(DOC > 30 ~ "DOC above upper applicability limit",
-    #                           pH <6 ~ "pH below lower applicability limit", 
-    #                           pH >8.5 ~ "pH above upper applicability limit",
-    #                           Hardness <2 ~ "Hardness below lower applicability limit", 
-    #                           Hardness >340 ~ "Hardness above upper applicability limit")  
-    #    ## this wont work as intended if two things out of range. 
-    #    ## need to make a new note everytime and then use paste to join?  
-    #       
-    #   GV[1,GV_labels] = NA
-    #   #GV[1,"CuNote"] = CuNote
-    #   
-    # } else {
-    #   if("pH" %in% names(input) & "Hardness" %in% names(input)) {
-    #     if(is.na(input$pH) | is.na(input$Hardness)){
-    #       CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
-    # 
-    #    } else {
-    #       CuNote <- "TMF data in range, GV suitable"   
-    #     }
-    # 
-    #   # Apply equation form -  
-    #   ## SHARLEEN -------------------****************
-    #     ## USE THE cu-DGVs here so its easier to update in one place only 
-    #     ## ***********************************
-    #   if ("PC99" %in% pcs_calc) GV$CuPC99 <- ifelse(0.20*(input$DOC/0.5)^1.00 <1,
-    #                                                 round(max(0.2, 0.20*(input$DOC/0.5)^1.00),1),
-    #                                                 signif(max(0.2, 0.20*(input$DOC/0.5)^1.00),2))
-    #   
-    #   if ("PC95" %in% pcs_calc) GV$CuPC95 <- ifelse(DGV_cu*(input$DOC/0.5)^1.00 <1,
-    #                                                 round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),1),
-    #                                                 signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),2))
-    # 
-    #   if ("PC90" %in% pcs_calc) GV$CuPC90 <- signif(max(0.73, 0.73*(input$DOC/0.5)^1.00),2)
-    #   if ("PC80" %in% pcs_calc) GV$CuPC80 <- signif(max(1.3, 1.3*(input$DOC/0.5)^1.00),2)
-      
-    # }
     myoutput <- cbind(input, CuNote, GV)
     
     if (calc_biof) {
@@ -363,11 +308,6 @@ calc_GVs <- function(df, options){
       }
     }
     
-    # if (rcr & ("PC95" %in% pcs)) {
-    #   myoutput <- myoutput |>
-    #     dplyr::mutate(Zn_HQ = ifelse((is.na(ZnPC95)|is.na(Zinc)), NA, signif(Zinc/ZnPC95,2))     # RCR Zn
-    #     )
-    # }
     
     return (myoutput)
    
@@ -384,6 +324,9 @@ calc_GVs <- function(df, options){
     GV <- data.frame(matrix(nrow=1, ncol=length(pcs_calc)+1))
     GV_labels = paste("Ni", pcs_calc, sep="")
     names(GV) = c(GV_labels, "NiNote")
+   
+    # Initialize flag for whether or not to calculate GVs
+    do_calcs <- FALSE
     
     if (is.na(input$DOC) | is.na(input$pH) | is.na(input$Ca) |is.na(input$Mg)) {
       
@@ -392,26 +335,32 @@ calc_GVs <- function(df, options){
       GV[1,GV_labels] = NA
       GV[1,"NiNote"] = NiNote
       
-    } else {
+   
+    } else if (input$DOC<0.5 | input$DOC>17 | input$pH<6 | input$pH>8 | input$Hardness<22 | input$Hardness>516) {
       
-      if (input$DOC<0.3 | input$pH<5.5| input$Ca<0.1 | input$Mg<0.2) {
-        NiNote <- "TMF(s) outside applicable model range"
-        
-      } else if (input$DOC<0.7 | input$pH<6.9 | input$Ca<3.7 | input$Mg<3) {
-        NiNote <- "TMF(s) outside applicable model range"
-        
-      } else if (input$DOC>26 | input$pH>8.5 | input$Ca>144 | input$Mg>286) {
-        NiNote <- "TMF(s) outside applicable model range"
-        
-      } else if (input$DOC>7.1 | input$pH>8.0 | input$Ca>72 | input$Mg>21) {
-        NiNote <- "TMF(s) outside applicable model range"
-        
+      DOCnote <-case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
+                         input$DOC>17 ~ "DOC above upper applicability limit",
+                         TRUE ~ "")
+      pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
+                         input$pH>8 ~ "pH above upper applicability limit",
+                         TRUE ~ "")
+      Hnote <-case_when(input$Hardness<22 ~ "Hardness below lower applicability limit",
+                        input$Hardness >516 ~ "Hardness above upper applicability limit",
+                        TRUE ~ "")
+      
+      NiNote <- paste(DOCnote,pHnote, Hnote, sep=", ")
+      
+      
+      GV[1,GV_labels] = NA
+
       } else {
-        NiNote <- "TMFs in applicable range, DGV suitable"
+        NiNote <- "TMF data in range, GV suitable"
+        do_calcs <- TRUE
       }
       
+    if (do_calcs) {
+      
       myDOC <- input$DOC
-     # myH   <- input$Hardness
       mypH  <- input$pH
       myCa  <- input$Ca
       myMg  <- input$Mg
@@ -431,49 +380,19 @@ calc_GVs <- function(df, options){
       if(isTRUE(class(res)=="try-error")) {                             # if data cannot be fitted, NA is recorded
         GV[GV_labels] = NA
         #GV <- data.frame(NiPC99=NA, NiPC95=NA, NiPC90=NA, NiPC80=NA) 
-      
+        
       } else {
         
         GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=100)[,3])) 
         GV_temp <- GV_temp |>
           dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
-                                               TRUE ~ signif(.x, 2))))
-          rownames(GV_temp) <- NULL
-          
-         # ## Real ssd plot
-         #  Nissd.pred <- predict(res, ci = TRUE)
-         # 
-         #  fig_Ni <- ssd_plot(sens, Nissd.pred, ribbon = TRUE,
-         #                     label = "PlotLabel",
-         #                     color = "Model.used") +
-         #    ggtitle(paste("Row: ", input$row)) +
-         #    labs(subtitle = "Nickel species sensitivity distribution",
-         #         caption = paste("SSD for DOC=", round(myDOC,1), " pH=", round(mypH,1),
-         #                         " Ca=", round(myCa,1), " Mg=", round(myMg,1))) +
-         #    theme_bw() +
-         #    theme(legend.position.inside = c(0.2, 0.8),
-         #          legend.background = element_rect(color = "black", linewidth = 0.1),
-         #          legend.text=element_text(size=8),
-         #          legend.key.size = unit(0.5, 'cm'),
-         #          plot.caption.position = "plot",
-         #          plot.caption = element_text(hjust = 0)
-         #    )
-         # 
-         #  p_name <- paste0("Ni_SSD_", input$row)
-         #  temp <- c(names(plots), p_name)
-         # 
-         #  plots <<- append(plots, list(fig_Ni))
-         #  names(plots) <<- temp
-
-          # # Make dummy plot and update list of plots to return
-          # fig_Ni <- ggplot(input, aes(DOC, Hardness)) + geom_point()
-          #
-          # p_name <- paste0("Ni_SSD_", input$row)
-          # temp <- c(names(plots), p_name)
-          #
-          # plots <<- append(plots, list(fig_Ni))
-          # names(plots) <<- temp
-          #
+                                                      TRUE ~ signif(.x, 2))))
+        rownames(GV_temp) <- NULL
+        
+      
+    }
+        
+         
       }
       
       GV <- cbind(GV_temp, NiNote) 
