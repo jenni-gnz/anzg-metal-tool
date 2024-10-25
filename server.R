@@ -274,6 +274,8 @@ server <- function(input, output, session) {
     
     GVs <<- calc_GVs(df_checked, GV_options)
     results <<- GVs$results
+    names(results) <<- gsub("\\<Ca\\>", "Calcium", names(results))
+    names(results) <<- gsub("\\<Mg\\>", "Magnesium", names(results))
     
     # Overwrite original data in results so that issues removed as part of
     # checking (e.g. non-numeric values) are preserved when the results are
