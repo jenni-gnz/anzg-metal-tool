@@ -98,8 +98,8 @@ calc_GVs <- function(df, options){
     # Otherwise, write a note if any of the observations are out of the fitting
     # bounds
     
-    GV <- data.frame(matrix(nrow=1, ncol=length(pcs)))
-    GV_labels = paste("Cu", pcs, sep="")
+    GV <- data.frame(matrix(nrow=1, ncol=length(pcs_calc)))
+    GV_labels = paste("Cu", pcs_calc, sep="")
     names(GV) = GV_labels
     
     # GV <- data.frame(matrix(nrow=1, ncol=length(pcs)+1))
@@ -237,9 +237,11 @@ calc_GVs <- function(df, options){
                                         is.na(CuBioF) ~ NA,
                                         !is.numeric(Copper) ~ NA,
                                         is.numeric(Copper) ~ signif(Copper*CuBioF,2)),     # Bioavailable Cu
-                      CuDGV = DGV_cu
+                      #CuDGV = DGV_cu
                       )
     }
+    
+    myoutput[,paste0("DGV_Cu", names(CuDGV_vals))] = CuDGV_vals
     
     # Hazard quotient
     
@@ -541,7 +543,9 @@ calc_GVs <- function(df, options){
       
     #  Cu.output <- ddply(myTMF.df,.(row), function(x) GetCuGuidelines(input=x))
       GV_labels = paste("Cu", pcs, sep="")
-      if (calc_biof) GV_labels = c(GV_labels, "CuBio", "CuDGV")
+      #if (calc_biof) GV_labels = c(GV_labels, "CuBio", "CuDGV")
+      if (calc_biof) GV_labels = c(GV_labels, "CuBio")
+      GV_labels = c(GV_labels, paste0("DGV_Cu",names(CuDGV_vals)))
       if (rcr) GV_labels = c(GV_labels, paste0("Cu",gsub("PC","HQ",pcs)))
       Alloutput <- cbind(Alloutput, Cu.output %>% dplyr::select(all_of(c(GV_labels, "CuNote"))))
       
