@@ -17,7 +17,8 @@ check_data <- function(df, options){
   }
   
   if ("Ni" %in% options$metals) {
-    cols = c(cols, "Ca", "Mg")                                                   # Ni requires Ca and Mg
+    cols = c(cols, "Calcium", "Magnesium")                                       # Ni requires Ca and Mg
+    #cols = c(cols, "Ca", "Mg")                                                   # Ni requires Ca and Mg
   }
   
   if ("Zn" %in% options$metals) {
@@ -44,12 +45,12 @@ check_data <- function(df, options){
   i = which(grepl("Error: missing column Hardness", issue_df$message))
   
   if (length(i) > 0) {
-    if ("Ca" %in% names(df) & "Mg" %in% names(df)) {
-      Ca = as.numeric(df$Ca)
-      Mg = as.numeric(df$Mg)
+    if ("Calcium" %in% names(df) & "Magnesium" %in% names(df)) {
+      Ca = as.numeric(df$Calcium)
+      Mg = as.numeric(df$Magnesium)
       df$Hardness = 2.497*Ca + 4.118*Mg
       issue_df$type[i] = "warning"
-      issue_df$message[i] = "Warning: missing column Hardness, will be calculated from Ca and Mg"
+      issue_df$message[i] = "Warning: missing column Hardness, will be calculated from Calcium and Magnesium"
     }
   }
   
@@ -89,6 +90,9 @@ check_data <- function(df, options){
   if (nrow(negative) > 0) {
     issue_df = rbind(issue_df, data.frame("row"=negative[,1], "col"=negative[,2], "type"="error", "message"=paste0("Error: negative data in column ", cols_in[negative[,2]])))
   }
+  
+  names(df) = gsub("\\<Calcium\\>", "Ca", names(df))
+  names(df) = gsub("\\<Magnesium\\>", "Mg", names(df))
   
   results = list("cols_in"=cols_in, "issue_df"=issue_df, "df_checked"=df)
   
