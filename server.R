@@ -44,9 +44,9 @@ server <- function(input, output, session) {
   results <- NULL                                                                # GV results dataframe
   plots <- NULL                                                                  # list of SSD plots
                                     
-  # Render the DGV table---------------- 
-  tier1DGVs <- data.frame(Metal =c("Copper", "Nickel", "Zinc"), `99%` = c(2, 4, 3.2)) 
-  DGVs <- renderTable(tier1DGVs)
+  # # Render the DGV table---------------- 
+  # tier1DGVs <- data.frame(Metal =c("Copper", "Nickel", "Zinc"), `99%` = c(2, 4, 3.2)) 
+  # DGVs <- renderTable(tier1DGVs)
   # Load dataset when file uploaded ------------------------------------------------------------------------
   
   observe({
