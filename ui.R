@@ -47,7 +47,7 @@ ui <- fluidPage(
                                          ),
                                  tags$td(style="width:33%; height:120px", align="center",
                                          h1(id="main-title", style="color:white;",
-                                            "ANZG metal freshwater DGV tool")
+                                            "ANZG metal freshwater guideline value calculator")
                                          ),
                                  tags$td(style="width:33%"
                                          )
@@ -79,33 +79,43 @@ ui <- fluidPage(
      # br(),
       fluidRow(id="welcome-panel",
                column(width=8, style="padding-right:55px", align="left", h2(id="welcome-title", 
-                                                "Welcome to the ANZG bioavailability-based metals default guideline values (DGVs) tool"),
+                                                "Welcome to the ANZG metal bioavailability-adjusted guideline values (BAGVs) calculator"),
                       br(),
                       span("This tool estimates potential risks to freshwater aquatic 
                       environments posed by ", strong("copper"), " and ", strong("nickel"), " after considering bioavailability",
-                      tooltip(bs_icon("info-circle"), "Definition of bioaval", placement = "bottom"),".",
+                      tooltip(bs_icon("info-circle"), 
+                              "the concentration an organism in the water column “experiences”, accounting for metal speciation and competition",
+                              placement = "bottom"),".",
                       br(),  br(),
                       "This tool has been developed to assist in implementation of the ", 
                       tags$a("ANZG",  href="https://www.waterquality.gov.au/anz-guidelines", target="_blank"),
-                      "toxicant default guideline values (DGVs) within a tiered risk assessment framework.",
+                      "toxicant guideline values (GVs) within a tiered risk assessment framework.",
                       tooltip(bs_icon("info-circle"), "add a link", placement = "bottom"),
                       br(), br(),
                       strong("Use the tool when your dissolved metal concentrations ", em("exceed"), 
                       "the tier 1 DGVs"), 
-                      popover(bs_icon("info-circle"), title = "Tier 1 DGVs", "add the DGVs in a table"),
-                      br(),  br(),
-                      includeMarkdown("text/page-1-description.md"), 
+                      popover(bs_icon("info-circle"), title = "Tier 1 DGVs", #tableOutput("DGVs")
+                              includeMarkdown("text/tier1-dgvs.md"),
+                              options = list(container = "body")
+                              ),
+                      br(), 
+                      p(includeMarkdown("text/page-1-description.md")), 
                       "If you  include metal concentrations, the tool can also 
                       estimate the bioavailable fraction of the metal",
-                      tooltip(bs_icon("info-circle"), "pop out", placement = "bottom"),
+                      tooltip(bs_icon("info-circle"), 
+                              "used to compare to Tier 1 DGVs", 
+                              placement = "bottom"),
                       ", and calculate a hazard quotient",
-                      tooltip(bs_icon("info-circle"), "pop out", placement = "bottom"), br(),
-                    "Upload a comma-separated table (csv)", a(" (template provided if needed) ",target="_blank",href="myfile.csv"), 
+                      tooltip(bs_icon("info-circle"), 
+                              "an indication of risk to aquatic organisms, metal concentration divided by BAGV", 
+                              placement = "bottom"), 
+                      br(),
+                    "Upload a comma-separated table (csv)", a(" (template provided if needed) ",target="_blank",href="template.csv"), 
                     "with your water chemistry data or test the 
                     calculator with the example dataset provided.", br(), br(), 
                     "For more instructions see ", a("the user guide with worked examples",target="_blank",href="myfile.pdf"),
                     "and the ", strong("FAQs"), " below.", br(),
-                    "Details on the DGVs, the tiered approach to implementation" ,
+                    "Details on the GVs, the tiered approach to implementation" ,
                     " and a description of the science underpinning the tool's development is provided in ",
                     a("this document.",target="_blank",href="myfile.pdf"))
                       
@@ -140,10 +150,13 @@ ui <- fluidPage(
                           p(includeMarkdown("text/page-1-about.md"),
                             tags$style(' #tab {margin-bottom:-30px;}')),
                           div(style = "margin-top: -100px"),
-                          tags$img(src='reqd_table.png', align = "left", style = "width: 600px"),
+                          tags$img(src='reqd_table2.png', align = "left", style = "width: 600px"),
                           #    tags$style(' #tab {margin-top:-200px; }')),
                           p(includeMarkdown("text/page-1-about-2.md")),
                           ),
+                 tabPanel(h4("Frequently asked questions"),
+                          p(includeMarkdown("text/faqs.md")),
+                          br()),
                  tabPanel(h4("About this calculator"),
                           p(includeMarkdown("text/page-1-about-3.md")),
                           br())
@@ -169,55 +182,58 @@ ui <- fluidPage(
                                   #     br(),
                                       
                                                     #style="background-color:#f0f1f1;",
-                                  tooltip(checkboxGroupInput(inputId="metals", width="80%",
-                                                                label="Which metals do you want to generate DGVs for?",
+                                                            checkboxGroupInput(inputId="metals", width="80%",
+                                                                label=span("Which metals do you want to generate BAGVs for?",
+                                                                           popover(bs_icon("info-circle"),
+                                                                                   "Zinc will be available in the future")),
                                                                 choices=c("Copper" = "Cu",
                                                                           "Nickel" = "Ni")
                                                                           #"Zinc" = "Zn")
-                                             ), "Zinc will be available in the future"),
+                                             ), 
                                            #  br(),#  br(),
-                                  tooltip(checkboxGroupInput(inputId="pcs", width="80%",
-                                                             label="What levels of species protection do you want to include?",
+                                  checkboxGroupInput(inputId="pcs", width="80%",
+                                                             label=span("What levels of species protection do you want to include?",
+                                                                        popover(bs_icon("info-circle"), 
+                                                                      "95% protection is the default for slightly-moderately disturbed sites. \nSee ANZG website for more details")),        
                                                              choices=c("99% protection" = "PC99",
                                                                        "95% protection" = "PC95",
                                                                        "90% protection" = "PC90",
-                                                                       "80% protection" = "PC80")),
-                                                             #selected = "PC95"),
-                                          "95% protection is the default for slightly-moderately disturbed sites. \nSee ANZG website for more details",
-                                          placement = "right"
+                                                                       "80% protection" = "PC80"),
+                                                             selected = "PC95"
+                                         
                                   ),
                                   br(),
-                                  tooltip(checkboxInput("rcr",
-                                                        value = FALSE,
-                                                        label = HTML('<p 
-                     style="position:  relative; top: -36px; left: 30px;">
-                 Do you want to calculate Hazard Quotients (HQs)?
-                    </p>')
-                                  ),
-                                  "These indicate where risks to aquatic ecosystems are possible. \nYou'll need to supply metal concentrations",
-                                  placement = "right"
-                                  )
-                                             
-                              ),
+                                  checkboxInput("rcr",
+                                                value = FALSE,
+                                                label = span(HTML('<p 
+                                                                  style="position:  relative; top: -36px; left: 30px;"> 
+                                                                  Do you want to calculate Hazard Quotients (HQs)? '
+                                                                  ), 
+                                                            popover(bs_icon("info-circle"),
+                                                                    "These indicate where risks to aquatic ecosystems are possible. \nYou'll need to supply metal concentrations",
+                               )
+                                      )
+                                         )),
                         column(width=5, align = "left",
                                br(),
-                                tooltip(checkboxInput("calc_biof",
+                                checkboxInput("calc_biof",
                                                      value = FALSE,
-                                                     label = HTML('<p 
+                                                     label = span(HTML('<p 
                                                              style="position:  relative; top: -36px; left: 30px;">
-                                                           Do you want to estimate the bioavailable metal concentration?
-                                                            </p>'#,# bsicons::bs_icon("info-circle")
-                                                                  
-                                                     )),
-                                          "These can be compared to a fixed DGV. 
+                                                           Do you want to estimate the bioavailable metal concentration?'
+                                                           ),
+                                                          popover(bs_icon("info-circle"),
+                                                          "These can be compared to the tier 1 DGV. 
                                         \nYou'll need to supply metal concentrations 
-                                        \nand select the country where you are applying these",
-                                       placement = "right"
-                               ),
-                               tooltip(radioButtons("country", label = "Select your country for application:", 
+                                        \nand select the country where you are applying these"))        
+                                                                  
+                                                     ),
+
+                               radioButtons("country", label = span("Select your country for application:", 
+                                                                    popover(bs_icon("info-circle"),
+                                         "Country of application is required for comparing bioavailable metals to tier 1 DGVs")),                           
                                                     choices = c("Australia" = "aus", "New Zealand" = "nz")),
-                                       "Country of application is required for comparing bioavailable metals to reference DGVs",
-                                       placement = "right"),#             
+                                       
                                br(), 
                                
                                
@@ -225,8 +241,6 @@ ui <- fluidPage(
                         ) ## end top fluid row
                  ), ##end width 10 column
                column(width=2, align="right",
-                          #             actionButton("check_btn", h4("Check data"), width="280px",
-                           #                         style="color:white; background-color:#376894; border-color:#376894"),
                         actionButton("check_btn",  div(class='button-inner', h4("Check input data"), icon("forward")),
                                                      width="280px", style="color:white; background-color:#376894; border-color:#376894"),
                                                                       br(), br(),
@@ -367,32 +381,36 @@ ui <- fluidPage(
     #5. User guide and documents-----------------------------------------------------
 nav_panel(value="user-page",
           title=h4(id="page4-title", "User guide"),
-          
-          h2("User guide to the ANZG metal DGV tool"),
+
+          h2("User guide to the ANZG metal GV tool"),
+          p("This app",strong("calculates chronic default guideline values for copper, nickel and zinc"),
+          " as derived for Australian and New Zealand guidelines for marine and fresh water."),
+          em("Hint: Find and click the info icons throughout the app to find more information on a particular input."),
+            
           accordion(
             open = FALSE,
             accordion_panel(
               "1. Upload your file",
-              p(withMathJax(includeMarkdown("text/user-guide.md")))
+              p(withMathJax(includeMarkdown("text/user-guide1.md")))
             ),
             accordion_panel(
               "2. Select options",
-              p("Some content here brought in from a R Markdown file")
-            ),    
+              p(withMathJax(includeMarkdown("text/user-guide2.md")))
+            ),
             accordion_panel(
               "3. Check data",
-              p("Some content here brought in from a R Markdown file")
-            ),   
+              p(withMathJax(includeMarkdown("text/user-guide3.md")))
+            ),
             accordion_panel(
               "4. View & download results",
-              p("Some content here brought in from a R Markdown file")
-            ),         
-            accordion_panel(
-              "Worked example",
-              p(withMathJax(includeMarkdown("text/worked-example.md")))  
-            )
+              p(withMathJax(includeMarkdown("text/user-guide4.md")))
+            ),
+            # accordion_panel(
+            #   "Worked example",
+            #   p(withMathJax(includeMarkdown("text/worked-example.md")))
+            # )
           )
-          
+
 ),
     ## Links ------------------------------------------------------------
     # nav_menu(
