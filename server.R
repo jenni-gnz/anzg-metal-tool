@@ -43,7 +43,10 @@ server <- function(input, output, session) {
   GVs <- NULL                                                                    # list of outputs returned from calc_GVs function
   results <- NULL                                                                # GV results dataframe
   plots <- NULL                                                                  # list of SSD plots
-  
+                                    
+  # Render the DGV table---------------- 
+  tier1DGVs <- data.frame(Metal =c("Copper", "Nickel", "Zinc"), `99%` = c(2, 4, 3.2)) 
+  DGVs <- renderTable(tier1DGVs)
   # Load dataset when file uploaded ------------------------------------------------------------------------
   
   observe({
@@ -102,7 +105,7 @@ server <- function(input, output, session) {
   # Enable / disable check data button based on metal selection
   
   observe({
-    if (!is.null(input$metals)) {
+    if (!is.null(input$metals) & !is.null(input$pcs)) {
       shinyjs::enable("check_btn")
     
     } else {
@@ -274,14 +277,17 @@ server <- function(input, output, session) {
     
     GVs <<- calc_GVs(df_checked, GV_options)
     results <<- GVs$results
-    names(results) <<- gsub("\\<Ca\\>", "Calcium", names(results))
-    names(results) <<- gsub("\\<Mg\\>", "Magnesium", names(results))
+     names(results) <<- gsub("\\<Ca\\>", "Calcium", names(results))   ##This broke the app if people have a column called Ca
+     names(results) <<- gsub("\\<Mg\\>", "Magnesium", names(results))  ## but should be ok now as joined df to results differently
     
     # Overwrite original data in results so that issues removed as part of
     # checking (e.g. non-numeric values) are preserved when the results are
     # displayed and/or downloaded
     
-    results[,match(names(df),names(results))] <<- df
+   # results[,match(names(df),names(results))] <<- df           ##This broke the app if there are blanks in the original df
+    new_columns <- setdiff(names(results), names(df))           ## Instead add the new columns to the old data set
+    tool_results <- results[,new_columns]
+    results <- cbind(df, tool_results)  
     
    # plots <<- GVs$plots
     remove_modal_spinner() # remove it when done
