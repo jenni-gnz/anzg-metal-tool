@@ -286,7 +286,7 @@ server <- function(input, output, session) {
    # results[,match(names(df),names(results))] <<- df           ##This broke the app if there are blanks in the original df
     new_columns <- setdiff(names(results), names(df))           ## Instead add the new columns to the old data set
     tool_results <- results[,new_columns]
-    results <- cbind(df, tool_results)  
+    results <<- cbind(df, tool_results)  
     
     
     units <- read_csv("data/units.csv", locale = locale(encoding = "UTF-8"))  ## encoding required to get units to work
