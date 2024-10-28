@@ -327,7 +327,7 @@ calc_GVs <- function(df, options){
       GV[1,"NiNote"] = NiNote
       
    
-    } else if (input$DOC<0.5 | input$DOC>17 | input$pH<6 | input$pH>8 | input$Ca<22 | input$Ca>516 | input$Ca<22 | input$Ca>516) {
+    } else if (input$DOC<0.5 | input$DOC>17 | input$pH<6 | input$pH>8 | input$Ca<3.7 | input$Ca>88 | input$Mg<3 | input$Mg>72) {
       
       DOCnote <-case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
                          input$DOC>17 ~ "DOC above upper applicability limit",
