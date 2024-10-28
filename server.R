@@ -290,7 +290,7 @@ server <- function(input, output, session) {
     
     
     units <- read_csv("data/units.csv", locale = locale(encoding = "UTF-8"))  ## encoding required to get units to work
-    add_units <- units[,new_columns]
+    add_units <<- units[,new_columns]
     
     print(add_units)
     #results <- bind_rows(add_units, results)                                                 ## Adding new row with units doesnt work
@@ -377,10 +377,13 @@ server <- function(input, output, session) {
   output$downloadGVs <- downloadHandler(
     
     filename = function() {
-      paste("MyDGVs-", Sys.Date(), ".csv", sep="")
+      paste("MyDGVs-", Sys.Date(), ".xlsx", sep="")
     },
     content = function(file) {
-      write.csv(results, file, row.names=FALSE)
+      #write.csv(results, file, row.names=FALSE)
+      write_xlsx(list(readme = add_units,
+                      gvs = results), file)
+      
       #write_xlsx(data_list(), path = file)  ## https://stackoverflow.com/questions/59071409/how-to-download-data-onto-multiple-sheets-from-shiny
     }
   )
