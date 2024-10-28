@@ -380,7 +380,7 @@ server <- function(input, output, session) {
       paste("MyDGVs-", Sys.Date(), ".csv", sep="")
     },
     content = function(file) {
-      write.csv(GVs$results, file, row.names=FALSE)
+      write.csv(results, file, row.names=FALSE)
       #write_xlsx(data_list(), path = file)  ## https://stackoverflow.com/questions/59071409/how-to-download-data-onto-multiple-sheets-from-shiny
     }
   )
