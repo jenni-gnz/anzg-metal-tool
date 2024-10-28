@@ -319,7 +319,7 @@ calc_GVs <- function(df, options){
     GV_labels = paste("Ni", pcs_calc, sep="")
     names(GV) = c(GV_labels, "NiNote")
    
-    if (is.na(input$DOC) | is.na(input$pH) | is.na(input$Ca) |is.na(input$Mg)) {
+    if (is.na(input$DOC) | is.na(input$pH) | is.na(input$Calcium) |is.na(input$Magnesium)) {
       
       NiNote <- "TMFs missing"
       
@@ -327,7 +327,8 @@ calc_GVs <- function(df, options){
       GV[1,"NiNote"] = NiNote
       
    
-    } else if (input$DOC<0.5 | input$DOC>17 | input$pH<6 | input$pH>8 | input$Ca<3.7 | input$Ca>88 | input$Mg<3 | input$Mg>72) {
+    } else if (input$DOC<0.5 | input$DOC>17 | input$pH<6 | input$pH>8 |
+               input$Calcium<3.7 | input$Calcium>88 | input$Magnesium<3 | input$Magnesium>72) {
       
       DOCnote <-case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
                          input$DOC>17 ~ "DOC above upper applicability limit",
@@ -335,11 +336,11 @@ calc_GVs <- function(df, options){
       pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
                          input$pH>8 ~ "pH above upper applicability limit",
                          TRUE ~ NA)
-      Canote <-case_when(input$Ca<3.7 ~ "Calcium below lower applicability limit",
-                        input$Ca >88 ~ "Calcium above upper applicability limit",
+      Canote <-case_when(input$Calcium<3.7 ~ "Calcium below lower applicability limit",
+                        input$Calcium >88 ~ "Calcium above upper applicability limit",
                         TRUE ~ NA)
-      Mgnote <-case_when(input$Mg<3 ~ "Magnesium below lower applicability limit",
-                         input$Mg >72 ~ "Magnesium above upper applicability limit",
+      Mgnote <-case_when(input$Magnesium<3 ~ "Magnesium below lower applicability limit",
+                         input$Magnesium >72 ~ "Magnesium above upper applicability limit",
                          TRUE ~ NA)
       
       NiNote <- paste(na.omit(c(DOCnote,pHnote, Canote, Mgnote)), collapse = ", ")
@@ -352,8 +353,8 @@ calc_GVs <- function(df, options){
       
       myDOC <- input$DOC
       mypH  <- input$pH
-      myCa  <- input$Ca
-      myMg  <- input$Mg
+      myCa  <- input$Calcium
+      myMg  <- input$Magnesium
       
       tMLR[is.na(tMLR)] <- 0                                        # Zero out coefficients that are NA - will mean that these parts of the general full
       
@@ -422,7 +423,7 @@ calc_GVs <- function(df, options){
     myTMF.df <- myTMF.df |> dplyr::mutate(row = row_number(), .before = everything()) # Used only for users to reorder the table display
     
     # Specify the columns to convert (if present)
-    columns_to_convert <- c("DOC","pH", "Hardness", "Ca", "Mg", "Copper", "Nickel", "Zinc")  # columns we use
+    columns_to_convert <- c("DOC","pH", "Hardness", "Calcium", "Magnesium", "Copper", "Nickel", "Zinc")  # columns we use
     
     # Convert columns to numeric only if they are present in the df (should avoid crashing)
      myTMF.df[intersect(columns_to_convert, names(myTMF.df))] <- lapply(myTMF.df[intersect(columns_to_convert, 

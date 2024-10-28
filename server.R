@@ -276,8 +276,8 @@ server <- function(input, output, session) {
     
     GVs <<- calc_GVs(df_checked, GV_options)
     results <<- GVs$results
-     names(results) <<- gsub("\\<Ca\\>", "Calcium", names(results))   ##This broke the app if people have a column called Ca
-     names(results) <<- gsub("\\<Mg\\>", "Magnesium", names(results))  ## but should be ok now as joined df to results differently
+     #names(results) <<- gsub("\\<Ca\\>", "Calcium", names(results))   ##This breaks the app if people have a column called Ca_xxxx
+    # names(results) <<- gsub("\\<Mg\\>", "Magnesium", names(results))  
     
     # Overwrite original data in results so that issues removed as part of
     # checking (e.g. non-numeric values) are preserved when the results are
@@ -289,8 +289,9 @@ server <- function(input, output, session) {
     results <<- cbind(df, tool_results)  
     
     
-    units <- read_csv("data/units.csv", locale = locale(encoding = "UTF-8"))  ## encoding required to get units to work
-    add_units <<- units[,new_columns]
+    units <- read_csv("data/units2.csv", locale = locale(encoding = "UTF-8"))  ## encoding required to get units to work
+    add_columns <- new_columns[new_columns !="row"]
+    add_units <<- units |> filter(Column %in% add_columns)
     
     print(add_units)
     #results <- bind_rows(add_units, results)                                                 ## Adding new row with units doesnt work
@@ -363,15 +364,7 @@ server <- function(input, output, session) {
      paste("Guideline values calculated for ", input$metals)
    })
    
-  
-## Combine the output with the readme info 
-  # data_list <- reactive({
-  #   list(
-  #     sheet_readme = add_units,
-  #     sheet_gvs = results   ##this should download the updated results file
-  #     
-  #   )
-  # })
+
   
   # Button to download data  
   output$downloadGVs <- downloadHandler(
@@ -384,8 +377,7 @@ server <- function(input, output, session) {
       write_xlsx(list(readme = add_units,
                       gvs = results), file)
       
-      #write_xlsx(data_list(), path = file)  ## https://stackoverflow.com/questions/59071409/how-to-download-data-onto-multiple-sheets-from-shiny
-    }
+     }
   )
 
   # Button that makes SSD plots - commented out as combining with download button for now
