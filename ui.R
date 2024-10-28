@@ -231,7 +231,8 @@ ui <- fluidPage(
 
                                radioButtons("country", label = span("Select your country for application:", 
                                                                     popover(bs_icon("info-circle"),
-                                         "Country of application is required for comparing bioavailable metals to tier 1 DGVs")),                           
+                                         "Country of application is required for comparing bioavailable metals to tier 1 DGVs \n 
+                                         Only one country can be selected at a time")),                           
                                                     choices = c("Australia" = "aus", "New Zealand" = "nz")),
                                        
                                br(), 
