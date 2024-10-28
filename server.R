@@ -8,6 +8,7 @@
 
 
 #library(formattable)
+library(writexl)
 library(reactable)
 library(shiny)
 library(shinyjs)
@@ -42,11 +43,9 @@ server <- function(input, output, session) {
  
   GVs <- NULL                                                                    # list of outputs returned from calc_GVs function
   results <- NULL                                                                # GV results dataframe
+  add_units <- NULL                                                              # units dataframe
   plots <- NULL                                                                  # list of SSD plots
                                     
-  # # Render the DGV table---------------- 
-  # tier1DGVs <- data.frame(Metal =c("Copper", "Nickel", "Zinc"), `99%` = c(2, 4, 3.2)) 
-  # DGVs <- renderTable(tier1DGVs)
   # Load dataset when file uploaded ------------------------------------------------------------------------
   
   observe({
@@ -289,7 +288,13 @@ server <- function(input, output, session) {
     tool_results <- results[,new_columns]
     results <- cbind(df, tool_results)  
     
-   # plots <<- GVs$plots
+    
+    units <- read_csv("data/units.csv", locale = locale(encoding = "UTF-8"))  ## encoding required to get units to work
+    add_units <- units[,new_columns]
+    
+    print(add_units)
+    #results <- bind_rows(add_units, results)                                                 ## Adding new row with units doesnt work
+                                                                                              ## can't combine text & double
     remove_modal_spinner() # remove it when done
     
     # Update ui
@@ -359,8 +364,16 @@ server <- function(input, output, session) {
    })
    
   
-  # Button to download data
-
+## Combine the output with the readme info 
+  # data_list <- reactive({
+  #   list(
+  #     sheet_readme = add_units,
+  #     sheet_gvs = results   ##this should download the updated results file
+  #     
+  #   )
+  # })
+  
+  # Button to download data  
   output$downloadGVs <- downloadHandler(
     
     filename = function() {
@@ -368,6 +381,7 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       write.csv(GVs$results, file, row.names=FALSE)
+      #write_xlsx(data_list(), path = file)  ## https://stackoverflow.com/questions/59071409/how-to-download-data-onto-multiple-sheets-from-shiny
     }
   )
 
