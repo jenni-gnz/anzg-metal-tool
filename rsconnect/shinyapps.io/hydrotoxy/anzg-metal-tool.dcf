@@ -5,8 +5,9 @@ account: hydrotoxy
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12644480
-bundleId: 9077647
+bundleId: 9282502
 url: https://hydrotoxy.shinyapps.io/anzg-metal-tool/
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: deploy.R

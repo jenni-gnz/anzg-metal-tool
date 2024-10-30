@@ -39,7 +39,6 @@ check_data <- function(df, options){
   issue_df$row = as.numeric(issue_df$row)
   issue_df$col = as.numeric(issue_df$col)
   
-<<<<<<< HEAD
   # If Hardness is identified as missing, and Ca and Mg are available, calculate
   # Hardness from Ca and Mg and update the issue dataframe
   
@@ -55,8 +54,7 @@ check_data <- function(df, options){
     }
   }
   
-=======
->>>>>>> d0c163b7deb6556cc95d69c332fa7854ef1751bd
+
   # Identify any missing data in required columns that are in the dataset
   
   cols_in = cols[cols %in% names(df)]
@@ -94,14 +92,12 @@ check_data <- function(df, options){
     issue_df = rbind(issue_df, data.frame("row"=negative[,1], "col"=negative[,2], "type"="error", "message"=paste0("Error: negative data in column ", cols_in[negative[,2]])))
   }
   
-<<<<<<< HEAD
+
  # names(df) = gsub("\\<Calcium\\>", "Ca", names(df))
 #  names(df) = gsub("\\<Magnesium\\>", "Mg", names(df))
   
   results = list("cols_in"=cols_in, "issue_df"=issue_df, "df_checked"=df)
-=======
-  results = list("cols_in"=cols_in, "issue_df"=issue_df)
->>>>>>> d0c163b7deb6556cc95d69c332fa7854ef1751bd
+
   
   return(results)
   

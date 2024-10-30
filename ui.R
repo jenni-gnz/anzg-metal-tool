@@ -55,7 +55,8 @@ ui <- fluidPage(
                          )
               ),
   
-  tags$style(".btn-file {background-color:#376894; border-color:#376894; width:280px}",
+  tags$style(".btn-file {background-color:#376894; border-color:#376894}",
+             #".btn-file {background-color:#376894; border-color:#376894; width:280px}"
              ".fa-arrow-up {color:white}",
              ".fa-arrow-right {font-size:30px}",
              HTML("#data table {width: 800px;}
@@ -68,25 +69,17 @@ ui <- fluidPage(
   page_navbar(id="tabs",
     bg = "#bacdda",
     
-    nav_spacer(),
-    nav_spacer(),
+  #  nav_spacer(),
+  #  nav_spacer(),
     nav_spacer(),
     
     # 1. Intro and file upload --------------------------------------------------------------------------
     nav_panel(value="upload-page",
-<<<<<<< HEAD
       title = h5(id="page1-title", "1. Upload your file"),
      # br(),
       fluidRow(id="welcome-panel",
                column(width=8, style="padding-right:55px", align="left", h2(id="welcome-title", 
                                                 "Welcome to the ANZG metal bioavailability-adjusted guideline values (BAGVs) calculator"),
-=======
-      title = h4(id="page1-title", "1. Upload your file"),
-      br(),
-      fluidRow(id="welcome-panel",
-               column(width=8, align="left", h2(id="welcome-title", 
-                                                "Welcome to the ANZG bioavailability-based metals default guideline values (DGVs) tool"),
->>>>>>> d0c163b7deb6556cc95d69c332fa7854ef1751bd
                       br(),
                       span("This tool estimates potential risks to freshwater aquatic 
                       environments posed by ", strong("copper"), " and ", strong("nickel"), " after considering bioavailability",
@@ -127,27 +120,23 @@ ui <- fluidPage(
                     a("this document.",target="_blank",href="myfile.pdf"))
                       
                       ),
-               column(width=4, align="left",
-                      fluidRow(id="upload-panel",
-                               column(width=6,
-                                      fileInputOnlyButton("target_upload",
-                                                          buttonLabel=
-                                                            
-                                                            div(class="button-inner", h4("Upload CSV file", style="color:white"), icon("arrow-up")),
-                                                          
-                                                          #buttonLabel=div(class="button-inner", span(id="button-inner-text", h4("Upload CSV file", style="color:white")), icon("arrow-up")),
-                                                          accept=c("text/csv", "text/comma-separated-values", ".csv"), width='100%'
-                                                          )
-                                      ),
-                               column(width=6,
-                                      actionButton("sample_btn", div(class='button-inner', h4("Use demo table"), icon("forward")),
-                                                                     width="280px",
-                                                   style="color:white; background-color:#86a3bb; border-color:#86a3bb")
-                                      )
-                              ),
-                      
-                      fluidRow(id="upload-info",
-                               helpText(includeMarkdown("text/page-1-instructions.md")))
+               
+               column(width=4,
+                      fluidRow(
+                      tags$table(tags$tr(tags$td(style="width:50%; padding-right:15px", align="right",
+                                                 fileInputOnlyButton(
+                                                   "target_upload",
+                                                   buttonLabel=div(class="button-inner", h4("Upload CSV file", style="color:white"), icon("arrow-up")),
+                                                   accept=c("text/csv", "text/comma-separated-values", ".csv"), width="90%")
+                                                 ),
+                                         tags$td(style="width:50%; padding-bottom:33px", align="center",
+                                                 actionButton("sample_btn",
+                                                              div(class="button-inner", h4("Use demo table"), icon("forward")),
+                                                              style="color:white; background-color:#86a3bb; border-color:#86a3bb", width="90%")
+                                                 )
+                                         )
+                                 )),
+                      fluidRow(id="upload-info", align="right", helpText(includeMarkdown("text/page-1-instructions.md")))
                       )
                ),
       hr(),
@@ -174,7 +163,7 @@ ui <- fluidPage(
                  )
                )
     ),  ## end page 1 nav_panel  --------------------------------  
-    nav_spacer(),
+   # nav_spacer(),
     
     nav_panel(value="arrow1",
       title=tags$img(src="icons/arrow.svg")
@@ -184,13 +173,8 @@ ui <- fluidPage(
     
     # 2. Select options ------------------------------------------------------------------------
     nav_panel(value="select-page",
-<<<<<<< HEAD
       title = h5(id="page2-title", "2. Select options"),
     #  br(),
-=======
-      title = h4(id="page2-title", "2. Select options"),
-      br(),
->>>>>>> d0c163b7deb6556cc95d69c332fa7854ef1751bd
       fluidRow(id="options-panel",
                  column(width=10, align="left", h2("Review your data (displayed below) and select options for your analysis"),
                                                          fluidRow(#em("Choose the options for your analysis:"),
@@ -280,7 +264,7 @@ ui <- fluidPage(
                )
       ),  #end of page 2 nav_panel -----------------------
    
-    nav_spacer(),
+  #  nav_spacer(),
     
     nav_panel(value="arrow2",
       title=tags$img(src="icons/arrow.svg")
@@ -290,25 +274,16 @@ ui <- fluidPage(
     
     # 3. Check data page -----------------------------------------------------------------------------
     nav_panel(value="check-page",
-<<<<<<< HEAD
               title = h5(id="page3-title", "3. Check data"),
       #        br(),
-=======
-              title = h4(id="page3-title", "3. Check data"),
-              br(),
->>>>>>> d0c163b7deb6556cc95d69c332fa7854ef1751bd
              fluidRow(id="check-panel",
              column(width=7,
+                    fluidRow(p("Note: for large data sets this may take some time to display")),
+                    br(),
                     fluidRow(id="check-panel",
                              tags$table(style="width:100%",
-<<<<<<< HEAD
                                         tags$tr(tags$td(rowspan=3, style="width:15%; text-align:center", 
                                                         uiOutput("issuesIcon")),
-=======
-                                        tags$tr(tags$td(style="width:45%", p("Note: for large data sets this may take some time to display"))),
-
-                                        tags$tr(tags$td(rowspan=3, style="width:15%; text-align:center", uiOutput("issuesIcon")),
->>>>>>> d0c163b7deb6556cc95d69c332fa7854ef1751bd
                                                 tags$td(style="width:45%; font-size:22pt", uiOutput("issuesText1")),
                                                 tags$td(rowspan=3, style="width:40%")
                                                 ),
@@ -343,7 +318,7 @@ ui <- fluidPage(
              add_busy_spinner(spin = "fading-circle", color = "#FF931E")
     ), # end of page 3 nav_panel ------------------
     
-    nav_spacer(),
+#    nav_spacer(),
     
     nav_panel(value="arrow3",
       title=tags$img(src="icons/arrow.svg")
@@ -353,16 +328,11 @@ ui <- fluidPage(
     
     # 4. Display & download GVs page-----------------------------------------------------------------
     nav_panel(value="GV-page",
-<<<<<<< HEAD
               title=h5(id="page4-title", "4. View & download results"),
        #       br(),
-=======
-              title=h4(id="page4-title", "4. View & download results"),
-              br(),
->>>>>>> d0c163b7deb6556cc95d69c332fa7854ef1751bd
               fluidRow(id="results-panel",
                        column(width=7, align="left",
-                              h2("Guideline values calculated successfully"),
+                              uiOutput("resultsHeading"),
                               br(),
                               uiOutput("resultsText")
                               ),
@@ -409,51 +379,9 @@ ui <- fluidPage(
         ), # end of page 4 nav_panel
 
     nav_spacer(),
-<<<<<<< HEAD
     #5. User guide and documents-----------------------------------------------------
 nav_panel(value="user-page",
           title=h4(id="page4-title", "User guide"),
-=======
-    ###Page 5 -----------------------------------------------------
-    #  nav_panel(value="user-page",
-    #           title=h4(id="page4-title", "User guide"),
-    #           br(),
-    #           fluidRow(id="user-guide",
-    #                    h2(id="user-title", "User guide to the ANZG metal DGV tool"),
-    #                           br(),
-    #                           p(withMathJax(includeMarkdown("text/user-guide.md")))
-    #                    )
-    # ), # end page 5 nav_panel
-    nav_panel(value="user-page",
-                         title=h4(id="page4-title", "User guide"),
-              page_sidebar(
-      h2("User guide to the ANZG metal DGV tool"),
-      
-      sidebar = sidebar(
-        bg = "#bacdda",
-        accordion(
-          accordion_panel(
-            "User guide",
-        #    color_by
-          ),
-          accordion_panel(
-            "Worked example",
-            "More sections go here"
-          )
-        )
-      ),
-      
-      accordion(
-        open = FALSE,
-        accordion_panel(
-          "User guide",
-          p(withMathJax(includeMarkdown("text/user-guide.md")))
-        ),
-        accordion_panel(
-          "Example",
-          p(withMathJax(includeMarkdown("text/worked-example.md")))  
-        ),
->>>>>>> d0c163b7deb6556cc95d69c332fa7854ef1751bd
 
           h2("User guide to the ANZG metal GV tool"),
           p("This app",strong("calculates chronic default guideline values for copper, nickel and zinc"),

@@ -45,14 +45,14 @@ plot_SSDs <- function(df, options){
     
     # Check input data. If data is missing do nothing
     
-    if (is.na(input$DOC) | is.na(input$pH) | is.na(input$Ca) |is.na(input$Mg)) {
+    if (is.na(input$DOC) | is.na(input$pH) | is.na(input$Calcium) |is.na(input$Magnesium)) {
       
     ## dont plot, move on
       
     } else {
       
-      if (input$DOC<0.1 |input$DOC>20 |  input$pH<6.9 |input$pH>8.0 |
-                input$Ca<1 | input$Ca>72 | input$Mg<1  | input$Mg>21) {
+      if (input$DOC<0.5 |input$DOC>17 |  input$pH<6.0 |input$pH>8.0 |
+                input$Calcium<3.7 | input$Calcium>88 | input$Magnesium<3  | input$Magnesium>72) {
         NiNote <- "TMF(s) outside applicable model range"
 
       } else {
@@ -60,8 +60,8 @@ plot_SSDs <- function(df, options){
       
       myDOC <- input$DOC
       mypH  <- input$pH
-      myCa  <- input$Ca
-      myMg  <- input$Mg
+      myCa  <- input$Calcium
+      myMg  <- input$Magnesium
       
       tMLR[is.na(tMLR)] <- 0                                        # Zero out coefficients that are NA - will mean that these parts of the general full
       
@@ -90,7 +90,7 @@ plot_SSDs <- function(df, options){
           ggtitle(paste("Row: ", input$row)) +
           labs(subtitle = "Nickel species sensitivity distribution",
                caption = paste("SSD for DOC=", round(myDOC,1), " pH=", round(mypH,1), 
-                               " Ca=", round(myCa,1), " Mg=", round(myMg,1))) +
+                               " Calcium=", round(myCa,1), " Magnesium=", round(myMg,1))) +
           theme_bw() +
           theme(legend.position.inside = c(0.2, 0.8),
                 legend.background = element_rect(color = "black", linewidth = 0.1),
@@ -116,7 +116,7 @@ plot_SSDs <- function(df, options){
     myTMF.df <- myTMF.df |> dplyr::mutate(myrow = row_number())  #Used in the plotting title
     
     # Specify the columns to convert (if present)
-    columns_to_convert <- c("DOC","pH", "Hardness", "Ca", "Mg", "Copper", "Nickel", "Zinc")  # columns we use
+    columns_to_convert <- c("DOC","pH", "Hardness", "Calcium", "Magnesium", "Copper", "Nickel", "Zinc")  # columns we use
     
     # Convert columns to numeric only if they are present in the df (should avoid crashing)
     myTMF.df[intersect(columns_to_convert, names(myTMF.df))] <- lapply(myTMF.df[intersect(columns_to_convert, 

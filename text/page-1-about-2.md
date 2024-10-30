@@ -17,7 +17,7 @@ No specific column labels are needed for these. The information will be retained
    - hazard quotient (HQ). HQ values > 1 will be highlighted <span style="color:#FF0000">red</span> (indicating a hazard)*  
   
 
-8. Your results file will also indicate where GVs are not applicable because DOC, pH, hardness, calcium and/or magnesium are outside the range of the bioavailability models. The results file will provide a reason in the notes column, and further explanation and guidance can be found in the <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">User Guide</a>.
+8. Your results file will also indicate where GVs are not applicable because DOC, pH, hardness, calcium and/or magnesium are outside the range of the bioavailability models. The results file will provide a reason in the notes column, and further explanation and guidance can be found in the <a href="user-guide.pdf">User Guide</a>.
 
 
 

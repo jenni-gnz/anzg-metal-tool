@@ -442,7 +442,6 @@ calc_GVs <- function(df, options){
         purrr::map(GetCuGuidelines) |>
         purrr::list_rbind()
       
-    #  Cu.output <- ddply(myTMF.df,.(row), function(x) GetCuGuidelines(input=x))
       GV_labels = paste("Cu", pcs, sep="")
       
       if (calc_biof) GV_labels = c(GV_labels, "CuBio")
@@ -486,7 +485,6 @@ calc_GVs <- function(df, options){
         dplyr::group_split(row) |>
         purrr::map(GetNiGuidelines) |>
         purrr::list_rbind()
-    #  Ni.output <- ddply(myTMF.df,.(row), function(x) GetNiGuidelines(input=x))
        
       GV_labels = paste("Ni", pcs, sep="")
       
