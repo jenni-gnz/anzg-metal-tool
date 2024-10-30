@@ -44,8 +44,8 @@ calc_GVs <- function(df, options){
   CuDGVvals_all <- data.frame("nz" = c("PC99" = 0.25, "PC95" = 0.64, "PC90" = 1.0, "PC80" = 1.7),
                               "aus" = c("PC99" = 0.25, "PC95" = 0.64, "PC90" = 1.0, "PC80" = 1.7))
   
-  NiDGVvals_all <- data.frame("aus" = c("PC99" = 0.6, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
-                              "nz" = c("PC99" = 0.4, "PC95" = 2.3, "PC90" = 4.8, "PC80" = 10))
+  NiDGVvals_all <- data.frame("aus" = c("PC99" = 0.61, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
+                              "nz" = c("PC99" = 0.39, "PC95" = 2.3, "PC90" = 4.8, "PC80" = 10))
   
   CuDGV_vals <- setNames(CuDGVvals_all[,country], row.names(CuDGVvals_all))
   NiDGV_vals <- setNames(NiDGVvals_all[,country], row.names(NiDGVvals_all))
@@ -111,40 +111,40 @@ calc_GVs <- function(df, options){
       CuNote <- "DOC missing"
       GV[1,GV_labels] = NA
       
-    # } else if ("pH" %in% names(input) & "Hardness" %in% names(input)) {
-    #   
-    #   # If both pH and hardness columns are in the input dataset
-    #   
-    #   if (is.na(input$pH) | is.na(input$Hardness)) {
-    #     CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
-    #     do_calcs <- TRUE
-    #     
-    #   } else if (input$DOC>30 | input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
-    #     
-    #     DOCnote <-ifelse(input$DOC>30, "DOC above upper applicability limit","")
-    #     pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
-    #                         input$pH>8.5 ~ "pH above upper applicability limit",
-    #                        TRUE ~ "")
-    #     Hnote <-case_when(input$Hardness<2 ~ "Hardness below lower applicability limit",
-    #                         input$Hardness >340 ~ "Hardness above upper applicability limit",
-    #                       TRUE ~ "")
-    #     
-    #     CuNote <- paste(na.omit(c(DOCnote,pHnote, Hnote)), collapse = ", ")
-    #     
-    #     GV[1,GV_labels] = NA
-    #     #GV[1,"CuNote"] = CuNote
+    } else if ("pH" %in% names(input) & "Hardness" %in% names(input)) {
+      
+      # If both pH and hardness columns are in the input dataset
+      
+      if (is.na(input$pH) | is.na(input$Hardness)) {
+        CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
+        do_calcs <- TRUE
         
-      # } else {
-      #   CuNote <- "TMF data in range, GV suitable"
-      #   do_calcs <- TRUE
-      # }
+      } else if (input$DOC>30 | input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
+        
+        DOCnote <-ifelse(input$DOC>30, "DOC above upper applicability limit","")
+        pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
+                            input$pH>8.5 ~ "pH above upper applicability limit",
+                           TRUE ~ "")
+        Hnote <-case_when(input$Hardness<2 ~ "Hardness below lower applicability limit",
+                            input$Hardness >340 ~ "Hardness above upper applicability limit",
+                          TRUE ~ "")
+        
+        CuNote <- paste(na.omit(c(DOCnote,pHnote, Hnote)), collapse = ", ")
+        
+        GV[1,GV_labels] = NA
+        #GV[1,"CuNote"] = CuNote
+        
+      } else {
+        CuNote <- "TMF data in range, GV suitable"
+        do_calcs <- TRUE
+      }
         
     } else {
       
       # Either pH or hardness columns are missing from the input dataset, can
       # still do calcs but note that GV values may or may not be applicable
-      CuNote <- "GV may or may not be applicable"
-     # CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
+      
+      CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
       do_calcs <- TRUE
       
     }
@@ -154,10 +154,9 @@ calc_GVs <- function(df, options){
       for (p in pcs_calc) {
         
         DGV_cu <- CuDGV_vals[p]
-        GV[1,paste0("Cu",p)] <- DGV_cu*(input$DOC/0.5)^1.004
-        # GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(input$DOC/0.5)^1.00 <1,
-        #                                round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),1),
-        #                                signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),2))
+        GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(input$DOC/0.5)^1.00 <1,
+                                       round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),1),
+                                       signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),2))
       }
      
     }
@@ -201,7 +200,112 @@ calc_GVs <- function(df, options){
   
   # Zinc, with MLR adjustment
   
- 
+  GetZnGuidelines <- function(input, sens=ZnSSD.df, tMLR=ZnMLR.coeffs){
+    
+    # Check input data. If data is missing do nothing, but keep the row.
+    # Otherwise, write a note if any of the observations are out of the fitting
+    # bounds
+    
+    GV <- data.frame(matrix(nrow=1, ncol=length(pcs_calc)+1))
+    GV_labels = paste("Zn", pcs_calc, sep="")
+    names(GV) = c(GV_labels, "ZnNote")
+    
+    if(is.na(input$DOC) | is.na(input$pH) | is.na(input$Hardness)) {
+      
+      ZnNote <- "TMFs missing"
+      
+      GV[1,GV_labels] = NA
+      GV[1,"ZnNote"] = ZnNote
+      
+    } else {
+      
+      if(input$DOC>40 | input$pH>8.5 | input$Hardness>529){
+        ZnNote <- "TMF(s) outside applicable model range"
+        
+      } else if (input$DOC>15 | input$pH >8.1 | input$Hardness> 370){
+        ZnNote <- "TMF(s) outside applicable model range"
+        
+      } else if (input$DOC<0.3 | input$pH<5.6 | input$Hardness<5) {
+        ZnNote <- "TMF(s) outside applicable model range"
+        
+      } else if (input$DOC<0.5 | input$pH<6.7| input$Hardness<26) {
+        ZnNote <- "TMF(s) outside applicable model range"
+        
+      } else {
+        ZnNote <- "TMFs in applicable range, DGV suitable"
+      }
+      
+      # myDOC <- min(max(input$DOC, 0.5), 15)                 # Use this if we want to crop the TMF data to the MLR range
+      # myH   <- min(max(input$H, 20), 440)
+      # mypH  <- min(max(input$pH, 6.2), 8.3)
+      
+      myDOC <- input$DOC                                      # Use this if we want to calculate anyway & decide on issues later
+      myH   <- input$Hardness
+      mypH  <- input$pH
+      
+      tMLR[is.na(tMLR)] <- 0                                  # Zero out coefficients that are NA - will mean that these parts of the general full
+                                                              # equation below do not contribute to the formula
+      sens <- merge(sens,tMLR,by.x="Model used",by.y="type")
+      
+      # Apply generic equation form
+      sens$Conc <- exp(sens$Sensitivity + sens$DOC*log(myDOC) + sens$H*log(myH) +
+                         sens$pH*mypH + sens$DOC.pH*log(myDOC)*mypH)
+      
+      # Note: column must be called Conc for ssdtools
+      
+      # Fit ssd function and extract protection values
+      res <- try(ssd_fit_bcanz(sens), silent=FALSE)
+      
+      if (isTRUE(class(res)=="try-error")) {                              # if data cannot be fitted, NA is recorded
+        GV[GV_labels] = NA
+        
+      } else {
+        GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=10)[,3]))
+        GV_temp <- GV_temp |>
+          dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
+                                               TRUE ~ signif(.x, 2))))
+        
+        rownames(GV_temp) <- NULL
+        #GV = as.data.frame(t(ssd_hc(res, percent=c(1, 5, 10, 20), ci=FALSE, nboot=10)[,3])) 
+        #rownames(GV) <- NULL
+      }
+      
+      GV <- cbind(GV_temp, ZnNote)
+    }
+    
+    names(GV) <- c(GV_labels, "ZnNote")
+    myoutput <- cbind(input, GV)
+    
+    if (calc_biof) {
+    #if (calc_biof & ("PC95" %in% pcs)) {
+      
+      myoutput <- myoutput |>
+        dplyr::mutate(ZnBioF = case_when(is.na(ZnPC95) ~ NA,                       # Calc Bioavailable fraction
+                                         4.1/ZnPC95 > 1 ~ 1,                       # Make 1 if > 1
+                                         TRUE ~ 4.1/ZnPC95),
+                      ZnBio = case_when(is.na(ZnPC95) ~ NA,
+                                        is.na(ZnBioF) ~ NA,
+                                        !is.numeric(Zinc) ~ NA,
+                                        is.numeric(Zinc) ~ signif(Zinc*ZnBioF,2)   # Bioavailable Zn
+                                        )
+                      )
+    }
+    
+    # Hazard quotient
+    
+    if (rcr) {
+      for (p in pcs) {
+        x = gsub("PC","",p)
+        col = paste0("Zn",p)
+        myoutput <- myoutput |>
+          dplyr::mutate("ZnHQ{x}" := ifelse((is.na(.data[[col]])|is.na(Zinc)), NA, signif(Zinc/.data[[col]],2)))
+      }
+    }
+    
+    
+    return (myoutput)
+   
+  }
   
   # Nickel, with MLR adjustment
   
@@ -223,30 +327,29 @@ calc_GVs <- function(df, options){
       GV[1,"NiNote"] = NiNote
       
    
-    # } else if (input$DOC<0.5 | input$DOC>17 | input$pH<6 | input$pH>8 |
-    #            input$Calcium<3.7 | input$Calcium>88 | input$Magnesium<3 | input$Magnesium>72) {
-    #   
-    #   DOCnote <-case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
-    #                      input$DOC>17 ~ "DOC above upper applicability limit",
-    #                      TRUE ~ NA)
-    #   pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
-    #                      input$pH>8 ~ "pH above upper applicability limit",
-    #                      TRUE ~ NA)
-    #   Canote <-case_when(input$Calcium<3.7 ~ "Calcium below lower applicability limit",
-    #                     input$Calcium >88 ~ "Calcium above upper applicability limit",
-    #                     TRUE ~ NA)
-    #   Mgnote <-case_when(input$Magnesium<3 ~ "Magnesium below lower applicability limit",
-    #                      input$Magnesium >72 ~ "Magnesium above upper applicability limit",
-    #                      TRUE ~ NA)
-    #   
-    #   NiNote <- paste(na.omit(c(DOCnote,pHnote, Canote, Mgnote)), collapse = ", ")
-    #   
-    #   GV[1,GV_labels] = NA
-    #   GV[1,"NiNote"] = NiNote
-    #   
+    } else if (input$DOC<0.5 | input$DOC>17 | input$pH<6 | input$pH>8 |
+               input$Calcium<3.7 | input$Calcium>88 | input$Magnesium<3 | input$Magnesium>72) {
+      
+      DOCnote <-case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
+                         input$DOC>17 ~ "DOC above upper applicability limit",
+                         TRUE ~ NA)
+      pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
+                         input$pH>8 ~ "pH above upper applicability limit",
+                         TRUE ~ NA)
+      Canote <-case_when(input$Calcium<3.7 ~ "Calcium below lower applicability limit",
+                        input$Calcium >88 ~ "Calcium above upper applicability limit",
+                        TRUE ~ NA)
+      Mgnote <-case_when(input$Magnesium<3 ~ "Magnesium below lower applicability limit",
+                         input$Magnesium >72 ~ "Magnesium above upper applicability limit",
+                         TRUE ~ NA)
+      
+      NiNote <- paste(na.omit(c(DOCnote,pHnote, Canote, Mgnote)), collapse = ", ")
+      
+      GV[1,GV_labels] = NA
+      GV[1,"NiNote"] = NiNote
+      
       } else {
-      #  NiNote <- "TMF data in range, GV suitable"
-        NiNote <- "GV might or might not be suitable"
+      NiNote <- "TMF data in range, GV suitable"
       
       myDOC <- input$DOC
       mypH  <- input$pH
@@ -271,9 +374,9 @@ calc_GVs <- function(df, options){
       } else {
         
         GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=100)[,3])) 
-        # GV_temp <- GV_temp |>
-        #   dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
-        #                                               TRUE ~ signif(.x, 2))))
+        GV_temp <- GV_temp |>
+          dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
+                                                      TRUE ~ signif(.x, 2))))
         rownames(GV_temp) <- NULL
       }
      

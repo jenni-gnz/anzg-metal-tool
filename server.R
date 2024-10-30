@@ -17,6 +17,7 @@ library(tidyverse)
 source("check_data.R")
 source("calc_GVs.R")
 source("plot_SSDs.R")
+options(shiny.maxRequestSize=40*1024^2)
 
 server <- function(input, output, session) {
   
@@ -289,7 +290,7 @@ server <- function(input, output, session) {
     results <<- cbind(df, tool_results)  
     
     
-    units <- read_csv("data/units2.csv", locale = locale(encoding = "UTF-8"))  ## encoding required to get units to work
+    units <- read_csv("data/units.csv", locale = locale(encoding = "UTF-8"))  ## encoding required to get units to work
     add_columns <- new_columns[new_columns !="row"]
     add_units <<- units |> filter(Column %in% add_columns)
     

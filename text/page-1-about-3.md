@@ -1,5 +1,1 @@
-
-More text?
-*Use the tool when your dissolved metal concentrations exceed the Tier 1 default guideline values (DGVs).* 
-
-*Funding acknowledgements? Logos?  Flow chart for tiered system??*
+The development of this calculator was funded by the Metals Environmental Research Associations
