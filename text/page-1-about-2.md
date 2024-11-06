@@ -1,5 +1,5 @@
 
-4. Optional indicate where data *can* be supplied but are not essential. Water hardness and pH are not required to calculate copper DGVs, but if supplied the values will be checked to ensure the water is in the suitable range for the copper DGVs. Metal concentrations are **required** if you want to estimate the bioavailable metal concentration,
+4. Other data *can* be supplied but are not essential. Water hardness and pH are not required to calculate copper DGVs, but if supplied the values will be checked to ensure the water is in the suitable range for the copper DGVs. Metal concentrations are **required** if you want to estimate the bioavailable metal concentration,
 or calculate a **Hazard Quotient**. 
 
 5. You *may* include any other information such as:
@@ -10,7 +10,7 @@ or calculate a **Hazard Quotient**.
 
 No specific column labels are needed for these. The information will be retained in your results file.  &nbsp;
 
-6. The tool will calculate GVs at your requested level of protection. These are provided in a downloadable csv file, that includes your input data.  
+6. The tool will calculate BAGVs at your requested level of protection. These are provided in a downloadable csv file, that includes your input data.  
 
 7. Where you have entered data about the measured concentrations of the metal(s), the following options can also be selected:
    - an estimate of the concentration of bioavailable metals (for comparing to the tier 1 DGVs)

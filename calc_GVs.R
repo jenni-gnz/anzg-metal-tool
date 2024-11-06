@@ -44,8 +44,8 @@ calc_GVs <- function(df, options){
   CuDGVvals_all <- data.frame("nz" = c("PC99" = 0.25, "PC95" = 0.64, "PC90" = 1.0, "PC80" = 1.7),
                               "aus" = c("PC99" = 0.25, "PC95" = 0.64, "PC90" = 1.0, "PC80" = 1.7))
   
-  NiDGVvals_all <- data.frame("aus" = c("PC99" = 0.61, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
-                              "nz" = c("PC99" = 0.39, "PC95" = 2.3, "PC90" = 4.8, "PC80" = 10))
+  NiDGVvals_all <- data.frame("aus" = c("PC99" = 0.66, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
+                              "nz" = c("PC99" = 0.39, "PC95" = 2.3, "PC90" = 5.0, "PC80" = 11))
   
   CuDGV_vals <- setNames(CuDGVvals_all[,country], row.names(CuDGVvals_all))
   NiDGV_vals <- setNames(NiDGVvals_all[,country], row.names(NiDGVvals_all))
