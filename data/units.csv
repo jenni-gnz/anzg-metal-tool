@@ -1,0 +1,43 @@
+﻿Column,Units,Explanation
+CuPC99,µg/L,"Bioavailability-adjusted GV, 99% species protection"
+CuPC95,µg/L,"Bioavailability-adjusted GV, 95% species protection"
+CuPC90,µg/L,"Bioavailability-adjusted GV, 90% species protection"
+CuPC80,µg/L,"Bioavailability-adjusted GV, 80% species protection"
+DGV_CuPC99,µg/L,"Tier 1 DGV, 99% species protection"
+DGV_CuPC95,µg/L,"Tier 1 DGV, 95% species protection"
+DGV_CuPC90,µg/L,"Tier 1 DGV, 90% species protection"
+DGV_CuPC80,µg/L,"Tier 1 DGV, 80% species protection"
+CuHQ99,unitless,"HQ, diss. copper conc divided by CuPC99"
+CuHQ95,unitless,"HQ, diss. copper conc divided by CuPC95"
+CuHQ90,unitless,"HQ, diss. copper conc divided by CuPC90"
+CuHQ80,unitless,"HQ, diss. copper conc divided by CuPC80"
+CuBio,µg/L,Estimated bioavailable copper concentration
+CuNote,unitless,Note regarding GVs
+NiPC99,µg/L,"Bioavailability-adjusted GV, 99% species protection"
+NiPC95,µg/L,"Bioavailability-adjusted GV, 95% species protection"
+NiPC90,µg/L,"Bioavailability-adjusted GV, 90% species protection"
+NiPC80,µg/L,"Bioavailability-adjusted GV, 80% species protection"
+DGV_NiPC99,µg/L,"Tier 1 DGV, 99% species protection"
+DGV_NiPC95,µg/L,"Tier 1 DGV, 95% species protection"
+DGV_NiPC90,µg/L,"Tier 1 DGV, 90% species protection"
+DGV_NiPC80,µg/L,"Tier 1 DGV, 80% species protection"
+NiHQ99,unitless,"HQ, diss. nickel conc divided by NiPC99"
+NiHQ95,unitless,"HQ, diss. nickel conc divided by NiPC95"
+NiHQ90,unitless,"HQ, diss. nickel conc divided by NiPC90"
+NiHQ80,unitless,"HQ, diss. nickel conc divided by NiPC80"
+NiBio,µg/L,Estimated bioavailable nickel concentration
+NiNote,unitless,Note regarding GVs
+ZnPC99,µg/L,"Bioavailability-adjusted GV, 99% species protection"
+ZnPC95,µg/L,"Bioavailability-adjusted GV, 95% species protection"
+ZnPC90,µg/L,"Bioavailability-adjusted GV, 90% species protection"
+ZnPC80,µg/L,"Bioavailability-adjusted GV, 80% species protection"
+DGV_ZnPC99,µg/L,"Tier 1 DGV, 99% species protection"
+DGV_ZnPC95,µg/L,"Tier 1 DGV, 95% species protection"
+DGV_ZnPC90,µg/L,"Tier 1 DGV, 90% species protection"
+DGV_ZnPC80,µg/L,"Tier 1 DGV, 80% species protection"
+ZnHQ99,unitless,"HQ, diss. zinc conc divided by ZnPC99"
+ZnHQ95,unitless,"HQ, diss. zinc conc divided by ZnPC95"
+ZnHQ90,unitless,"HQ, diss. zinc conc divided by ZnPC90"
+ZnHQ80,unitless,"HQ, diss. zinc conc divided by ZnPC80"
+ZnBio,µg/L,Estimated bioavailable zinc concentration
+ZnNote,unitless,Note regarding GVs
