@@ -8,6 +8,7 @@
 
 
 #library(formattable)
+library(writexl)
 library(reactable)
 library(shiny)
 library(shinyjs)
@@ -15,15 +16,16 @@ library(DT)  ## load DT after shiny so that the DT functions are used
 library(tidyverse)
 source("check_data.R")
 source("calc_GVs.R")
-
+source("plot_SSDs.R")
+options(shiny.maxRequestSize=40*1024^2)
 
 server <- function(input, output, session) {
   
-      showModal(modalDialog(
-     #   title = "Important message",
-        "This app has not been optimised for use on mobile devices",
-        easyClose = TRUE
-      ))
+     #  showModal(modalDialog(
+     # #   title = "Important message",
+     #    "This app has not been optimised for use on mobile devices",
+     #    easyClose = TRUE
+     #  ))
   
   # Disable arrow tabs ------------------------------------------------------------------------------------
   
@@ -35,11 +37,16 @@ server <- function(input, output, session) {
   
   shinyjs::disable("check_btn")
   
-  # Initialize dataframes for data and GVs
+  # Initialize output variables for data and GVs
   
-  df = NULL
-  results = NULL
-  
+  df <- NULL                                                                     # original data
+  df_checked <- NULL                                                             # checked and processed data
+ 
+  GVs <- NULL                                                                    # list of outputs returned from calc_GVs function
+  results <- NULL                                                                # GV results dataframe
+  add_units <- NULL                                                              # units dataframe
+  plots <- NULL                                                                  # list of SSD plots
+                                    
   # Load dataset when file uploaded ------------------------------------------------------------------------
   
   observe({
@@ -65,7 +72,7 @@ server <- function(input, output, session) {
     
     output$data = renderReactable({
       reactable(df, resizable=TRUE, showPageSizeOptions=TRUE, showPagination=TRUE,
-                bordered=TRUE,
+                bordered=TRUE, wrap=FALSE,
                 defaultColDef=colDef(format=colFormat(digits=1),
                                      headerStyle=list(background="#bacdda")))
     })
@@ -86,7 +93,7 @@ server <- function(input, output, session) {
     
     output$data = renderReactable({
       reactable(df, resizable=TRUE, showPageSizeOptions=TRUE, showPagination=TRUE,
-                bordered=TRUE,
+                bordered=TRUE, wrap=FALSE,
                 defaultColDef=colDef(format=colFormat(digits=1),
                                      headerStyle=list(background="#bacdda")))
     })
@@ -98,7 +105,7 @@ server <- function(input, output, session) {
   # Enable / disable check data button based on metal selection
   
   observe({
-    if (!is.null(input$metals)) {
+    if (!is.null(input$metals) & !is.null(input$pcs)) {
       shinyjs::enable("check_btn")
     
     } else {
@@ -110,7 +117,7 @@ server <- function(input, output, session) {
   # Check data when "check data" action button pressed---------------------------
   
   observeEvent(input$check_btn, {
-    df_checked = NULL
+    
     # Get selected options
     
     GV_options = list("metals"=input$metals, "calc_biof"=input$calc_biof, "rcr" = input$rcr)
@@ -120,6 +127,7 @@ server <- function(input, output, session) {
     x = check_data(df, GV_options)
     issues = x$issue_df                                                          # issues dataframe
     cols_in = x$cols_in                                                          # required columns that are in the data
+    df_checked <<- x$df_checked                                                  # data, may include new column with Hardness calculated from Ca and Mg if applicable
     
     Nerrs = nrow(issues[which(issues$type=="error"),])                           # number of issues identified as errors
     Nwarn = nrow(issues[which(issues$type=="warning"),])                         # number of issues identified as warnings
@@ -132,7 +140,6 @@ server <- function(input, output, session) {
     } else {
       shinyjs::enable("GV_btn")
     }
-    
     
     # Render icon and text based on whether any issues have been identified
     
@@ -162,6 +169,7 @@ server <- function(input, output, session) {
     })
     
     # Display issue table
+    
     issue_summary <- data.frame(Issue = issues[order(issues$message),"message"])  #order errors first
     
     issue_summary <- issue_summary |>
@@ -177,14 +185,15 @@ server <- function(input, output, session) {
     
     # Display data in table
     
-    df_checked = df
     msg = ""                                                                     # warning or error message to display
     
     # Create a lookup copy of df_checked for reference with table formatting
     # If any issues were found, replace the corresponding cell in the lookup
     # dataframe with the issue type (i.e., error/warning)
     
-    lookup = df_checked
+    lookup = df
+    
+    #lookup = df_checked
     if (nrow(issues) > 0) {
       for (i in c(1:nrow(issues))) {
         ir = issues[i,"row"]                                                     # index of issue row in data
@@ -212,9 +221,11 @@ server <- function(input, output, session) {
       
       if (!is.na(lookup[index,name])) {
         if (lookup[index,name] == "error") {
-          color <- "#fecdcd"
-        } else if (lookup[index,name] == "warning") {
-          color <- "#ffebcc"
+          list(fontWeight = "bold", color <- "#fecdcd")
+         } else if (lookup[index,name] == "warning") {
+           fontWeight = "bold"
+           color <- "#ffebcc"
+
         }
       }
       
@@ -227,21 +238,18 @@ server <- function(input, output, session) {
                         headerStyle=list(background="#bacdda"))
     )
     
-    colDefList <- rep(colDefList, ncol(df_checked))
-    names(colDefList) <- names(df_checked)
+    colDefList <- rep(colDefList, ncol(df))
+    names(colDefList) <- names(df)
     
     output$data_checked = renderReactable({
-      reactable(df_checked, resizable=TRUE, showPageSizeOptions=TRUE,
-                showPagination=TRUE, bordered=TRUE,
+      reactable(df, resizable=TRUE, showPageSizeOptions=TRUE,
+                showPagination=TRUE, bordered=TRUE, wrap=FALSE,
                 columns=colDefList)
     })
     
     output$issueMessage <- renderText({
       sprintf("%s", msg)
     })
-    
-    
-    # NEED TO DISABLE CALCULATE BUTTON UNLESS DATA OK...
     
     updateNavbarPage(session, "tabs", selected="check-page")
     
@@ -251,20 +259,54 @@ server <- function(input, output, session) {
   
   observeEvent(input$GV_btn, {
     
+    show_modal_spinner(spin = "hollow-dots", color ="#FF931E") # show the modal window
+    
     # NOTE: NEED A PROGRESS BAR OR SOME OTHER INDICATOR
     
     updateNavbarPage(session, "tabs", selected="GV-page")
     
     # Get selected options
     
-   
     GV_options = list("metals"=input$metals,
                       "calc_biof"=input$calc_biof,
                       "pcs"=input$pcs,
-                      "rcr"=input$rcr)
+                      "rcr"=input$rcr,
+                      "country"=input$country)
     
-     GVs <<- calc_GVs(df, GV_options)
- 
+    # Call function to calculate GVs
+    
+    GVs <<- calc_GVs(df_checked, GV_options)
+    results <<- GVs$results
+     #names(results) <<- gsub("\\<Ca\\>", "Calcium", names(results))   ##This breaks the app if people have a column called Ca_xxxx
+    # names(results) <<- gsub("\\<Mg\\>", "Magnesium", names(results))  
+    
+    # Overwrite original data in results so that issues removed as part of
+    # checking (e.g. non-numeric values) are preserved when the results are
+    # displayed and/or downloaded
+    
+   # results[,match(names(df),names(results))] <<- df           ##This broke the app if there are blanks in the original df
+    new_columns <- setdiff(names(results), names(df))           ## Instead add the new columns to the old data set
+    tool_results <- results[,new_columns]
+    results <<- cbind(df, tool_results)  
+    
+    
+    units <- read_csv("data/units.csv", locale = locale(encoding = "UTF-8"))  ## encoding required to get units to work
+    add_columns <- new_columns[new_columns !="row"]
+    add_units <<- units |> filter(Column %in% add_columns)
+    
+    print(add_units)
+    #results <- bind_rows(add_units, results)                                                 ## Adding new row with units doesnt work
+                                                                                              ## can't combine text & double
+    remove_modal_spinner() # remove it when done
+    
+    # Update ui
+    
+    output$resultsHeading = renderUI({
+      if (!is.null(GVs)){
+        h2("Guideline values calculated successfully")
+      }
+    })
+     
     output$resultsText = renderUI({
       for (i in c(1:nrow(GVs$summary))) {
         GVs$summary[i,"message"] = paste(GVs$summary[i,"metal"],
@@ -278,56 +320,43 @@ server <- function(input, output, session) {
       
     })
     
-    #cols = names(results[grepl("PC", names(results)) | grepl("Bio", names(results)) | grepl("HQ", names(results))])
-    #hq_cols = names(results[grepl("HQ", names(results))])
-    # 
-    # styleHQFn <- function(value, name) {
-    #   
-    #   color <- "black"
-    #   
-    #   # Set font color to black unless column is in the list of HQs and 
-    #   # value is > 1
-    #   # then make it red
-    #   
-    #   if (name %in% hq_cols & value > 1) {
-    #     color <- "red"
-    #     fontWeight <- "bold"
-    #   }
-    #        list(color=color#, fontWeight = fontWeight
-    #         )
-    # }
-    # 
-    # colDefList <- list(
-    #   reactable::colDef(style=styleHQFn,
-    #                     format=colFormat(digits=1),
-    #                     headerStyle=list(background="#bacdda"))
-    # )
-    # 
-    #  colDefList <- rep(colDefList, ncol(GVs$results))
-    #  names(colDefList) <- names(GVs$results)
-    # 
+    styleFn <- function(value, index, name) {
+      
+      # Set default font colour to black
+      
+      color <- "black"
+      fontWeight <- "normal"
+      
+      # Set font colour to red if the column is a hazard quotient and the
+      # value is greater than 1
+      
+      if (!is.na(value)) {
+        if (grepl("HQ",name) & value > 1) {
+          color <- "#e00000"
+          fontWeight <- "bold"
+        }
+      }
+      
+      list(color=color, fontWeight=fontWeight)
+    }
+    
+    colDefList <- list(
+      reactable::colDef(style=styleFn,
+                        format=colFormat(digits=1),
+                        headerStyle=list(background="#bacdda"))
+    )
+    
+    colDefList <- rep(colDefList, ncol(results))
+    names(colDefList) <- names(results)
+    
     output$GVs = renderReactable({
-      reactable(GVs$results, resizable=TRUE, showPageSizeOptions=TRUE,
+      reactable(results, resizable=TRUE, showPageSizeOptions=TRUE,
                 showPagination=TRUE, bordered=TRUE, wrap=FALSE,
-               
-                defaultColDef=colDef(#colDefList
-                                     format=colFormat(digits=1),
-                                     #style=styleHQFn,
-                                     headerStyle=list(background="#bacdda")
-                                     )
-            
-      )
+                columns=colDefList)
     })
     
-    
-    
-    # output$GVs = renderDT({
-    #   datatable(results) %>% formatRound(cols, 1) %>% 
-    #      formatStyle(hq_cols, color = styleInterval(1, c('black', 'red')),
-    #                                                                     fontWeight = 'bold')
-    # }, options=list(scrollX=TRUE, bFilter=0))  #, scrollY = TRUE
-
   })
+  
   ## Page 4----------------------------
   # Summary of results 
   #no.CuGVs <- length(results$CuPC95)
@@ -336,59 +365,83 @@ server <- function(input, output, session) {
      paste("Guideline values calculated for ", input$metals)
    })
    
-  
-  # Button to download data
 
+  
+  # Button to download data  
   output$downloadGVs <- downloadHandler(
     
     filename = function() {
-      paste("MyDGVs-", Sys.Date(), ".csv", sep="")
+      paste("MyDGVs-", Sys.Date(), ".xlsx", sep="")
     },
     content = function(file) {
-      write.csv(GVs$results, file, row.names=FALSE)
-      # https://shiny.posit.co/r/articles/build/download/
-    }
+      #write.csv(results, file, row.names=FALSE)
+      write_xlsx(list(readme = add_units,
+                      gvs = results), file)
+      
+     }
   )
 
-###Might use this?---
-#   output$mytable = DT::renderDataTable({
-#     results
-#   })
-
-  # Button to download ssds
-#  mydata <- list(cars,pressure,airquality)
-#  nplots <- length(mydata)
-# 
-#   observeEvent(input$downloadssds, {
-#     lapply(1:nplots, function(i){
-#       ggsave(paste0("yplot",i,".png"), plot(mydata[[i]]))
-#     })
-#   }, ignoreInit = TRUE)
-
+  # Button that makes SSD plots - commented out as combining with download button for now
   
-output$downloadssds <- downloadHandler(
+  # observeEvent(input$SSDplots, { 
+  #   #add_busy_spinner(spin = "hollow-dots", color ="#FF931E") # this one doesn't show up for some reason
+  #   show_modal_spinner(spin = "hollow-dots", color ="#FF931E")
+  #   # Get selected options
+  #   
+  #   GV_options = list("metals"=input$metals)
+  #   
+  #   # Call function to create the plots
+  #   
+  #   CompletedPlots <<- plot_SSDs(df_checked, GV_options)
+  #   plots <<- CompletedPlots$plots
+  #   remove_modal_spinner() # remove it when plots created
+  #   
+  #   # Then need to make the download button visible
+  #   # runjs("$('#downloadData')[0].click();") # DOWNLOAD BUTTON
+  # 
+  #   })
+  
+  # Button to download SSD plots
+  
+  output$downloadssds <- downloadHandler(
     
-     filename = function() {
-       paste(input$metal, input$row, Sys.Date(), ".png", sep="")
-     },
-     content = function(file) {
-       png(file, width = 980, height = 400, units = "px", pointsize = 12,
-       bg = "white", res = NA)
-       ## Need to replace this dummy plot with a call to the ssd plot function
-       x =  seq(1,10, by=1)
-       y = seq(2,20, by= 2)
-       top6.plot <- plot(x ~ y)
-print(top6.plot)
-dev.off()
+    filename = function() {
+      paste0("MySSDs-", Sys.Date(), ".zip")
+    },
+    content = function(file) {
+      
+      show_modal_spinner(spin = "hollow-dots", color ="#FF931E")
+      
+      # Call function to create the plots
+      
+      GV_options = list("metals"=input$metals)
+      CompletedPlots <<- plot_SSDs(df_checked, GV_options)
+      plots <<- CompletedPlots$plots
+      
+      remove_modal_spinner()                                   # remove spinner when plots created
+      
+      # Create temporary directory and save plots to file
+      
+      temp_directory <- file.path(tempdir(), as.integer(Sys.time()))
+      dir.create(temp_directory)
+      
+      pnames = paste0(names(plots), ".png")
+      for (i in seq_along(plots)) {
+        ggsave(file.path(temp_directory, pnames[i]), plots[[i]], "png")
+      }
+      
+      # Zip file and save to user specified location
+      
+      zip::zip(
+        zipfile = file,
+        files = dir(temp_directory),
+        root = temp_directory
+      )
+      
+      unlink(temp_directory, recursive = TRUE)
+    },
+    contentType = "application/zip"
+  )
 
-### end replacement here?
-},
-contentType = 'image/png'
-)
 
-  
-  
-  
-  
-  
 }
