@@ -41,8 +41,8 @@ calc_GVs <- function(df, options){
   ### For each metal, there are 4 values for each country. 
   ### Depending on the PCs selected, we need to provide these values with the returned table
 
-  CuDGVvals_all <- data.frame("nz" = c("PC99" = 0.25, "PC95" = 0.63, "PC90" = 0.99, "PC80" = 1.7),
-                              "aus" = c("PC99" = 0.25, "PC95" = 0.63, "PC90" = 0.99, "PC80" = 1.7))
+  CuDGVvals_all <- data.frame("nz" = c("PC99" = 0.439, "PC95" = 0.732, "PC90" = 0.896, "PC80" = 1.28),
+                              "aus" = c("PC99" = 0.439, "PC95" = 0.732, "PC90" = 0.896, "PC80" = 1.28))
   
   NiDGVvals_all <- data.frame("aus" = c("PC99" = 0.66, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
                               "nz" = c("PC99" = 0.39, "PC95" = 2.3, "PC90" = 5.0, "PC80" = 11))
