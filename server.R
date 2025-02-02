@@ -313,8 +313,11 @@ server <- function(input, output, session) {
                                          " DGVs were calculated for ",
                                          GVs$summary[i,"nGVs"],
                                          " data rows (",
+                                         GVs$summary[i,"nOutofRange"],
+                                         " data rows were excluded as TMFs were out of the applicable 
+                                         range for GV calculation; ",
                                          GVs$summary[i,"nExcluded"],
-                                         " data row/rows were excluded)<br>", sep="")
+                                         " data row/rows were excluded due to missing data)<br><br>", sep="")
       }
       HTML(paste(GVs$summary[,"message"], collapse=""))
       

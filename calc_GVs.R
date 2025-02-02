@@ -121,13 +121,14 @@ calc_GVs <- function(df, options){
         
       } else if (input$DOC>30 | input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
         
-        DOCnote <-ifelse(input$DOC>30, "DOC above upper applicability limit","")
+        DOCnote <-case_when(input$DOC>30 ~ "DOC above upper applicability limit",
+                            TRUE ~ NA)
         pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
                             input$pH>8.5 ~ "pH above upper applicability limit",
-                           TRUE ~ "")
+                           TRUE ~ NA)
         Hnote <-case_when(input$Hardness<2 ~ "Hardness below lower applicability limit",
                             input$Hardness >340 ~ "Hardness above upper applicability limit",
-                          TRUE ~ "")
+                          TRUE ~ NA)
         
         CuNote <- paste(na.omit(c(DOCnote,pHnote, Hnote)), collapse = ", ")
         
@@ -345,6 +346,7 @@ calc_GVs <- function(df, options){
       
       NiNote <- paste(na.omit(c(DOCnote,pHnote, Canote, Mgnote)), collapse = ", ")
       
+      
       GV[1,GV_labels] = NA
       GV[1,"NiNote"] = NiNote
       
@@ -458,7 +460,10 @@ calc_GVs <- function(df, options){
       i = nrow(summary)
       summary[i+1,"metal"] <<- "Copper"
       summary[i+1,"nExcluded"] <<- nrow(Cu.output[which(Cu.output$CuNote=="DOC missing"),])
-      summary[i+1,"nGVs"] <<- nrow(Cu.output) - summary[i+1,"nExcluded"]
+      summary[i+1,"nGVs"] <<- nrow(Cu.output[which(Cu.output$CuNote=="TMF data in range, GV suitable"),])
+      summary[i+1,"nOutofRange"] <<- nrow(Cu.output) - summary[i+1,"nExcluded"] - summary[i+1,"nGVs"]
+      
+      
     }
     
     # if ("Zn" %in% metals) {
@@ -502,7 +507,8 @@ calc_GVs <- function(df, options){
       i = nrow(summary)
       summary[i+1,"metal"] <<- "Nickel"
       summary[i+1,"nExcluded"] <<- nrow(Ni.output[which(Ni.output$NiNote=="TMFs missing"),])
-      summary[i+1,"nGVs"] <<- nrow(Ni.output) - summary[i+1,"nExcluded"]
+      summary[i+1,"nGVs"] <<- nrow(Ni.output[which(Ni.output$NiNote=="TMF data in range, GV suitable"),])
+      summary[i+1,"nOutofRange"] <<- nrow(Ni.output) - summary[i+1,"nExcluded"] - summary[i+1,"nGVs"]
       #Alloutput <- Alloutput |> select(-row)
     }
     
