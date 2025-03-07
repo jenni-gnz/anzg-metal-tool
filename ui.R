@@ -252,6 +252,8 @@ ui <- fluidPage(
                fluidRow(id="show-data",
 
                       h4("Your uploaded data are displayed below:"),
+                      uiOutput("filename"),
+                      br(), br(),
                       helpText("Please note that if your data are missing, you’ll need to edit your original table and re-upload."),
                       helpText("Check your original data to make sure all data values are numeric, and do not include * or commas."),
                       br(), br(), br(),

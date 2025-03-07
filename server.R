@@ -62,6 +62,10 @@ server <- function(input, output, session) {
     
     fpath = inFile$datapath
     
+    output$filename <- renderText({
+      sprintf("Data source: %s", basename(inFile$name))
+    })
+    
     msg = tryCatch({
       df <<- utils::read.csv(fpath, header=TRUE, stringsAsFactors=FALSE, fileEncoding="UTF-8")
     },error=function(e) e, warning=function(w) w)
