@@ -1,0 +1,37 @@
+---
+title: "page-1-TMFs"
+output: html_document
+date: "2025-03-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r table1}
+
+library(reactable)
+library(htmltools)
+
+TMFs <- data.frame(c("Copper","Nickel"), c("DOC","pH, DOC, calcium, magnesium"))
+names(TMFs) = c("Dissolved Metal", "TMFs")
+
+dt_TMFs <- reactable(TMFs,
+                     defaultColDef=colDef(headerStyle=list(background="#bacdda")),
+                     columns=list(
+                       TMFs=colDef(width=370)
+                     ),
+                     width=830,
+                     rowStyle = function(index){
+                           if (index == 2){
+                             list(borderBottom="1px solid rgba(0, 0, 0, 0.05)")
+                           }
+                         }
+                     )
+
+dt_TMFs <- htmlwidgets::prependContent(dt_TMFs, 
+    p("Table 2. Dissolved metals and their TMFs", style="font-size:80%"))
+
+dt_TMFs
+
+```

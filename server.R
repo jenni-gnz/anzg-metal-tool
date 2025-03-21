@@ -19,7 +19,51 @@ source("calc_GVs.R")
 source("plot_SSDs.R")
 options(shiny.maxRequestSize=40*1024^2)
 
+
+env <- new.env(parent = globalenv())
+
+rmarkdown::render("text/page-1-data-required.Rmd",
+                  params = params,
+                  envir = env)
+dt_data_req <- env$dt_data_req
+
+rmarkdown::render("text/page-1-TMFs.Rmd",
+                  params = params,
+                  envir = env)
+dt_TMFs <- env$dt_TMFs
+
+rmarkdown::render("text/page-1-applicability.Rmd",
+                  params = params,
+                  envir = env)
+dt_appl <- env$dt_appl
+
+rmarkdown::render("text/page-1-steps.Rmd",
+                  params = params,
+                  envir = env)
+dt_vars <- env$dt_vars
+
+
+
 server <- function(input, output, session) {
+  
+  output$dt1 <- renderUI({
+    htmltools::tagList(dt_data_req)
+  })
+  
+  output$dt2 <- renderUI({
+    htmltools::tagList(dt_TMFs)
+  })
+  
+  output$dt3 <- renderUI({
+    htmltools::tagList(dt_appl)
+  })
+  
+  output$dt4 <- renderUI({
+    htmltools::tagList(dt_vars)
+  })
+  
+  
+  
   
      #  showModal(modalDialog(
      # #   title = "Important message",
