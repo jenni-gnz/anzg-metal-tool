@@ -116,7 +116,7 @@ calc_GVs <- function(df, options){
       # If both pH and hardness columns are in the input dataset
       
       if (is.na(input$pH) | is.na(input$Hardness)) {
-        CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
+        CuNote <- "pH and/or hardness not provided, PC may or may not be applicable"
         do_calcs <- TRUE
         
       } else if (input$DOC>30 | input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
@@ -145,7 +145,7 @@ calc_GVs <- function(df, options){
       # Either pH or hardness columns are missing from the input dataset, can
       # still do calcs but note that GV values may or may not be applicable
       
-      CuNote <- "pH and/or hardness not provided, DGV may or may not be applicable"
+      CuNote <- "pH and/or hardness not provided, PC may or may not be applicable"
       do_calcs <- TRUE
       
     }
@@ -190,7 +190,7 @@ calc_GVs <- function(df, options){
         x = gsub("PC","",p)
         col = paste0("Cu",p)
         myoutput <- myoutput |>
-          dplyr::mutate("CuHQ{x}" := ifelse((is.na(.data[[col]])|is.na(Copper)), NA, signif(Copper/.data[[col]],2)))
+          dplyr::mutate("Cu_HQ{x}" := ifelse((is.na(.data[[col]])|is.na(Copper)), NA, signif(Copper/.data[[col]],2)))
       }
     }
     
@@ -330,7 +330,7 @@ calc_GVs <- function(df, options){
    
     } else if (input$DOC<0.5 | input$DOC>17 | input$pH<6 | input$pH>8 |
                input$Calcium<3.7 | input$Calcium>88 | input$Magnesium<3 | input$Magnesium>72) {
-      
+
       DOCnote <-case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
                          input$DOC>17 ~ "DOC above upper applicability limit",
                          TRUE ~ NA)
@@ -343,10 +343,10 @@ calc_GVs <- function(df, options){
       Mgnote <-case_when(input$Magnesium<3 ~ "Magnesium below lower applicability limit",
                          input$Magnesium >72 ~ "Magnesium above upper applicability limit",
                          TRUE ~ NA)
-      
+
       NiNote <- paste(na.omit(c(DOCnote,pHnote, Canote, Mgnote)), collapse = ", ")
-      
-      
+
+
       GV[1,GV_labels] = NA
       GV[1,"NiNote"] = NiNote
       
@@ -411,7 +411,7 @@ calc_GVs <- function(df, options){
         x = gsub("PC","",p)
         col = paste0("Ni",p)
         myoutput <- myoutput |>
-          dplyr::mutate("NiHQ{x}" := ifelse((is.na(.data[[col]])|is.na(Nickel)), NA, signif(Nickel/.data[[col]],2)))
+          dplyr::mutate("Ni_HQ{x}" := ifelse((is.na(.data[[col]])|is.na(Nickel)), NA, signif(Nickel/.data[[col]],2)))
       }
     }
     
@@ -448,15 +448,20 @@ calc_GVs <- function(df, options){
       
       if (calc_biof) GV_labels = c(GV_labels, "CuBio")
       
-      if (rcr) GV_labels = c(GV_labels, paste0("Cu",gsub("PC","HQ",pcs)))
+      if (rcr) GV_labels = c(GV_labels, paste0("Cu",gsub("PC","_HQ",pcs)))
       
       Alloutput <- cbind(Alloutput, Cu.output %>% dplyr::select(all_of(c(GV_labels, "CuNote"))))
+      names(Alloutput) <- gsub("PC", "_BAGV", names(Alloutput))
+      names(Alloutput) <- gsub("CuBio", "Cu_bioavailable", names(Alloutput))
       
       CuDGV_vals_sub = as.data.frame(t(CuDGV_vals[pcs]))
-      names(CuDGV_vals_sub) <- paste0("DGV_Cu",names(CuDGV_vals_sub))
+      CuDGV_vals_sub <- CuDGV_vals_sub |> mutate(across(is.numeric, signif, digits=2))
+      names(CuDGV_vals_sub) <- paste0("Cu_DGV",names(CuDGV_vals_sub))
+      names(CuDGV_vals_sub) <- gsub("PC", "", names(CuDGV_vals_sub))
       
       Alloutput <- cbind(Alloutput,CuDGV_vals_sub)
-     
+      Alloutput <- Alloutput |> relocate(CuNote, .after = last_col())
+      
       i = nrow(summary)
       summary[i+1,"metal"] <<- "Copper"
       summary[i+1,"nExcluded"] <<- nrow(Cu.output[which(Cu.output$CuNote=="DOC missing"),])
@@ -495,20 +500,27 @@ calc_GVs <- function(df, options){
       
       if (calc_biof) GV_labels = c(GV_labels, "NiBio")
       
-      if (rcr) GV_labels = c(GV_labels, paste0("Ni",gsub("PC","HQ",pcs)))
+      if (rcr) GV_labels = c(GV_labels, paste0("Ni",gsub("PC","_HQ",pcs)))
       
       Alloutput <- cbind(Alloutput, Ni.output %>% dplyr::select(all_of(c(GV_labels, "NiNote"))))
- 
+      names(Alloutput) <- gsub("PC", "_BAGV", names(Alloutput))
+      names(Alloutput) <- gsub("NiBio", "Ni_bioavailable", names(Alloutput))
+      
       NiDGV_vals_sub = as.data.frame(t(NiDGV_vals[pcs]))
-      names(NiDGV_vals_sub) <- paste0("DGV_Ni",names(NiDGV_vals_sub))
+      NiDGV_vals_sub <- NiDGV_vals_sub |> mutate(across(is.numeric, signif, digits=2))
+      names(NiDGV_vals_sub) <- paste0("Ni_DGV",names(NiDGV_vals_sub))
+      names(NiDGV_vals_sub) <- gsub("PC", "", names(NiDGV_vals_sub))
       
       Alloutput <- cbind(Alloutput,NiDGV_vals_sub)
+      Alloutput <- Alloutput |> relocate(NiNote, .after = last_col())
       
       i = nrow(summary)
       summary[i+1,"metal"] <<- "Nickel"
       summary[i+1,"nExcluded"] <<- nrow(Ni.output[which(Ni.output$NiNote=="TMFs missing"),])
       summary[i+1,"nGVs"] <<- nrow(Ni.output[which(Ni.output$NiNote=="TMF data in range, GV suitable"),])
       summary[i+1,"nOutofRange"] <<- nrow(Ni.output) - summary[i+1,"nExcluded"] - summary[i+1,"nGVs"]
+      
+      
       #Alloutput <- Alloutput |> select(-row)
     }
     

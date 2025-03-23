@@ -1,0 +1,41 @@
+---
+title: "page-1-data-required"
+output: html_document
+date: "2025-03-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r table1}
+
+library(reactable)
+library(htmltools)
+
+data_req <- data.frame(c("BAGV","Bioavailable metal concentration","Hazard quotient"),
+                       c("y","y","y"),
+                       c("n","y","y"))
+names(data_req) = c("Calculation", "Relevant Toxicity Modifying Factors","Dissolved Metal Concentrations")
+
+dt_data_req <- reactable(data_req,
+                         defaultColDef=colDef(align="center",
+                                              headerStyle=list(background="#bacdda"),
+                                              cell=function(value){
+                                                if (value == "n") "" else if (value == "y") "\u2714" else value
+                                              }),
+                         columns=list(Calculation=colDef(align="left")),
+                         rowStyle = function(index){
+                           if (index == 3){
+                             list(borderBottom="1px solid rgba(0, 0, 0, 0.05)")
+                           }
+                         },
+                         width=1200
+                         )
+
+dt_data_req <- htmlwidgets::prependContent(dt_data_req, 
+    p("Table 1. Water chemistry data required for Metals Bioavailability Tool calculations", style="font-size:80%"))
+
+dt_data_req
+
+```

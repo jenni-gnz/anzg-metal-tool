@@ -1,0 +1,24 @@
+The Metals Bioavailability Tool helps you estimate potential risks to freshwater aquatic environments posed by some dissolved metals after considering bioavailability.
+
+You should use the Metals Bioavailability Tool in the context of the guidance provided about [metal bioavailability, the Tiered Assessment Framework and the Metals Bioavailability Tool](https://mfenz.shinyapps.io/fish-ibi-calculator/)
+on the Australian & New Zealand Guidelines for Fresh & Marine Water Quality (ANZG) website.
+
+You can use the Metals Bioavailability Tool at Tier 2 of the ANZG [Tiered Assessment Framework](https://mfenz.shinyapps.io/fish-ibi-calculator/)
+to help assess potential risks to your waterbody.
+
+The Metals Bioavailability Tool can calculate:
+
+- **Bioavailability-adjusted guideline values** (BAGVs) - default guideline values adjusted for metal bioavailability.
+- **Bioavailable metal concentrations** - concentrations of metals that are estimated to be bioavailable in samples or at a site.
+- **Hazard quotients** - metal concentrations divided by the BAGVs.
+
+for
+
+- copper and nickel
+- one or more metal at a time
+- 4 levels of species protection (99%, 95%, 90% and 80%)
+- Australian or New Zealand freshwaters
+
+See also:
+
+- [Levels of species protection](https://www.waterquality.gov.au/anz-guidelines/resources/key-concepts/level-of-protection)
