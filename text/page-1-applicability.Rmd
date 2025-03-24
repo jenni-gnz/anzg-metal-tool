@@ -20,11 +20,11 @@ appl <- data.frame(c("Copper","Nickel"),
                    c("2 to 340","22 to 516"),
                    c("0 to 30","0.5 to 17"))
 
-names(appl) <- c("Dissolved Metal", "pH", "Calcium (mg/L)", "Magnesium (mg/L)", "Hardness (mg/L as CaCO3)",
+names(appl) <- c("Dissolved Metal", "pH", "Calcium (mg/L)", "Magnesium (mg/L)", "Hardness (mg/L as CaCO<sub>3</sub>)",
                  "DOC (mg/L)")
 
 dt_appl <- reactable(appl,
-                     defaultColDef=colDef(headerStyle=list(background="#bacdda")),
+                     defaultColDef=colDef(headerStyle=list(background="#bacdda"), html=TRUE),
                      rowStyle = function(index){
                            if (index == 2){
                              list(borderBottom="1px solid rgba(0, 0, 0, 0.05)")
