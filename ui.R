@@ -87,53 +87,6 @@ ui <- fluidPage(
                       h2(id="welcome-title", "Welcome to the Metals Bioavailability Tool"),
                       br(),
                       p(includeMarkdown("text/page-1-intro.md")),
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                    #   h2(id="welcome-title", "Welcome to the ANZG metal bioavailability-adjusted guideline values (BAGVs) calculator"),
-                    #   br(),
-                    #   span("This tool estimates potential risks to freshwater aquatic 
-                    #   environments posed by ", strong("copper"), " and ", strong("nickel"), " after considering bioavailability",
-                    #   tooltip(bs_icon("info-circle"), 
-                    #           "the concentration an organism in the water column “experiences”, accounting for metal speciation and competition",
-                    #           placement = "bottom"),".",
-                    #   br(),  br(),
-                    #   "This tool has been developed to assist in implementation of the ", 
-                    #   tags$a("ANZG",  href="https://www.waterquality.gov.au/anz-guidelines", target="_blank"),
-                    #   "toxicant guideline values (GVs) within a tiered risk assessment framework.",
-                    #   tooltip(bs_icon("info-circle"), "add a link", placement = "bottom"),
-                    #   br(), br(),
-                    #   strong("Use the tool when your dissolved metal concentrations ", em("exceed"), 
-                    #   "the tier 1 DGVs"), 
-                    #   popover(bs_icon("info-circle"), title = "Tier 1 DGVs", #tableOutput("DGVs")
-                    #           includeMarkdown("text/tier1-dgvs.md"),
-                    #           options = list(container = "body")
-                    #           ),
-                    #   br(), 
-                    #   p(includeMarkdown("text/page-1-description.md")), 
-                    #   "If you  include metal concentrations, the tool can also 
-                    #   estimate the bioavailable fraction of the metal",
-                    #   tooltip(bs_icon("info-circle"), 
-                    #           "used to compare to Tier 1 DGVs", 
-                    #           placement = "bottom"),
-                    #   ", and calculate a hazard quotient",
-                    #   tooltip(bs_icon("info-circle"), 
-                    #           "an indication of risk to aquatic organisms, metal concentration divided by BAGV", 
-                    #           placement = "bottom"), 
-                    #   br(),
-                    # "Upload a comma-separated table (csv)", a(" (template provided if needed) ",target="_blank",href="template.csv"), 
-                    # "with your water chemistry data or test the 
-                    # calculator with the example dataset provided.", br(), br(), 
-                    # "For more instructions see ", a("the user guide with worked examples",target="_blank",href="myfile.pdf"),
-                    # "and the ", strong("FAQs"), " below.", br(),
-                    # "Details on the GVs, the tiered approach to implementation" ,
-                    # " and a description of the science underpinning the tool's development is provided in ",
-                    # a("this document.",target="_blank",href="myfile.pdf"))
-                      
                ),
                
                column(width=4,
@@ -173,36 +126,33 @@ ui <- fluidPage(
                                  br(),br(),
                                  p("Data format", style="font-weight:bold"),
                                  p(includeMarkdown("text/page-1-format.md")),
+                                 br(),
                                  ),
                  accordion_panel(title="Step by step - Your data & the Metals Bioavailability Tool",
-                                 p("Get your data ready", style="font-weight:bold"),
                                  p(includeMarkdown("text/page-1-steps.md")),
                                  br(),
                                  uiOutput("dt4"),
-                                 br(),br(),
+                                 br(),
+                                 p(includeMarkdown("text/page-1-outputs.md")),
+                                 br(),
+                                 ),
+                 accordion_panel(title="Get started",
+                                 p(includeMarkdown("text/page-1-get-started.md")),
+                                 br(),
+                                 ),
+                 accordion_panel(title="Next step",
+                                 p(includeMarkdown("text/page-1-next-step.md")),
+                                 br(),
+                                 ),
+                 accordion_panel(title="Frequently asked questions",
+                                 p(includeMarkdown("text/page-1-FAQs.md")),
+                                 br(),
+                                 ),
+                 accordion_panel(title="Additional resources",
+                                 p(includeMarkdown("text/page-1-resources.md")),
+                                 br(),
                                  )
                ),
-               
-               # h4("About this calculator"),
-               # br(),
-               # p(includeMarkdown("text/page-1-about.md")),
-               # tabsetPanel(
-               #   tabPanel(h4("Instructions for use"),
-               #            br(),
-               #            p(includeMarkdown("text/page-1-about.md"),
-               #              tags$style(' #tab {margin-bottom:-30px;}')),
-               #            div(style = "margin-top: -100px"),
-               #            tags$img(src='reqd_table2.png', align = "left", style = "width: 600px"),
-               #            #    tags$style(' #tab {margin-top:-200px; }')),
-               #            p(includeMarkdown("text/page-1-about-2.md")),
-               #            ),
-               #   tabPanel(h4("Frequently asked questions"),
-               #            p(includeMarkdown("text/faqs.md")),
-               #            br()),
-               #   tabPanel(h4("About this calculator"),
-               #            p(includeMarkdown("text/page-1-about-3.md")),
-               #            br())
-               #   )
               )
     ),  ## end page 1 nav_panel  --------------------------------  
    # nav_spacer(),
