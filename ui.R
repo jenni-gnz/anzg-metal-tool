@@ -146,7 +146,7 @@ ui <- fluidPage(
                       tags$table(tags$tr(tags$td(style="width:50%; padding-right:15px", align="right",
                                                  fileInputOnlyButton(
                                                    "target_upload",
-                                                   buttonLabel=div(class="button-inner", h4("Start - upload your data", style="color:white")#, icon("arrow-up")
+                                                   buttonLabel=div(class="button-inner", h4("START - upload your data", style="color:white")#, icon("arrow-up")
                                                                    ),
                                                    accept=c("text/csv", "text/comma-separated-values", ".csv"), width="90%")
                                                  ),
@@ -186,9 +186,32 @@ ui <- fluidPage(
                                           br(),
                                           uiOutput("dt4"),
                                           br(),br(),
+                                          br(),
+                                          
+                                          p(includeMarkdown("text/page-1-outputs.md")),
+                                          
+                                          br(),
+                                           ),
+                          
+                          accordion_panel(title="Get started",
+                                          p(includeMarkdown("text/page-1-get-started.md")),
+                                          br(),
+                          ),
+                          accordion_panel(title="Next step",
+                                          p(includeMarkdown("text/page-1-next-step.md")),
+                                          br(),
+                          ),
+                          accordion_panel(title="Frequently asked questions",
+                                          p(includeMarkdown("text/page-1-FAQs.md")),
+                                          br(),
+                          ),
+                          accordion_panel(title="Additional resources",
+                                          p(includeMarkdown("text/page-1-resources.md")),
+                                          br(),
                           )
-                        )
-          )# h4("About this calculator"),
+                      ),
+              )
+          # h4("About this calculator"),
                # br(),
                # p(includeMarkdown("text/page-1-about.md")),
                # tabsetPanel(
@@ -430,43 +453,9 @@ ui <- fluidPage(
         ), # end of page 4 nav_panel
 
     nav_spacer(),
-#     #5. User guide and documents-----------------------------------------------------
-# nav_panel(value="user-page",
-#           title=h4(id="page4-title", "User guide"),
-# 
-#           h2("User guide to the ANZG metal GV tool"),
-#           p("This app",strong("calculates chronic default guideline values for copper, nickel and zinc"),
-#           " as derived for Australian and New Zealand guidelines for marine and fresh water."),
-#           em("Hint: Find and click the info icons throughout the app to find more information on a particular input."),
-#             
-#           accordion(
-#             open = FALSE,
-#             accordion_panel(
-#               "1. Upload your file",
-#               p(withMathJax(includeMarkdown("text/user-guide1.md")))
-#             ),
-#             accordion_panel(
-#               "2. Select options",
-#               p(withMathJax(includeMarkdown("text/user-guide2.md")))
-#             ),
-#             accordion_panel(
-#               "3. Check data",
-#               p(withMathJax(includeMarkdown("text/user-guide3.md")))
-#             ),
-#             accordion_panel(
-#               "4. View & download results",
-#               p(withMathJax(includeMarkdown("text/user-guide4.md")))
-#             ),
-#             # accordion_panel(
-#             #   "Worked example",
-#             #   p(withMathJax(includeMarkdown("text/worked-example.md")))
-#             # )
-#           )
-# 
-# ),
-    # Links ------------------------------------------------------------
+#     #5. User guide and links ------------------------------------------------------------
     nav_menu(
-         title = h4("User guide & links"),
+         title = h5("User guide & links"),
          align = "right",
          nav_item(tags$a("User guide", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
          nav_item(tags$a("Information on DGV development", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
