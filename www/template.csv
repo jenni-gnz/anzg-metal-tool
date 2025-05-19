@@ -1,0 +1,7 @@
+Details,Site name,Date,DOC,pH,Calcium,Magnesium,Hardness,Copper,Zinc,Nickel
+replace this row and all below with your data,,,,,,,,,,
+Units,,,mg/L,unitless,mg/L,mg/L,mg/L as CaCO3,µg/L (micrograms/L),µg/L (micrograms/L),µg/L (micrograms/L)
+column type,text,text/date,numeric,numeric,numeric,numeric,numeric,numeric,numeric,numeric
+Example,Dog River,14/05/2022,,7.50,5.10,1.40,18.50,,8.00,10.00
+,Cat Stream,14/05/2022,0.50,7.50,4.30,2.50,21.03,0.50,,15.00
+,Bird Creek,14/05/2022,0.50,7.50,5.30,5.10,34.24,0.60,5.20,20.00

@@ -1,12 +1,12 @@
-name: anzg-metal-tool
-title: anzg-metal-tool
+name: metaldgvtool
+title: metaldgvtool
 username: hydrotoxy
 account: hydrotoxy
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
-appId: 12644480
-bundleId: 10094594
-url: https://hydrotoxy.shinyapps.io/anzg-metal-tool/
+appId: 12625454
+bundleId: 9327281
+url: https://hydrotoxy.shinyapps.io/metaldgvtool/
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
