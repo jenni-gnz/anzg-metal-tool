@@ -1,3 +1,3 @@
-Upload a comma-separated file containing your data. 
+Upload a comma-separated file containing your data (use template [here](./template.csv)).
 Please ensure your file has only one header line in the first row.
-See "Instructions for use" tab for more details.
+See instructions below for more details.

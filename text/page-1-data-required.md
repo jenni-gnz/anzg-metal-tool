@@ -1,1 +1,1 @@
-The water chemistry data required for the different calculations are listed in Table 1.
+The water chemistry data requirements for the different calculations are in Table 1.

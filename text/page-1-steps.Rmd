@@ -16,14 +16,20 @@ library(htmltools)
 vars <- data.frame(c("pH","Dissolved organic carbon","Hardness","Calcium (dissolved)",
                      "Magnesium (dissolved)","Copper (dissolved)","Nickel (dissolved)"),
                    c("pH","DOC","Hardness","Calcium","Magnesium","Copper","Nickel"),
-                   c("unitless","mg/L","mg/L as CaCO3","mg/L","mg/L","ug/L","ug/L"),
-                   c("X","X","X","X","X","X","X")
+                   c("unitless","mg/L","mg/L as CaCO<sub>3</sub>","mg/L","mg/L","&micro;g/L","&micro;g/L"),
+                   c("&ndash; nickel BAGVs <br> &ndash; checking if copper BAGVs are applicable",
+                     "&ndash; copper and nickel BAGVs",
+                     "&ndash; checking if copper BAGVs are applicable",
+                     "&ndash; nickel BAGVs",
+                     "&ndash; nickel BAGVs",
+                     "&ndash; bioavailable copper concentration and hazard quotients",
+                     "&ndash; bioavailable nickel concentration and hazard quotients")
                    )
 
 names(vars) <- c("Variable","Column heading","Unit","Variable is used for")
 
 dt_vars <- reactable(vars,
-                     defaultColDef=colDef(headerStyle=list(background="#bacdda")),
+                     defaultColDef=colDef(headerStyle=list(background="#bacdda"), html=TRUE),
                      rowStyle = function(index){
                            if (index == 7){
                              list(borderBottom="1px solid rgba(0, 0, 0, 0.05)")

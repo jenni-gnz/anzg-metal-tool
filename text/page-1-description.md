@@ -1,3 +1,1 @@
-The tool will calculate **bioavailability-adjusted GVs  (BAGVs)** based on the water chemistry data you provide. The water chemistry data needed depend on the metal DGVs you want to calculate and include pH, DOC, calcium, magnesium and water hardness; collectively termed toxicity modifying factors (TMFs).
-
-BAGVs can be calculated for four levels of <a href="https://www.waterquality.gov.au/anz-guidelines/resources/key-concepts/level-of-protection">species protection</a> (99%, 95%, 90% and 80%).
+The tool will calculate **bioavailability-adjusted GVs  (BAGVs)** for each sample and for each metal of interest based on the water chemistry data you provide. The water chemistry data needed depends on the metal BAGVs you want to calculate and may include pH, DOC, calcium, magnesium and water hardness; collectively termed toxicity modifying factors (TMFs).

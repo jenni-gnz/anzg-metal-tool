@@ -1,16 +1,16 @@
 The Metals Bioavailability Tool helps you estimate potential risks to freshwater aquatic environments posed by some dissolved metals after considering bioavailability.
 
-You should use the Metals Bioavailability Tool in the context of the guidance provided about [metal bioavailability, the Tiered Assessment Framework and the Metals Bioavailability Tool](https://mfenz.shinyapps.io/fish-ibi-calculator/)
+You should use the Metals Bioavailability Tool in the context of the guidance provided about <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default" target="_blank"> metal bioavailability, the Tiered Assessment Framework and the Metals Bioavailability Tool</a>
 on the Australian & New Zealand Guidelines for Fresh & Marine Water Quality (ANZG) website.
 
-You can use the Metals Bioavailability Tool at Tier 2 of the ANZG [Tiered Assessment Framework](https://mfenz.shinyapps.io/fish-ibi-calculator/)
+You can use the Metals Bioavailability Tool at Tier 2 of the ANZG <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default" target="_blank"> Tiered Assessment Framework</a>
 to help assess potential risks to your waterbody.
 
 The Metals Bioavailability Tool can calculate:
 
-- **Bioavailability-adjusted guideline values** (BAGVs) - default guideline values adjusted for metal bioavailability.
-- **Bioavailable metal concentrations** - concentrations of metals that are estimated to be bioavailable in samples or at a site.
-- **Hazard quotients** - metal concentrations divided by the BAGVs.
+- **Bioavailability-adjusted guideline value** (BAGVs) - a default guideline value adjusted for metal bioavailability.
+- **Bioavailable metal concentration** estimate - the concentration of a metal that is estimated to be bioavailable in the sample or at a site.
+- **Hazard quotient** - is the metal concentration divided by the BAGV.
 
 for
 
@@ -21,4 +21,4 @@ for
 
 See also:
 
-- [Levels of species protection](https://www.waterquality.gov.au/anz-guidelines/resources/key-concepts/level-of-protection)
+- <a href="https://www.waterquality.gov.au/anz-guidelines/resources/key-concepts/level-of-protection" target="_blank"> Levels of species protection</a>
