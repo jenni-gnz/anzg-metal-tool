@@ -1,0 +1,58 @@
+---
+title: "page-1-applicability"
+output: html_document
+date: "2025-03-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r table1}
+
+library(reactable)
+library(htmltools)
+
+appl <- data.frame(c("Copper","Nickel"),
+                   c("6.0 to 8.5","6.0 to 8.0"),
+                   c("Not specified","3.7 to 88"),
+                   c("Not specified","3 to 72"),
+                   c("2 to 340","22 to 516"),
+                   c("0 to 30","0.5 to 17"))
+
+names(appl) <- c("Dissolved Metal", "pH", "Calcium (mg/L)", "Magnesium (mg/L)", "Hardness (mg/L as CaCO<sub>3</sub>)",
+                 "DOC (mg/L)")
+
+dt_appl <- reactable(appl,
+                     defaultColDef=colDef(headerStyle=list(background="#bacdda"), html=TRUE),
+                     rowStyle = function(index){
+                           if (index == 2){
+                             list(borderBottom="1px solid rgba(0, 0, 0, 0.05)")
+                           }
+                         }
+                     )
+
+
+
+
+# dt_data_req <- reactable(data_req,
+#                          defaultColDef=colDef(align="center",
+#                                               headerStyle=list(background="#bacdda"),
+#                                               cell=function(value){
+#                                                 if (value == "n") "" else if (value == "y") "\u2714" else value
+#                                               }),
+#                          columns=list(Calculation=colDef(align="left")),
+#                          rowStyle = function(index){
+#                            if (index == 3){
+#                              list(borderBottom="1px solid rgba(0, 0, 0, 0.05)")
+#                            }
+#                          },
+#                          width=1200
+#                          )
+
+dt_appl <- htmlwidgets::prependContent(dt_appl, 
+    p("Table 3. Applicability ranges of water chemistry variables for copper and nickel", style="font-size:80%"))
+
+dt_appl
+
+```

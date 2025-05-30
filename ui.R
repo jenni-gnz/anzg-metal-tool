@@ -47,8 +47,9 @@ ui <- fluidPage(
                                          ),
                                  tags$td(style="width:33%; height:120px", align="center",
                                          h1(id="main-title", style="color:white;",
-                                            "ANZG metal freshwater guideline value calculator")
-                                         ),
+                         #                   "ANZG metal freshwater guideline value calculator")
+                                         "Metals Bioavailability Tool")
+                         ),
                                  tags$td(style="width:33%"
                                          )
                                  )
@@ -57,14 +58,18 @@ ui <- fluidPage(
   
   tags$style(".btn-file {background-color:#376894; border-color:#376894}",
              #".btn-file {background-color:#376894; border-color:#376894; width:280px}"
+             ".accordion-item {border-left:none; border-right:none}",
+             ".accordion-button {font-size:75%}",
+             #".accordion-button {font-weight:bold}",
              ".fa-arrow-up {color:white}",
              ".fa-arrow-right {font-size:30px}",
              HTML("#data table {width: 800px;}
                              #data td:first-child {
                                width: 10%;
-                             }"
+                             }",
                   ),
              ),
+  tags$link(rel = "stylesheet", type = "text/css", href = "custom.css"),
   
   page_navbar(id="tabs",
     bg = "#bacdda",
@@ -78,47 +83,11 @@ ui <- fluidPage(
       title = h5(id="page1-title", "1. Upload your file"),
      # br(),
       fluidRow(id="welcome-panel",
-               column(width=8, style="padding-right:55px", align="left", h2(id="welcome-title", 
-                                                "Welcome to the ANZG metal bioavailability-adjusted guideline values (BAGVs) calculator"),
+               column(width=8, style="padding-right:55px", align="left",
+                      h2(id="welcome-title", "Metals Bioavailability Tool"),
                       br(),
-                      span("This tool estimates potential risks to freshwater aquatic 
-                      environments posed by ", strong("copper"), " and ", strong("nickel"), " after considering bioavailability",
-                      tooltip(bs_icon("info-circle"), 
-                              "the concentration an organism in the water column “experiences”, accounting for metal speciation and competition",
-                              placement = "bottom"),".",
-                      br(),  br(),
-                      "This tool has been developed to assist in implementation of the ", 
-                      tags$a("ANZG",  href="https://www.waterquality.gov.au/anz-guidelines", target="_blank"),
-                      "toxicant guideline values (GVs) within a tiered risk assessment framework.",
-                      tooltip(bs_icon("info-circle"), "add a link", placement = "bottom"),
-                      br(), br(),
-                      strong("Use the tool when your dissolved metal concentrations ", em("exceed"), 
-                      "the tier 1 DGVs"), 
-                      popover(bs_icon("info-circle"), title = "Tier 1 DGVs", #tableOutput("DGVs")
-                              includeMarkdown("text/tier1-dgvs.md"),
-                              options = list(container = "body")
-                              ),
-                      br(), 
-                      p(includeMarkdown("text/page-1-description.md")), 
-                      "If you  include metal concentrations, the tool can also 
-                      estimate the bioavailable fraction of the metal",
-                      tooltip(bs_icon("info-circle"), 
-                              "used to compare to Tier 1 DGVs", 
-                              placement = "bottom"),
-                      ", and calculate a hazard quotient",
-                      tooltip(bs_icon("info-circle"), 
-                              "an indication of risk to aquatic organisms, metal concentration divided by BAGV", 
-                              placement = "bottom"), 
-                      br(),
-                    "Upload a comma-separated table (csv)", a(" (template provided if needed) ",target="_blank",href="template.csv"), 
-                    "with your water chemistry data or test the 
-                    calculator with the example dataset provided.", br(), br(), 
-                    "For more instructions see ", a("the user guide with worked examples",target="_blank",href="myfile.pdf"),
-                    "and the ", strong("FAQs"), " below.", br(),
-                    "Details on the GVs, the tiered approach to implementation" ,
-                    " and a description of the science underpinning the tool's development is provided in ",
-                    a("this document.",target="_blank",href="myfile.pdf"))
-                      
+                      p(includeMarkdown("text/page-1-intro.md")),
+                    #   
                       ),
                
                column(width=4,
@@ -126,12 +95,14 @@ ui <- fluidPage(
                       tags$table(tags$tr(tags$td(style="width:50%; padding-right:15px", align="right",
                                                  fileInputOnlyButton(
                                                    "target_upload",
-                                                   buttonLabel=div(class="button-inner", h4("Upload CSV file", style="color:white"), icon("arrow-up")),
+                                                   buttonLabel=div(class="button-inner", h4("START - upload your data", style="color:white")#, icon("arrow-up")
+                                                                   ),
                                                    accept=c("text/csv", "text/comma-separated-values", ".csv"), width="90%")
                                                  ),
                                          tags$td(style="width:50%; padding-bottom:33px", align="center",
                                                  actionButton("sample_btn",
-                                                              div(class="button-inner", h4("Use demo table"), icon("forward")),
+                                                              div(class="button-inner", h4("Try demo data")#, icon("forward")
+                                                                  ),
                                                               style="color:white; background-color:#86a3bb; border-color:#86a3bb", width="90%")
                                                  )
                                          )
@@ -139,30 +110,78 @@ ui <- fluidPage(
                       fluidRow(id="upload-info", align="right", helpText(includeMarkdown("text/page-1-instructions.md")))
                       )
                ),
-      hr(),
-      fluidRow(id="about-title",
-               # h4("About this calculator"),
+     fluidRow(id="intro-accordions",
+                        accordion(
+                          open=FALSE,
+                          multiple=TRUE,
+                          accordion_panel(title="Data requirements",
+                                          p(includeMarkdown("text/page-1-data-required.md")),
+                                          uiOutput("dt1"),
+                                          br(), br(),
+                                          p("Toxicity Modifying Factors", style="font-weight:bold"),
+                                          p(includeMarkdown("text/page-1-TMFs.md")),
+                                          uiOutput("dt2"),
+                                          br(), br(),
+                                          p("Applicability range", style="font-weight:bold"),
+                                          p(includeMarkdown("text/page-1-applicability.md")),
+                                          uiOutput("dt3"),
+                                          br(),br(),
+                                          p("Data format", style="font-weight:bold"),
+                                          p(includeMarkdown("text/page-1-format.md")),
+                          ),
+                           accordion_panel(title="Step by step - your data & the Metals Bioavailability Tool",
+                                         # p("Get your data ready", style="font-weight:bold"),
+                                          p(includeMarkdown("text/page-1-steps.md")),
+                                          br(),
+                                          uiOutput("dt4"),
+                                          br(),br(),
+                                          br(),
+                                          
+                                          p(includeMarkdown("text/page-1-outputs.md")),
+                                          
+                                          br(),
+                                           ),
+                          
+                          accordion_panel(title="Get started",
+                                          p(includeMarkdown("text/page-1-get-started.md")),
+                                          br(),
+                          ),
+                          accordion_panel(title="Next step",
+                                          p(includeMarkdown("text/page-1-next-step.md")),
+                                          br(),
+                          ),
+                          accordion_panel(title="Frequently asked questions",
+                                          p(includeMarkdown("text/page-1-FAQs.md")),
+                                          br(),
+                          ),
+                          accordion_panel(title="Additional resources",
+                                          p(includeMarkdown("text/page-1-resources.md")),
+                                          br(),
+                          )
+                      ),
+              )
+          # h4("About this calculator"),
                # br(),
                # p(includeMarkdown("text/page-1-about.md")),
-               tabsetPanel(
-                 tabPanel(h4("Instructions for use"),
-                          br(),
-                          p(includeMarkdown("text/page-1-about.md"),
-                            tags$style(' #tab {margin-bottom:-30px;}')),
-                          div(style = "margin-top: -100px"),
-                          tags$img(src='reqd_table2.png', align = "left", style = "width: 600px"),
-                          #    tags$style(' #tab {margin-top:-200px; }')),
-                          p(includeMarkdown("text/page-1-about-2.md")),
-                          ),
-                 tabPanel(h4("Frequently asked questions"),
-                          p(includeMarkdown("text/faqs.md")),
-                          br()),
-                 tabPanel(h4("About this calculator"),
-                          p(includeMarkdown("text/page-1-about-3.md")),
-                          br())
-                 )
-               )
-    ),  ## end page 1 nav_panel  --------------------------------  
+               # tabsetPanel(
+               #   tabPanel(h4("Instructions for use"),
+               #            br(),
+               #            p(includeMarkdown("text/page-1-about.md"),
+               #              tags$style(' #tab {margin-bottom:-30px;}')),
+               #            div(style = "margin-top: -100px"),
+               #            tags$img(src='reqd_table2.png', align = "left", style = "width: 600px"),
+               #            #    tags$style(' #tab {margin-top:-200px; }')),
+               #            p(includeMarkdown("text/page-1-about-2.md")),
+               #            ),
+               #   tabPanel(h4("Frequently asked questions"),
+               #            p(includeMarkdown("text/faqs.md")),
+               #            br()),
+               #   tabPanel(h4("About this calculator"),
+               #            p(includeMarkdown("text/page-1-about-3.md")),
+               #            br())
+               #   )
+               
+         ),  ## end page 1 nav_panel  --------------------------------  
    # nav_spacer(),
     
     nav_panel(value="arrow1",
@@ -207,7 +226,7 @@ ui <- fluidPage(
                                                 value = FALSE,
                                                 label = span(HTML('<p 
                                                                   style="position:  relative; top: -36px; left: 30px;"> 
-                                                                  Do you want to calculate Hazard Quotients (HQs)? '
+                                                                  Do you want to calculate hazard quotients (HQs)? '
                                                                   ), 
                                                             popover(bs_icon("info-circle"),
                                                                     "These indicate where risks to aquatic ecosystems are possible. \nYou'll need to supply metal concentrations",
@@ -252,6 +271,8 @@ ui <- fluidPage(
                fluidRow(id="show-data",
 
                       h4("Your uploaded data are displayed below:"),
+                      uiOutput("filename"),
+                      br(), br(),
                       helpText("Please note that if your data are missing, you’ll need to edit your original table and re-upload."),
                       helpText("Check your original data to make sure all data values are numeric, and do not include * or commas."),
                       br(), br(), br(),
@@ -340,7 +361,7 @@ ui <- fluidPage(
                               downloadButton("downloadGVs", h4("Download results"), width="280px",
                                              style="color:white; background-color:#376894; border-color:#376894"),
                               br(), #br(),
-                              column(width=5, helpText("This exports a comma-separated (csv) file including your input data and results")),
+                              column(width=5, helpText("This exports a comma-separated (csv) file with your results and input data")),
                               br(),
                               
                               # actionButton("SSDplots", width="280px",
@@ -360,7 +381,7 @@ ui <- fluidPage(
                               # actionButton("button", "MakePlots"),
                               # #gt_output(outputId = "table"),
                               #br(), br(),
-                              column(width=5, helpText("Generate species sensitivity distribution (SSD) plots for nickel & download in a zip file",
+                              column(width=5, helpText("Generate species sensitivity distribution (SSD) plots for each sample for nickel & download in a zip file",
                                                        br(), "This takes ~1-2 mins for 10 rows of data")),
                               #helpText("This exports a zip file containing species sensitivity distribution (SSD) plots",
                               #         br(), 
@@ -373,55 +394,22 @@ ui <- fluidPage(
                        column(width=12,
                               br(), br(),
                               withSpinner(reactableOutput("GVs"), type =5),
+                              helpText("Note results are rounded to 1 decimal place for display. More resolution may be included in output csv file."),
+                              br(),
                               helpText("The columns are resizeable - hover over border in the header row & drag to resize"))
                        )
               
         ), # end of page 4 nav_panel
 
     nav_spacer(),
-    #5. User guide and documents-----------------------------------------------------
-nav_panel(value="user-page",
-          title=h4(id="page4-title", "User guide"),
-
-          h2("User guide to the ANZG metal GV tool"),
-          p("This app",strong("calculates chronic default guideline values for copper, nickel and zinc"),
-          " as derived for Australian and New Zealand guidelines for marine and fresh water."),
-          em("Hint: Find and click the info icons throughout the app to find more information on a particular input."),
-            
-          accordion(
-            open = FALSE,
-            accordion_panel(
-              "1. Upload your file",
-              p(withMathJax(includeMarkdown("text/user-guide1.md")))
-            ),
-            accordion_panel(
-              "2. Select options",
-              p(withMathJax(includeMarkdown("text/user-guide2.md")))
-            ),
-            accordion_panel(
-              "3. Check data",
-              p(withMathJax(includeMarkdown("text/user-guide3.md")))
-            ),
-            accordion_panel(
-              "4. View & download results",
-              p(withMathJax(includeMarkdown("text/user-guide4.md")))
-            ),
-            # accordion_panel(
-            #   "Worked example",
-            #   p(withMathJax(includeMarkdown("text/worked-example.md")))
-            # )
-          )
-
-),
-    ## Links ------------------------------------------------------------
-    # nav_menu(
-    #      title = h4("User guide & links"),
-    #      align = "right",
-    #      nav_item(tags$a("Why use this tool?", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
-    #      nav_item(tags$a("Worked example", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
-    #      nav_item(tags$a("FAQ", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
-    #      nav_item(tags$a("ANZG website", href = "https://www.waterquality.gov.au/anz-guidelines/about"))
-    # ),
+#     #5. User guide and links ------------------------------------------------------------
+    nav_menu(
+         title = h5("User guide & links"),
+         align = "right",
+         nav_item(tags$a("User guide", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
+         nav_item(tags$a("Information on DGV development", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
+         nav_item(tags$a("ANZG website", href = "https://www.waterquality.gov.au/anz-guidelines/about"))
+    ),
     
     nav_spacer()
 

@@ -1,0 +1,46 @@
+---
+title: "page-1-steps"
+output: html_document
+date: "2025-03-21"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r table1}
+
+library(reactable)
+library(htmltools)
+
+vars <- data.frame(c("pH","Dissolved organic carbon","Hardness","Calcium (dissolved)",
+                     "Magnesium (dissolved)","Copper (dissolved)","Nickel (dissolved)"),
+                   c("pH","DOC","Hardness","Calcium","Magnesium","Copper","Nickel"),
+                   c("unitless","mg/L","mg/L as CaCO<sub>3</sub>","mg/L","mg/L","&micro;g/L","&micro;g/L"),
+                   c("&ndash; nickel BAGVs <br> &ndash; checking if copper BAGVs are applicable",
+                     "&ndash; copper and nickel BAGVs",
+                     "&ndash; checking if copper BAGVs are applicable",
+                     "&ndash; nickel BAGVs",
+                     "&ndash; nickel BAGVs",
+                     "&ndash; bioavailable copper concentration and hazard quotients",
+                     "&ndash; bioavailable nickel concentration and hazard quotients")
+                   )
+
+names(vars) <- c("Variable","Column heading","Unit","Variable is used for")
+
+dt_vars <- reactable(vars,
+                     defaultColDef=colDef(headerStyle=list(background="#bacdda"), html=TRUE),
+                     rowStyle = function(index){
+                           if (index == 7){
+                             list(borderBottom="1px solid rgba(0, 0, 0, 0.05)")
+                           }
+                         }
+                     )
+
+
+dt_vars <- htmlwidgets::prependContent(dt_vars, 
+    p("Table 4. Metals Bioavailability Tool input variables, column headings, different calculations", style="font-size:80%"))
+
+dt_vars
+
+```

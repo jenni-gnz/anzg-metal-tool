@@ -19,7 +19,47 @@ source("calc_GVs.R")
 source("plot_SSDs.R")
 options(shiny.maxRequestSize=40*1024^2)
 
+
+
+env <- new.env(parent = globalenv())
+
+rmarkdown::render("text/page-1-data-required.Rmd",
+                  params = params,
+                  envir = env)
+dt_data_req <- env$dt_data_req
+
+rmarkdown::render("text/page-1-TMFs.Rmd",
+                  params = params,
+                  envir = env)
+dt_TMFs <- env$dt_TMFs
+
+rmarkdown::render("text/page-1-applicability.Rmd",
+                  params = params,
+                  envir = env)
+dt_appl <- env$dt_appl
+
+rmarkdown::render("text/page-1-steps.Rmd",
+                  params = params,
+                  envir = env)
+dt_vars <- env$dt_vars
+
 server <- function(input, output, session) {
+
+  output$dt1 <- renderUI({
+    htmltools::tagList(dt_data_req)
+  })
+  
+  output$dt2 <- renderUI({
+    htmltools::tagList(dt_TMFs)
+  })
+  
+  output$dt3 <- renderUI({
+    htmltools::tagList(dt_appl)
+  })
+  
+  output$dt4 <- renderUI({
+    htmltools::tagList(dt_vars)
+  })
   
      #  showModal(modalDialog(
      # #   title = "Important message",
@@ -61,6 +101,10 @@ server <- function(input, output, session) {
     # Otherwise, load the file and render data table
     
     fpath = inFile$datapath
+    
+    output$filename <-  renderText({
+      sprintf("Data source: %s", basename(inFile$name))
+    })
     
     msg = tryCatch({
       df <<- utils::read.csv(fpath, header=TRUE, stringsAsFactors=FALSE, fileEncoding="UTF-8")
@@ -303,18 +347,21 @@ server <- function(input, output, session) {
     
     output$resultsHeading = renderUI({
       if (!is.null(GVs)){
-        h2("Guideline values calculated successfully")
+        h2("Bioavailability-adjusted GVs calculated successfully")
       }
     })
      
     output$resultsText = renderUI({
       for (i in c(1:nrow(GVs$summary))) {
         GVs$summary[i,"message"] = paste(GVs$summary[i,"metal"],
-                                         " DGVs were calculated for ",
+                                         " BAGVs were calculated for ",
                                          GVs$summary[i,"nGVs"],
                                          " data rows (",
+                                         GVs$summary[i,"nOutofRange"],
+                                         " data rows were excluded as TMFs were out of the applicable 
+                                         range for BAGV calculation; ",
                                          GVs$summary[i,"nExcluded"],
-                                         " data row/rows were excluded)<br>", sep="")
+                                         " data row/rows were excluded due to missing data)<br><br>", sep="")
       }
       HTML(paste(GVs$summary[,"message"], collapse=""))
       
@@ -362,7 +409,7 @@ server <- function(input, output, session) {
   #no.CuGVs <- length(results$CuPC95)
   
   output$results_summary <- renderText({
-     paste("Guideline values calculated for ", input$metals)
+     paste("BAGVs calculated for ", input$metals)
    })
    
 
