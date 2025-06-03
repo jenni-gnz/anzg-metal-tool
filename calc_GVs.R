@@ -434,7 +434,7 @@ calc_GVs <- function(df, options){
         x = gsub("PC","",p)
         col = paste0("Zn",p)
         myoutput <- myoutput |>
-          dplyr::mutate("ZnHQ{x}" := ifelse((is.na(.data[[col]])|is.na(Zinc)), NA, signif(Zinc/.data[[col]],2)))
+          dplyr::mutate("Zn_HQ{x}" := ifelse((is.na(.data[[col]])|is.na(Zinc)), NA, signif(Zinc/.data[[col]],2)))
       }
     }
     
