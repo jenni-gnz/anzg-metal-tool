@@ -160,28 +160,8 @@ ui <- fluidPage(
                           )
                       ),
               )
-          # h4("About this calculator"),
-               # br(),
-               # p(includeMarkdown("text/page-1-about.md")),
-               # tabsetPanel(
-               #   tabPanel(h4("Instructions for use"),
-               #            br(),
-               #            p(includeMarkdown("text/page-1-about.md"),
-               #              tags$style(' #tab {margin-bottom:-30px;}')),
-               #            div(style = "margin-top: -100px"),
-               #            tags$img(src='reqd_table2.png', align = "left", style = "width: 600px"),
-               #            #    tags$style(' #tab {margin-top:-200px; }')),
-               #            p(includeMarkdown("text/page-1-about-2.md")),
-               #            ),
-               #   tabPanel(h4("Frequently asked questions"),
-               #            p(includeMarkdown("text/faqs.md")),
-               #            br()),
-               #   tabPanel(h4("About this calculator"),
-               #            p(includeMarkdown("text/page-1-about-3.md")),
-               #            br())
-               #   )
-               
-         ),  ## end page 1 nav_panel  --------------------------------  
+         ),  ## end page 1 nav_panel  --------------------------------
+  
    # nav_spacer(),
     
     nav_panel(value="arrow1",
@@ -191,9 +171,10 @@ ui <- fluidPage(
     nav_spacer(),
     
     # 2. Select options ------------------------------------------------------------------------
+  
     nav_panel(value="select-page",
       title = h5(id="page2-title", "2. Select options"),
-    #  br(),
+      br(),
       fluidRow(id="options-panel",
                  column(width=10, align="left", h2("Review your data (displayed below) and select options for your analysis"),
                                                          fluidRow(#em("Choose the options for your analysis:"),
@@ -203,11 +184,11 @@ ui <- fluidPage(
                                                     #style="background-color:#f0f1f1;",
                                                             checkboxGroupInput(inputId="metals", width="80%",
                                                                 label=span("Which metals do you want to generate BAGVs for?",
-                                                                           popover(bs_icon("info-circle"),
-                                                                                   "Zinc will be available in the future")),
+                                                                           #popover(bs_icon("info-circle"), "Zinc will be available in the future")
+                                                                           ),
                                                                 choices=c("Copper" = "Cu",
-                                                                          "Nickel" = "Ni")
-                                                                          #"Zinc" = "Zn")
+                                                                          "Nickel" = "Ni",
+                                                                          "Zinc" = "Zn")
                                              ), 
                                            #  br(),#  br(),
                                   checkboxGroupInput(inputId="pcs", width="80%",
