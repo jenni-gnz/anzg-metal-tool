@@ -18,7 +18,6 @@ check_data <- function(df, options){
   
   if ("Ni" %in% options$metals) {
     cols = c(cols, "Calcium", "Magnesium")                                       # Ni requires Ca and Mg
-    #cols = c(cols, "Ca", "Mg")                                                   # Ni requires Ca and Mg
   }
   
   if ("Zn" %in% options$metals) {
@@ -26,7 +25,7 @@ check_data <- function(df, options){
   }
   
   metal_labels = c("Cu"="Copper", "Ni"="Nickel", "Zn"="Zinc")
-  if (options$calc_biof == TRUE | options$rcr == TRUE) {                                                      # if calculating bioavailable metals,
+  if (options$calc_biof == TRUE | options$rcr == TRUE) {                         # if calculating bioavailable metals,
     cols = c(cols, metal_labels[options$metals])                                 # metal columns are also required
   }
   
@@ -53,7 +52,6 @@ check_data <- function(df, options){
       issue_df$message[i] = "Warning: missing column Hardness, will be calculated from Calcium and Magnesium"
     }
   }
-  
 
   # Identify any missing data in required columns that are in the dataset
   
@@ -92,12 +90,7 @@ check_data <- function(df, options){
     issue_df = rbind(issue_df, data.frame("row"=negative[,1], "col"=negative[,2], "type"="error", "message"=paste0("Error: negative data in column ", cols_in[negative[,2]])))
   }
   
-
- # names(df) = gsub("\\<Calcium\\>", "Ca", names(df))
-#  names(df) = gsub("\\<Magnesium\\>", "Mg", names(df))
-  
   results = list("cols_in"=cols_in, "issue_df"=issue_df, "df_checked"=df)
-
   
   return(results)
   

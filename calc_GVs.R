@@ -47,34 +47,32 @@ calc_GVs <- function(df, options){
   NiDGVvals_all <- data.frame("aus" = c("PC99" = 0.66, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
                               "nz" = c("PC99" = 0.39, "PC95" = 2.3, "PC90" = 5.0, "PC80" = 11))
   
+  
+  #-----------------------------------------
+  # THESE WILL NEED TO BE UPDATED, USING NI VALUES FOR NOW...
+  
+  ZnDGVvals_all <- data.frame("aus" = c("PC99" = 0.66, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
+                              "nz" = c("PC99" = 0.39, "PC95" = 2.3, "PC90" = 5.0, "PC80" = 11))
+  #------------------------------------------
+  
+  
   CuDGV_vals <- setNames(CuDGVvals_all[,country], row.names(CuDGVvals_all))
   NiDGV_vals <- setNames(NiDGVvals_all[,country], row.names(NiDGVvals_all))
+  ZnDGV_vals <- setNames(ZnDGVvals_all[,country], row.names(ZnDGVvals_all))
   
-  # DGV_cu_nz <- 0.6
-  # DGV_cu_aus <- 0.8
-  # DGV_ni_nz <- 2.3
-  # DGV_ni_aus <- 3.1
   
-  # # DGV_cu <- DGV_cu_aus
- 
-  # # 
-  # if (country == "nz") {
-  # #   DGV_cu <- DGV_cu_nz
-  #  DGV_ni <- DGV_ni_nz
-  # }
-  
-  # Zinc
-  
-  # if ("Zn" %in% metals){
-  #   load(file="data/ZnMLRcoeffs.Rdata")
-  #   load(file="data/ZnSSD.Rdata")
-  # }
-  
-  # Nickel
+  # Load Nickel SSD and MLR data if applicable
   
   if ("Ni" %in% metals){
     load(file="data/NiSSD.Rdata")
     load(file="data/NiMLR.coeffs.Rdata")
+  }
+  
+  # Load Zinc SSD and MLR data if applicable
+  
+  if ("Zn" %in% metals){
+    load(file="data/ZnMLRcoeffs.Rdata")
+    load(file="data/ZnSSD.Rdata")
   }
   
   # Initialize output info
@@ -198,6 +196,118 @@ calc_GVs <- function(df, options){
     
     }
  
+  # Nickel, with MLR adjustment
+  
+  GetNiGuidelines <- function(input, sens=NiSSD.df, tMLR=NiMLR.coeffs){
+    
+    # Check input data. If data is missing do nothing, but keep the row.
+    # Otherwise, write a note if any of the observations are out of the fitting
+    # bounds
+    
+    GV <- data.frame(matrix(nrow=1, ncol=length(pcs_calc)+1))
+    GV_labels = paste("Ni", pcs_calc, sep="")
+    names(GV) = c(GV_labels, "NiNote")
+    
+    if (is.na(input$DOC) | is.na(input$pH) | is.na(input$Calcium) |is.na(input$Magnesium)) {
+      
+      NiNote <- "TMFs missing"
+      
+      GV[1,GV_labels] = NA
+      GV[1,"NiNote"] = NiNote
+      
+      
+    } else if (input$DOC<0.5 | input$DOC>17 | input$pH<6 | input$pH>8 |
+               input$Calcium<3.7 | input$Calcium>88 | input$Magnesium<3 | input$Magnesium>72) {
+      
+      DOCnote <-case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
+                          input$DOC>17 ~ "DOC above upper applicability limit",
+                          TRUE ~ NA)
+      pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
+                         input$pH>8 ~ "pH above upper applicability limit",
+                         TRUE ~ NA)
+      Canote <-case_when(input$Calcium<3.7 ~ "Calcium below lower applicability limit",
+                         input$Calcium >88 ~ "Calcium above upper applicability limit",
+                         TRUE ~ NA)
+      Mgnote <-case_when(input$Magnesium<3 ~ "Magnesium below lower applicability limit",
+                         input$Magnesium >72 ~ "Magnesium above upper applicability limit",
+                         TRUE ~ NA)
+      
+      NiNote <- paste(na.omit(c(DOCnote,pHnote, Canote, Mgnote)), collapse = ", ")
+      
+      GV[1,GV_labels] = NA
+      GV[1,"NiNote"] = NiNote
+      
+    } else {
+      
+      NiNote <- "TMF data in range, GV suitable"
+      
+      myDOC <- input$DOC
+      mypH  <- input$pH
+      myCa  <- input$Calcium
+      myMg  <- input$Magnesium
+      
+      # Zero out coefficients that are NA - will mean that these parts of the general full
+      # equation below do not contribute to the formula
+      
+      tMLR[is.na(tMLR)] <- 0                                        
+      
+      sens <- merge(sens,tMLR,by.x="Model.used",by.y="MLR.model")
+      
+      # Apply generic equation form
+      sens$Conc <- exp(sens$Sensitivity + sens$DOC*log(myDOC) + sens$Ca*log(myCa) + sens$Mg*log(myMg) +
+                         sens$pH*mypH + sens$DOC.pH*log(myDOC)*mypH + sens$Mg.pH*log(myMg)*mypH)
+      
+      # Fit ssd functions and extract protection values
+      res <- try(ssd_fit_bcanz(sens), silent = FALSE)
+      
+      if(isTRUE(class(res)=="try-error")) {                             # if data cannot be fitted, NA is recorded
+        GV[GV_labels] = NA
+        
+      } else {
+        
+        GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=100)[,3])) 
+        GV_temp <- GV_temp |>
+          dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
+                                                      TRUE ~ signif(.x, 2))))
+        rownames(GV_temp) <- NULL
+      }
+      
+      GV <- cbind(GV_temp, NiNote)
+    }
+    
+    names(GV) <- c(GV_labels, "NiNote")
+    myoutput <- cbind(input, GV)
+    
+    
+    if (calc_biof) {
+      DGV_ni <- NiDGV_vals["PC95"]
+      myoutput <- myoutput |>
+        dplyr::mutate(NiBioF = case_when(is.na(NiPC95) ~ NA,                             # Calc bioavailable fraction
+                                         DGV_ni/NiPC95 > 1 ~ 1,                        # Make 1 if > 1
+                                         TRUE ~ DGV_ni/NiPC95),
+                      NiBio = case_when(is.na(NiPC95) ~ NA,
+                                        is.na(NiBioF) ~ NA,
+                                        !is.numeric(Nickel) ~ NA,
+                                        is.numeric(Nickel) ~ signif(Nickel*NiBioF,2))   # Bioavailable Ni
+                      
+        )
+    }
+    
+    # Hazard quotient
+    
+    if (rcr) {
+      for (p in pcs) {
+        x = gsub("PC","",p)
+        col = paste0("Ni",p)
+        myoutput <- myoutput |>
+          dplyr::mutate("Ni_HQ{x}" := ifelse((is.na(.data[[col]])|is.na(Nickel)), NA, signif(Nickel/.data[[col]],2)))
+      }
+    }
+    
+    return (myoutput)
+    
+  }
+  
   
   # Zinc, with MLR adjustment
   
@@ -218,34 +328,57 @@ calc_GVs <- function(df, options){
       GV[1,GV_labels] = NA
       GV[1,"ZnNote"] = ZnNote
       
+    } else if (input$DOC<0.5 | input$DOC>15 | input$pH<6.7 | input$pH>8.1 |
+               input$Hardness<26 | input$Hardness>370) {
+      
+      DOCnote <- case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
+                           input$DOC>15 ~ "DOC above upper applicability limit",
+                           TRUE ~ NA)
+      pHnote <- case_when(input$pH<6.7 ~ "pH below lower applicability limit",
+                          input$pH>8.1 ~ "pH above upper applicability limit",
+                          TRUE ~ NA)
+      Hnote <- case_when(input$Hardness<26 ~ "Hardness below lower applicability limit",
+                         input$Hardness>370 ~ "Hardness above upper applicability limit",
+                         TRUE ~ NA)
+      
+      ZnNote <- paste(na.omit(c(DOCnote,pHnote, Hnote)), collapse = ", ")
+      
+      GV[1,GV_labels] = NA
+      GV[1,"ZnNote"] = ZnNote
+      
     } else {
       
-      if(input$DOC>40 | input$pH>8.5 | input$Hardness>529){
-        ZnNote <- "TMF(s) outside applicable model range"
-        
-      } else if (input$DOC>15 | input$pH >8.1 | input$Hardness> 370){
-        ZnNote <- "TMF(s) outside applicable model range"
-        
-      } else if (input$DOC<0.3 | input$pH<5.6 | input$Hardness<5) {
-        ZnNote <- "TMF(s) outside applicable model range"
-        
-      } else if (input$DOC<0.5 | input$pH<6.7| input$Hardness<26) {
-        ZnNote <- "TMF(s) outside applicable model range"
-        
-      } else {
-        ZnNote <- "TMFs in applicable range, DGV suitable"
-      }
+      # if(input$DOC>40 | input$pH>8.5 | input$Hardness>529){
+      #   ZnNote <- "TMF(s) outside applicable model range"
+      #   
+      # } else if (input$DOC>15 | input$pH >8.1 | input$Hardness> 370){
+      #   ZnNote <- "TMF(s) outside applicable model range"
+      #   
+      # } else if (input$DOC<0.3 | input$pH<5.6 | input$Hardness<5) {
+      #   ZnNote <- "TMF(s) outside applicable model range"
+      #   
+      # } else if (input$DOC<0.5 | input$pH<6.7| input$Hardness<26) {
+      #   ZnNote <- "TMF(s) outside applicable model range"
+      #   
+      # } else {
+      #   ZnNote <- "TMFs in applicable range, DGV suitable"
+      # }
       
       # myDOC <- min(max(input$DOC, 0.5), 15)                 # Use this if we want to crop the TMF data to the MLR range
       # myH   <- min(max(input$H, 20), 440)
       # mypH  <- min(max(input$pH, 6.2), 8.3)
       
+      ZnNote <- "TMF data in range, GV suitable"
+      
       myDOC <- input$DOC                                      # Use this if we want to calculate anyway & decide on issues later
       myH   <- input$Hardness
       mypH  <- input$pH
       
-      tMLR[is.na(tMLR)] <- 0                                  # Zero out coefficients that are NA - will mean that these parts of the general full
-                                                              # equation below do not contribute to the formula
+      # Zero out coefficients that are NA - will mean that these parts of the
+      # general full equation below do not contribute to the formula
+      
+      tMLR[is.na(tMLR)] <- 0  
+      
       sens <- merge(sens,tMLR,by.x="Model used",by.y="type")
       
       # Apply generic equation form
@@ -261,14 +394,14 @@ calc_GVs <- function(df, options){
         GV[GV_labels] = NA
         
       } else {
+        
         GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=10)[,3]))
         GV_temp <- GV_temp |>
           dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
                                                TRUE ~ signif(.x, 2))))
         
         rownames(GV_temp) <- NULL
-        #GV = as.data.frame(t(ssd_hc(res, percent=c(1, 5, 10, 20), ci=FALSE, nboot=10)[,3])) 
-        #rownames(GV) <- NULL
+        
       }
       
       GV <- cbind(GV_temp, ZnNote)
@@ -278,12 +411,14 @@ calc_GVs <- function(df, options){
     myoutput <- cbind(input, GV)
     
     if (calc_biof) {
-    #if (calc_biof & ("PC95" %in% pcs)) {
+    
+      DGV_zn <- ZnDGV_vals["PC95"]
+      
       
       myoutput <- myoutput |>
         dplyr::mutate(ZnBioF = case_when(is.na(ZnPC95) ~ NA,                       # Calc Bioavailable fraction
-                                         4.1/ZnPC95 > 1 ~ 1,                       # Make 1 if > 1
-                                         TRUE ~ 4.1/ZnPC95),
+                                         DGV_zn/ZnPC95 > 1 ~ 1,                    # Make 1 if > 1
+                                         TRUE ~ DGV_zn/ZnPC95),
                       ZnBio = case_when(is.na(ZnPC95) ~ NA,
                                         is.na(ZnBioF) ~ NA,
                                         !is.numeric(Zinc) ~ NA,
@@ -303,122 +438,11 @@ calc_GVs <- function(df, options){
       }
     }
     
-    
     return (myoutput)
    
   }
   
-  # Nickel, with MLR adjustment
   
-  GetNiGuidelines <- function(input, sens=NiSSD.df, tMLR=NiMLR.coeffs){
-    
-    # Check input data. If data is missing do nothing, but keep the row.
-    # Otherwise, write a note if any of the observations are out of the fitting
-    # bounds
-    
-    GV <- data.frame(matrix(nrow=1, ncol=length(pcs_calc)+1))
-    GV_labels = paste("Ni", pcs_calc, sep="")
-    names(GV) = c(GV_labels, "NiNote")
-   
-    if (is.na(input$DOC) | is.na(input$pH) | is.na(input$Calcium) |is.na(input$Magnesium)) {
-      
-      NiNote <- "TMFs missing"
-      
-      GV[1,GV_labels] = NA
-      GV[1,"NiNote"] = NiNote
-      
-   
-    } else if (input$DOC<0.5 | input$DOC>17 | input$pH<6 | input$pH>8 |
-               input$Calcium<3.7 | input$Calcium>88 | input$Magnesium<3 | input$Magnesium>72) {
-
-      DOCnote <-case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
-                         input$DOC>17 ~ "DOC above upper applicability limit",
-                         TRUE ~ NA)
-      pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
-                         input$pH>8 ~ "pH above upper applicability limit",
-                         TRUE ~ NA)
-      Canote <-case_when(input$Calcium<3.7 ~ "Calcium below lower applicability limit",
-                        input$Calcium >88 ~ "Calcium above upper applicability limit",
-                        TRUE ~ NA)
-      Mgnote <-case_when(input$Magnesium<3 ~ "Magnesium below lower applicability limit",
-                         input$Magnesium >72 ~ "Magnesium above upper applicability limit",
-                         TRUE ~ NA)
-
-      NiNote <- paste(na.omit(c(DOCnote,pHnote, Canote, Mgnote)), collapse = ", ")
-
-
-      GV[1,GV_labels] = NA
-      GV[1,"NiNote"] = NiNote
-      
-      } else {
-      NiNote <- "TMF data in range, GV suitable"
-      
-      myDOC <- input$DOC
-      mypH  <- input$pH
-      myCa  <- input$Calcium
-      myMg  <- input$Magnesium
-      
-      tMLR[is.na(tMLR)] <- 0                                        # Zero out coefficients that are NA - will mean that these parts of the general full
-      
-      # Equation below do not contribute to the formula
-      sens <- merge(sens,tMLR,by.x="Model.used",by.y="MLR.model")
-      
-      # Apply generic equation form
-      sens$Conc <- exp(sens$Sensitivity + sens$DOC*log(myDOC) + sens$Ca*log(myCa) + sens$Mg*log(myMg) +
-                         sens$pH*mypH + sens$DOC.pH*log(myDOC)*mypH + sens$Mg.pH*log(myMg)*mypH)
-      
-      # Fit ssd functions and extract protection values
-      res <- try(ssd_fit_bcanz(sens), silent = FALSE)
-      
-      if(isTRUE(class(res)=="try-error")) {                             # if data cannot be fitted, NA is recorded
-        GV[GV_labels] = NA
-      
-      } else {
-        
-        GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=100)[,3])) 
-        GV_temp <- GV_temp |>
-          dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
-                                                      TRUE ~ signif(.x, 2))))
-        rownames(GV_temp) <- NULL
-      }
-     
-      GV <- cbind(GV_temp, NiNote)
-      }
-    
-    names(GV) <- c(GV_labels, "NiNote")
-    myoutput <- cbind(input, GV)
-
-    
-    if (calc_biof) {
-      DGV_ni <- NiDGV_vals["PC95"]
-       myoutput <- myoutput |>
-        dplyr::mutate(NiBioF = case_when(is.na(NiPC95) ~ NA,                             # Calc bioavailable fraction
-                                         DGV_ni/NiPC95 > 1 ~ 1,                        # Make 1 if > 1
-                                         TRUE ~ DGV_ni/NiPC95),
-                      NiBio = case_when(is.na(NiPC95) ~ NA,
-                                        is.na(NiBioF) ~ NA,
-                                        !is.numeric(Nickel) ~ NA,
-                                        is.numeric(Nickel) ~ signif(Nickel*NiBioF,2))   # Bioavailable Ni
-                     
-                      )
-     
-    }
-    
-    # Hazard quotient
-    
-    if (rcr) {
-      for (p in pcs) {
-        x = gsub("PC","",p)
-        col = paste0("Ni",p)
-        myoutput <- myoutput |>
-          dplyr::mutate("Ni_HQ{x}" := ifelse((is.na(.data[[col]])|is.na(Nickel)), NA, signif(Nickel/.data[[col]],2)))
-      }
-    }
-    
-        
-    return (myoutput)
-    
-  }
   
   GetAllGVs <- function(myTMF.df) {
     
@@ -428,10 +452,11 @@ calc_GVs <- function(df, options){
     columns_to_convert <- c("DOC","pH", "Hardness", "Calcium", "Magnesium", "Copper", "Nickel", "Zinc")  # columns we use
     
     # Convert columns to numeric only if they are present in the df (should avoid crashing)
-     myTMF.df[intersect(columns_to_convert, names(myTMF.df))] <- lapply(myTMF.df[intersect(columns_to_convert, 
+    myTMF.df[intersect(columns_to_convert, names(myTMF.df))] <- lapply(myTMF.df[intersect(columns_to_convert, 
                                                                                            names(myTMF.df))], as.numeric)
-     # Convert data to NA if they were zero (only if cols are present in the df to avoid crashing)
-     myTMF.df[intersect(columns_to_convert, names(myTMF.df))] <- lapply(myTMF.df[intersect(columns_to_convert, 
+    
+    # Convert data to NA if they were zero (only if cols are present in the df to avoid crashing)
+    myTMF.df[intersect(columns_to_convert, names(myTMF.df))] <- lapply(myTMF.df[intersect(columns_to_convert, 
                                                                                            names(myTMF.df))], 
                                                                         function(x) ifelse(x == 0, NA, x))
    
@@ -468,26 +493,7 @@ calc_GVs <- function(df, options){
       summary[i+1,"nGVs"] <<- nrow(Cu.output[which(Cu.output$CuNote=="TMF data in range, GV suitable"),])
       summary[i+1,"nOutofRange"] <<- nrow(Cu.output) - summary[i+1,"nExcluded"] - summary[i+1,"nGVs"]
       
-      
     }
-    
-    # if ("Zn" %in% metals) {
-    #   
-    #   Zn.output <- myTMF.df |>
-    #     dplyr::group_split(row) |>
-    #     purrr::map(GetZnGuidelines) |>
-    #     purrr::list_rbind()
-    #   #     Zn.output <- ddply(myTMF.df,.(row), function(x) GetZnGuidelines(input=x))
-    #   GV_labels = paste("Zn", pcs, sep="")
-    #   if (calc_biof) GV_labels = c(GV_labels, "ZnBio")
-    #   if (rcr) GV_labels = c(GV_labels, paste0("Zn",gsub("PC","HQ",pcs)))
-    #   Alloutput <- cbind(Alloutput, Zn.output %>% dplyr::select(all_of(c(GV_labels, "ZnNote"))))
-    #   
-    #   i = nrow(summary)
-    #   summary[i+1,"metal"] <<- "Zinc"
-    #   summary[i+1,"nExcluded"] <<- nrow(Zn.output[which(Zn.output$ZnNote=="TMFs missing"),])
-    #   summary[i+1,"nGVs"] <<- nrow(Zn.output) - summary[i+1,"nExcluded"]
-    # }
     
     if ("Ni" %in% metals) {
       
@@ -522,6 +528,39 @@ calc_GVs <- function(df, options){
       
       
       #Alloutput <- Alloutput |> select(-row)
+    }
+    
+    if ("Zn" %in% metals) {
+      
+      Zn.output <- myTMF.df |>
+        dplyr::group_split(row) |>
+        purrr::map(GetZnGuidelines) |>
+        purrr::list_rbind()
+      
+      GV_labels = paste("Zn", pcs, sep="")
+      
+      if (calc_biof) GV_labels = c(GV_labels, "ZnBio")
+      
+      if (rcr) GV_labels = c(GV_labels, paste0("Zn",gsub("PC","HQ",pcs)))
+      
+      Alloutput <- cbind(Alloutput, Zn.output %>% dplyr::select(all_of(c(GV_labels, "ZnNote"))))
+      names(Alloutput) <- gsub("PC", "_BAGV", names(Alloutput))
+      names(Alloutput) <- gsub("ZnBio", "Zn_bioavailable", names(Alloutput))
+      
+      ZnDGV_vals_sub = as.data.frame(t(ZnDGV_vals[pcs]))
+      ZnDGV_vals_sub <- ZnDGV_vals_sub |> mutate(across(is.numeric, signif, digits=2))
+      names(ZnDGV_vals_sub) <- paste0("Zn_DGV",names(ZnDGV_vals_sub))
+      names(ZnDGV_vals_sub) <- gsub("PC", "", names(ZnDGV_vals_sub))
+      
+      Alloutput <- cbind(Alloutput,ZnDGV_vals_sub)
+      Alloutput <- Alloutput |> relocate(ZnNote, .after = last_col())
+      
+      i = nrow(summary)
+      summary[i+1,"metal"] <<- "Zinc"
+      summary[i+1,"nExcluded"] <<- nrow(Zn.output[which(Zn.output$ZnNote=="TMFs missing"),])
+      summary[i+1,"nGVs"] <<- nrow(Zn.output[which(Zn.output$ZnNote=="TMF data in range, GV suitable"),])
+      summary[i+1,"nOutofRange"] <<- nrow(Zn.output) - summary[i+1,"nExcluded"] - summary[i+1,"nGVs"]
+      
     }
     
     return(Alloutput)
