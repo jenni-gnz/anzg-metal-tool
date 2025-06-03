@@ -14,16 +14,18 @@ library(reactable)
 library(htmltools)
 
 vars <- data.frame(c("pH","Dissolved organic carbon","Hardness","Calcium (dissolved)",
-                     "Magnesium (dissolved)","Copper (dissolved)","Nickel (dissolved)"),
-                   c("pH","DOC","Hardness","Calcium","Magnesium","Copper","Nickel"),
-                   c("unitless","mg/L","mg/L as CaCO<sub>3</sub>","mg/L","mg/L","&micro;g/L","&micro;g/L"),
-                   c("&ndash; nickel BAGVs <br> &ndash; checking if copper BAGVs are applicable",
-                     "&ndash; copper and nickel BAGVs",
-                     "&ndash; checking if copper BAGVs are applicable",
+                     "Magnesium (dissolved)","Copper (dissolved)","Nickel (dissolved)","Zinc (dissolved)"),
+                   c("pH","DOC","Hardness","Calcium","Magnesium","Copper","Nickel","Zinc"),
+                   c("unitless","mg/L","mg/L as CaCO<sub>3</sub>","mg/L","mg/L","&micro;g/L",
+                     "&micro;g/L","&micro;g/L"),
+                   c("&ndash; nickel and zinc BAGVs <br> &ndash; checking if copper BAGVs are applicable",
+                     "&ndash; copper, nickel and zinc BAGVs",
+                     "&ndash; zinc BAGVs <br> &ndash; checking if copper BAGVs are applicable",
                      "&ndash; nickel BAGVs",
                      "&ndash; nickel BAGVs",
                      "&ndash; bioavailable copper concentration and hazard quotients",
-                     "&ndash; bioavailable nickel concentration and hazard quotients")
+                     "&ndash; bioavailable nickel concentration and hazard quotients",
+                     "&ndash; bioavailable zinc concentration and hazard quotients")
                    )
 
 names(vars) <- c("Variable","Column heading","Unit","Variable is used for")
@@ -31,7 +33,7 @@ names(vars) <- c("Variable","Column heading","Unit","Variable is used for")
 dt_vars <- reactable(vars,
                      defaultColDef=colDef(headerStyle=list(background="#bacdda"), html=TRUE),
                      rowStyle = function(index){
-                           if (index == 7){
+                           if (index == 8){
                              list(borderBottom="1px solid rgba(0, 0, 0, 0.05)")
                            }
                          }

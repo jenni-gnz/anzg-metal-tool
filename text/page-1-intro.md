@@ -14,7 +14,7 @@ The Metals Bioavailability Tool can calculate:
 
 for
 
-- copper and nickel
+- copper, nickel and zinc
 - one or more metal at a time
 - 4 levels of species protection (99%, 95%, 90% and 80%)
 - Australian or New Zealand freshwaters

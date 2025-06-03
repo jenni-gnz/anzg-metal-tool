@@ -19,7 +19,7 @@ If you want to see an example of an input or output file you can try the demo or
 
 Detailed instructions about what you need to do at each step are provided here.
 
-The instructions follow the 4 steps in the Metals Bioavailability Tool calculation process.
+The instructions follow the four steps in the Metals Bioavailability Tool calculation process.
 
 You can also watch videos that show you <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default" target="_blank"> how to use the Metals Bioavailability Tool</a>.
 These videos are located on the ANZG website.

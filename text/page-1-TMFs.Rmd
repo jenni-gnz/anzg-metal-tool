@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(reactable)
 library(htmltools)
 
-TMFs <- data.frame(c("Copper","Nickel"), c("DOC","pH, DOC, calcium, magnesium"))
+TMFs <- data.frame(c("Copper","Nickel","Zinc"), c("DOC","pH, DOC, calcium, magnesium","pH, DOC, hardness*"))
 names(TMFs) = c("Dissolved Metal", "TMFs")
 
 dt_TMFs <- reactable(TMFs,
@@ -23,7 +23,7 @@ dt_TMFs <- reactable(TMFs,
                      ),
                      width=830,
                      rowStyle = function(index){
-                           if (index == 2){
+                           if (index == 3){
                              list(borderBottom="1px solid rgba(0, 0, 0, 0.05)")
                            }
                          }
@@ -31,6 +31,10 @@ dt_TMFs <- reactable(TMFs,
 
 dt_TMFs <- htmlwidgets::prependContent(dt_TMFs, 
     p("Table 2. Dissolved metals and their TMFs", style="font-size:80%"))
+
+dt_TMFs <- htmlwidgets::appendContent(dt_TMFs,
+    p(br(),"*If hardness is missing it will be calculated from calcium and magnesium, if these are available",
+    style="font-size:80%"))
 
 dt_TMFs
 
