@@ -174,12 +174,12 @@ ui <- fluidPage(
   
     nav_panel(value="select-page",
       title = h5(id="page2-title", "2. Select options"),
-      br(),
+      #br(),
       fluidRow(id="options-panel",
                  column(width=10, align="left", h2("Review your data (displayed below) and select options for your analysis"),
                                                          fluidRow(#em("Choose the options for your analysis:"),
                                  column(width=5, align = "left",
-                                  #     br(),
+                                       br(),
                                       
                                                     #style="background-color:#f0f1f1;",
                                                             checkboxGroupInput(inputId="metals", width="80%",

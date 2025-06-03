@@ -103,7 +103,7 @@ server <- function(input, output, session) {
     fpath = inFile$datapath
     
     output$filename <-  renderText({
-      sprintf("Data source: %s", basename(inFile$name))
+      sprintf("Source: %s", basename(inFile$name))
     })
     
     msg = tryCatch({
@@ -132,8 +132,14 @@ server <- function(input, output, session) {
   
   observeEvent(input$sample_btn, {
     
+    fpath <- "data/exampleinputdata.csv"
+    
     df <<- NULL
     df <<- utils::read.csv("data/exampleinputdata.csv", header=TRUE, stringsAsFactors=FALSE)
+    
+    output$filename <-  renderText({
+      sprintf("Source: %s", basename(fpath))
+    })
     
     output$data = renderReactable({
       reactable(df, resizable=TRUE, showPageSizeOptions=TRUE, showPagination=TRUE,
