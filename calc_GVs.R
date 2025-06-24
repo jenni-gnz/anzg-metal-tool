@@ -541,7 +541,7 @@ calc_GVs <- function(df, options){
       
       if (calc_biof) GV_labels = c(GV_labels, "ZnBio")
       
-      if (rcr) GV_labels = c(GV_labels, paste0("Zn",gsub("PC","HQ",pcs)))
+      if (rcr) GV_labels = c(GV_labels, paste0("Zn",gsub("PC","_HQ",pcs)))
       
       Alloutput <- cbind(Alloutput, Zn.output %>% dplyr::select(all_of(c(GV_labels, "ZnNote"))))
       names(Alloutput) <- gsub("PC", "_BAGV", names(Alloutput))

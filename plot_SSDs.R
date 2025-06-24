@@ -38,6 +38,7 @@ plot_SSDs <- function(df, options){
  
   plots = list()                                                                 # list to hold SSD plots 
   message = list()                                                               # list to hold message that says its completed
+  
   ######################################################################
    # Nickel, with MLR adjustment
   
@@ -80,7 +81,7 @@ plot_SSDs <- function(df, options){
       
       } else {
 
-        print(paste0("Plotting row ", input$row))
+        print(paste0("Plotting Ni row ", input$row))
         
         Nissd.pred <- predict(res, ci = TRUE)
         
@@ -89,8 +90,8 @@ plot_SSDs <- function(df, options){
                           color = "Model.used") +
           ggtitle(paste("Row: ", input$row)) +
           labs(subtitle = "Nickel species sensitivity distribution",
-               caption = paste("SSD for DOC=", round(myDOC,1), " pH=", round(mypH,1), 
-                               " Calcium=", round(myCa,1), " Magnesium=", round(myMg,1))) +
+               caption = paste("SSD for DOC =", round(myDOC,1), " pH =", round(mypH,1), 
+                               " Calcium =", round(myCa,1), " Magnesium =", round(myMg,1))) +
           theme_bw() +
           theme(legend.position.inside = c(0.2, 0.8),
                 legend.background = element_rect(color = "black", linewidth = 0.1),
@@ -110,6 +111,81 @@ plot_SSDs <- function(df, options){
       }
     }
   }
+  
+  ######################################################################
+  # Zinc, with MLR adjustment
+  
+  DoZnSSDPlots <- function(input, sens=ZnSSD.df, tMLR=ZnMLR.coeffs){
+    
+    # Check input data. If data is missing do nothing
+    
+    if (is.na(input$DOC) | is.na(input$pH) | is.na(input$Hardness)) {
+      
+      ## don't plot, move on
+      
+    } else {
+      
+      if (input$DOC<0.5 |input$DOC>15 |  input$pH<6.7 |input$pH>8.1 |
+          input$Hardness<26 | input$Hardness>370) {
+        ZnNote <- "TMF(s) outside applicable model range"
+        
+      } else {
+        ZnNote <- "TMFs in applicable range, DGV suitable"
+        
+        myDOC <- input$DOC
+        mypH  <- input$pH
+        myH  <- input$Hardness
+        
+        tMLR[is.na(tMLR)] <- 0                                        # Zero out coefficients that are NA - will mean that these parts of the general full
+        
+        # Equation below do not contribute to the formula
+        sens <- merge(sens,tMLR,by.x="Model used",by.y="type")
+        
+        # Apply generic equation form
+        sens$Conc <- exp(sens$Sensitivity + sens$DOC*log(myDOC) + sens$H*log(myH) +
+                           sens$pH*mypH + sens$DOC.pH*log(myDOC)*mypH)
+        
+        # Fit ssd functions and extract protection values
+        res <- try(ssd_fit_bcanz(sens), silent = FALSE)
+        
+        if(isTRUE(class(res)=="try-error")) {                             # if data cannot be fitted, NA is recorded
+          ### Don't save a figure?
+          
+        } else {
+          
+          print(paste0("Plotting Zn row ", input$row))
+          
+          Znssd.pred <- predict(res, ci = TRUE)
+          
+          fig_Zn <- ssd_plot(sens, Znssd.pred, ribbon = TRUE,
+                             label = "Taxonomic Group as per Table 6",
+                             color = "Model used") +
+            ggtitle(paste("Row: ", input$row)) +
+            labs(subtitle = "Zinc species sensitivity distribution",
+                 caption = paste("SSD for DOC =", round(myDOC,1), " pH =", round(mypH,1), 
+                                 " Hardness =", round(myH,1))) +
+            theme_bw() +
+            theme(legend.position.inside = c(0.2, 0.8),
+                  legend.background = element_rect(color = "black", linewidth = 0.1),
+                  legend.text=element_text(size=8),
+                  legend.key.size = unit(0.5, 'cm'),
+                  plot.caption.position = "plot",
+                  plot.caption = element_text(hjust = 0)
+            )
+          
+          p_name <- paste0("Zn_SSD_", input$row)
+          temp <- c(names(plots), p_name)
+          
+          plots <<- append(plots, list(fig_Zn))
+          names(plots) <<- temp
+          
+        }
+      }
+    }
+  }
+  
+  
+  
  ### Function to get all GVs------------------------ 
 
   GetAllSSDPlots <- function(myTMF.df) {
@@ -135,11 +211,9 @@ plot_SSDs <- function(df, options){
     
     if ("Zn" %in% metals) {
       
-      ## do nothing at present
-      
-      # Zn.output <- myTMF.df |>
-      #   dplyr::group_split(row) |>
-      #   purrr::map(DoZnSSDPlots) 
+      Zn.output <- myTMF.df |>
+        dplyr::group_split(row) |>
+        purrr::map(DoZnSSDPlots) 
     }
     
     if ("Ni" %in% metals) {
@@ -148,7 +222,7 @@ plot_SSDs <- function(df, options){
         dplyr::group_split(row) |>
         purrr::map(DoNiSSDPlots)
      # message <- "Complete"
-       }
+    }
     
     return(message)
     
