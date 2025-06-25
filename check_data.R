@@ -1,7 +1,7 @@
 # Check the data - will probably need to pass options selected for calculating
 # the GVs. For now, just do some simple checks
 
-check_data <- function(df, options){
+check_data <- function(df, options, updateProgress=NULL){
  
   # Initialize dataframe which will return information about any issues
   # identified in df
@@ -9,6 +9,11 @@ check_data <- function(df, options){
   issue_df = data.frame("row"=numeric(), "col"=numeric(), "type"=character(), "message"=character())
   
   # Check that df contains the required columns
+  
+  if (is.function(updateProgress)) {
+    text <- "Looking for required columns"
+    updateProgress(value=0, detail=text)
+  }
   
   cols = c("DOC")                                                                # all metals require DOC
   
@@ -55,6 +60,11 @@ check_data <- function(df, options){
 
   # Identify any missing data in required columns that are in the dataset
   
+  if (is.function(updateProgress)) {
+    text <- "Looking for missing data"
+    updateProgress(value=0.2, detail=text)
+  }
+  
   cols_in = cols[cols %in% names(df)]
   
   missing = which(is.na(df[cols_in]), arr.ind=TRUE)
@@ -64,6 +74,11 @@ check_data <- function(df, options){
   }
   
   # Check for non-numeric data in required columns that are in the dataset
+  
+  if (is.function(updateProgress)) {
+    text <- "Looking for non-numeric data"
+    updateProgress(value=0.4, detail=text)
+  }
   
   df[cols_in] = sapply(df[cols_in], as.numeric)                                  # convert to numeric
   
@@ -76,6 +91,11 @@ check_data <- function(df, options){
   
   # Check for zero data in required columns that are in the dataset
   
+  if (is.function(updateProgress)) {
+    text <- "Looking for zero values"
+    updateProgress(value=0.6, detail=text)
+  }
+  
   zeros = which(df[cols_in]==0, arr.ind=TRUE)
   
   if (nrow(zeros) > 0) {
@@ -84,10 +104,20 @@ check_data <- function(df, options){
   
   # Check for negative data in required columns that are in the dataset
   
+  if (is.function(updateProgress)) {
+    text <- "Looking for negative values"
+    updateProgress(value=0.8, detail=text)
+  }
+  
   negative = which(df[cols_in]<0, arr.ind=TRUE)
   
   if (nrow(negative) > 0) {
     issue_df = rbind(issue_df, data.frame("row"=negative[,1], "col"=negative[,2], "type"="error", "message"=paste0("Error: negative data in column ", cols_in[negative[,2]])))
+  }
+  
+  if (is.function(updateProgress)) {
+    text <- "Complete!"
+    updateProgress(value=1, detail=text)
   }
   
   results = list("cols_in"=cols_in, "issue_df"=issue_df, "df_checked"=df)

@@ -6,7 +6,7 @@
 
 # Edited to work with R Shiny tool Oct 2024
 
-plot_SSDs <- function(df, options){
+plot_SSDs <- function(df, options, updateProgress=NULL){
   
   #####################################################################
   ## Libraries and data files needed
@@ -39,10 +39,28 @@ plot_SSDs <- function(df, options){
   plots = list()                                                                 # list to hold SSD plots 
   message = list()                                                               # list to hold message that says its completed
   
+  # Calculate total number of rows for progress updates
+  
+  Nmetals = length(metals)                                                       # number of metals to generate SSD plots for (excluding copper)
+  if ("Cu" %in% metals) {
+    Nmetals = Nmetals - 1
+  }
+  
+  Nrows = nrow(df)                                                               # number of data rows
+  NrowsTotal = Nmetals*Nrows                                                     # number of data rows to calculate for all metals
+  df <- df |> dplyr::mutate(myrow=row_number())                                  # used to update the progress bar
+  N = 0                                                                          # running indicator for progress bar
+  
   ######################################################################
    # Nickel, with MLR adjustment
   
   DoNiSSDPlots <- function(input, sens=NiSSD.df, tMLR=NiMLR.coeffs){
+    
+    if (is.function(updateProgress)) {
+      text <- paste0("Nickel, row ", input$myrow, "/", Nrows)
+      updateProgress(value=N, detail=text)
+      N <<- N + 1/NrowsTotal
+    }
     
     # Check input data. If data is missing do nothing
     
@@ -116,6 +134,12 @@ plot_SSDs <- function(df, options){
   # Zinc, with MLR adjustment
   
   DoZnSSDPlots <- function(input, sens=ZnSSD.df, tMLR=ZnMLR.coeffs){
+    
+    if (is.function(updateProgress)) {
+      text <- paste0("Zinc, row ", input$myrow, "/", Nrows)
+      updateProgress(value=N, detail=text)
+      N <<- N + 1/NrowsTotal
+    }
     
     # Check input data. If data is missing do nothing
     
@@ -209,13 +233,6 @@ plot_SSDs <- function(df, options){
       ##Cu.output <- ddply(myTMF.df,.(myrow), function(x) GetCuGuidelines(input=x, Cucol=Cucol))
     }
     
-    if ("Zn" %in% metals) {
-      
-      Zn.output <- myTMF.df |>
-        dplyr::group_split(row) |>
-        purrr::map(DoZnSSDPlots) 
-    }
-    
     if ("Ni" %in% metals) {
       
       Ni.output <- myTMF.df |>
@@ -224,12 +241,25 @@ plot_SSDs <- function(df, options){
      # message <- "Complete"
     }
     
+    if ("Zn" %in% metals) {
+      
+      Zn.output <- myTMF.df |>
+        dplyr::group_split(row) |>
+        purrr::map(DoZnSSDPlots) 
+    }
+    
     return(message)
     
   }
   
   AllPlots <- GetAllSSDPlots(myTMF.df=df)
-    return (list("plots"=plots))
   
-
+  if (is.function(updateProgress)) {
+    text <- "Complete!"
+    updateProgress(value=N, detail=text)
+    N <<- 1
+  }
+  
+  return (list("plots"=plots))
+  
 }  

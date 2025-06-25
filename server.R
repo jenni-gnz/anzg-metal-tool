@@ -168,13 +168,34 @@ server <- function(input, output, session) {
   
   observeEvent(input$check_btn, {
     
+    # Create a Progress object
+    
+    progress <- shiny::Progress$new()
+    progress$set(message="Checking data", value=0)
+    
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+    
+    # Create a callback function to update progress.
+    # Each time this is called:
+    # - If `value` is NULL, it will move the progress bar 1/5 of the remaining
+    #   distance. If non-NULL, it will set the progress to that value.
+    # - It also accepts optional detail text.
+    updateProgress <- function(value = NULL, detail = NULL) {
+      if (is.null(value)) {
+        value <- progress$getValue()
+        value <- value + (progress$getMax() - value) / 5
+      }
+      progress$set(value=value, detail=detail)
+    }
+    
     # Get selected options
     
     GV_options = list("metals"=input$metals, "calc_biof"=input$calc_biof, "rcr" = input$rcr)
     
     # Call function to check the data
     
-    x = check_data(df, GV_options)
+    x = check_data(df, GV_options, updateProgress)
     issues = x$issue_df                                                          # issues dataframe
     cols_in = x$cols_in                                                          # required columns that are in the data
     df_checked <<- x$df_checked                                                  # data, may include new column with Hardness calculated from Ca and Mg if applicable
@@ -309,11 +330,26 @@ server <- function(input, output, session) {
   
   observeEvent(input$GV_btn, {
     
-    show_modal_spinner(spin = "hollow-dots", color ="#FF931E") # show the modal window
+    #show_modal_spinner(spin = "hollow-dots", color ="#FF931E") # show the modal window
     
     # NOTE: NEED A PROGRESS BAR OR SOME OTHER INDICATOR
     
     updateNavbarPage(session, "tabs", selected="GV-page")
+    
+    # Create a Progress object
+     
+    progress <- shiny::Progress$new()
+    progress$set(message="Calculating", value=0)
+     
+    # Close the progress when this reactive exits (even if there's an error)
+    
+    on.exit(progress$close())
+     
+    # Create a callback function to update progress.
+    
+    updateProgress <- function(value=NULL, detail=NULL) {
+      progress$set(value=value, detail=detail)
+    }
     
     # Get selected options
     
@@ -325,7 +361,7 @@ server <- function(input, output, session) {
     
     # Call function to calculate GVs
     
-    GVs <<- calc_GVs(df_checked, GV_options)
+    GVs <<- calc_GVs(df_checked, GV_options, updateProgress)
     results <<- GVs$results
      #names(results) <<- gsub("\\<Ca\\>", "Calcium", names(results))   ##This breaks the app if people have a column called Ca_xxxx
     # names(results) <<- gsub("\\<Mg\\>", "Magnesium", names(results))  
@@ -347,7 +383,7 @@ server <- function(input, output, session) {
     print(add_units)
     #results <- bind_rows(add_units, results)                                                 ## Adding new row with units doesnt work
                                                                                               ## can't combine text & double
-    remove_modal_spinner() # remove it when done
+    #remove_modal_spinner() # remove it when done
     
     # Update ui
     
@@ -359,7 +395,7 @@ server <- function(input, output, session) {
      
     output$resultsText = renderUI({
       for (i in c(1:nrow(GVs$summary))) {
-        GVs$summary[i,"message"] = paste(GVs$summary[i,"metal"],
+        GVs$summary[i,"message"] = paste("<li>",GVs$summary[i,"metal"],
                                          " BAGVs were calculated for ",
                                          GVs$summary[i,"nGVs"],
                                          " data rows (",
@@ -367,9 +403,10 @@ server <- function(input, output, session) {
                                          " data rows were excluded as TMFs were out of the applicable 
                                          range for BAGV calculation; ",
                                          GVs$summary[i,"nExcluded"],
-                                         " data row/rows were excluded due to missing data)<br><br>", sep="")
+                                         " data row/rows were excluded due to missing data)<br><br></li>", sep="")
       }
-      HTML(paste(GVs$summary[,"message"], collapse=""))
+      
+      HTML(paste0("<ul>",paste(GVs$summary[,"message"], collapse=""),"</ul>"))
       
     })
     
@@ -463,15 +500,30 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       
-      show_modal_spinner(spin = "hollow-dots", color ="#FF931E")
+      #show_modal_spinner(spin = "hollow-dots", color ="#FF931E")
+      
+      # Create a Progress object
+      
+      progress <- shiny::Progress$new()
+      progress$set(message="Generating SSD plots", value=0)
+      
+      # Close the progress when this reactive exits (even if there's an error)
+      
+      on.exit(progress$close())
+      
+      # Create a callback function to update progress.
+      
+      updateProgress <- function(value=NULL, detail=NULL) {
+        progress$set(value=value, detail=detail)
+      }
       
       # Call function to create the plots
       
       GV_options = list("metals"=input$metals)
-      CompletedPlots <<- plot_SSDs(df_checked, GV_options)
+      CompletedPlots <<- plot_SSDs(df_checked, GV_options, updateProgress)
       plots <<- CompletedPlots$plots
       
-      remove_modal_spinner()                                   # remove spinner when plots created
+      #remove_modal_spinner()                                   # remove spinner when plots created
       
       # Create temporary directory and save plots to file
       

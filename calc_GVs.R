@@ -10,7 +10,7 @@
 
 # Edited to work with R Shiny tool Aug 2024
 
-calc_GVs <- function(df, options){
+calc_GVs <- function(df, options, updateProgress=NULL){
   
   #####################################################################
   ## Libraries and data files needed
@@ -82,12 +82,26 @@ calc_GVs <- function(df, options){
   print(summary)
   plots = list()                                                                 # list to hold SSD plots
   
+  # Calculate total number of rows for progress updates
+  
+  Nrows = nrow(df)                                                               # number of data rows
+  NrowsTotal = length(metals)*Nrows                                              # number of data rows to calculate for all metals
+  df <- df |> dplyr::mutate(myrow=row_number())                                  # used to update the progress bar
+  N = 0                                                                          # running indicator for progress bar
+  
+  
   ######################################################################
   ## Functions to calculate GVs
   
   # Copper, just an equation
   
   GetCuGuidelines <- function(input){
+    
+    if (is.function(updateProgress)) {
+      text <- paste0("Copper, row ", input$myrow, "/", Nrows)
+      updateProgress(value=N, detail=text)
+      N <<- N + 1/NrowsTotal
+    }
     
     # Check input data. If data are missing, do nothing, but keep the row.
     # Otherwise, write a note if any of the observations are out of the fitting
@@ -199,6 +213,12 @@ calc_GVs <- function(df, options){
   # Nickel, with MLR adjustment
   
   GetNiGuidelines <- function(input, sens=NiSSD.df, tMLR=NiMLR.coeffs){
+    
+    if (is.function(updateProgress)) {
+      text <- paste0("Nickel, row ", input$myrow, "/", Nrows)
+      updateProgress(value=N, detail=text)
+      N <<- N + 1/NrowsTotal
+    }
     
     # Check input data. If data is missing do nothing, but keep the row.
     # Otherwise, write a note if any of the observations are out of the fitting
@@ -312,6 +332,12 @@ calc_GVs <- function(df, options){
   # Zinc, with MLR adjustment
   
   GetZnGuidelines <- function(input, sens=ZnSSD.df, tMLR=ZnMLR.coeffs){
+    
+    if (is.function(updateProgress)) {
+      text <- paste0("Zinc, row ", input$myrow, "/", Nrows)
+      updateProgress(value=N, detail=text)
+      N <<- N + 1/NrowsTotal
+    }
     
     # Check input data. If data is missing do nothing, but keep the row.
     # Otherwise, write a note if any of the observations are out of the fitting
@@ -571,6 +597,11 @@ calc_GVs <- function(df, options){
   
   print(AllMetals)
   print(summary)
+  
+  if (is.function(updateProgress)) {
+    text <- "Complete!"
+    updateProgress(value=1, detail=text)
+  }
   
   return (list("results"=AllMetals, "summary"=summary, "plots"=plots))
 

@@ -317,7 +317,7 @@ ui <- fluidPage(
                              reactableOutput("data_checked")
                       )
                       ),
-             add_busy_spinner(spin = "fading-circle", color = "#FF931E")
+             #add_busy_spinner(spin = "fading-circle", color = "#FF931E")
     ), # end of page 3 nav_panel ------------------
     
 #    nav_spacer(),
@@ -342,7 +342,7 @@ ui <- fluidPage(
                               downloadButton("downloadGVs", h4("Download results"), width="280px",
                                              style="color:white; background-color:#376894; border-color:#376894"),
                               br(), #br(),
-                              column(width=5, helpText("This exports a comma-separated (csv) file with your results and input data")),
+                              column(width=5, style="padding-top:10px", helpText("This exports a comma-separated (csv) file with your results and input data")),
                               br(),
                               
                               # actionButton("SSDplots", width="280px",
@@ -362,7 +362,7 @@ ui <- fluidPage(
                               # actionButton("button", "MakePlots"),
                               # #gt_output(outputId = "table"),
                               #br(), br(),
-                              column(width=5, helpText("Generate species sensitivity distribution (SSD) plots for each sample for nickel & download in a zip file",
+                              column(width=5, style="padding-top:10px", helpText("Generate species sensitivity distribution (SSD) plots for each sample for nickel and zinc & download these in a zip file.",
                                                        br(), "This takes ~1-2 mins for 10 rows of data")),
                               #helpText("This exports a zip file containing species sensitivity distribution (SSD) plots",
                               #         br(), 
