@@ -20,7 +20,7 @@ library(reactable)
 library(shinythemes)
 library(markdown)
 library(tippy)
-library(shinybusy)
+#library(shinybusy)
 
 fileInputOnlyButton <- function(..., label="") {
   

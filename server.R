@@ -177,15 +177,8 @@ server <- function(input, output, session) {
     on.exit(progress$close())
     
     # Create a callback function to update progress.
-    # Each time this is called:
-    # - If `value` is NULL, it will move the progress bar 1/5 of the remaining
-    #   distance. If non-NULL, it will set the progress to that value.
-    # - It also accepts optional detail text.
+    
     updateProgress <- function(value = NULL, detail = NULL) {
-      if (is.null(value)) {
-        value <- progress$getValue()
-        value <- value + (progress$getMax() - value) / 5
-      }
       progress$set(value=value, detail=detail)
     }
     
