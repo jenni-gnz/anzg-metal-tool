@@ -99,14 +99,14 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
       
       } else {
 
-        print(paste0("Plotting Ni row ", input$row))
+        print(paste0("Plotting Ni row ", input$myrow))
         
         Nissd.pred <- predict(res, ci = TRUE)
         
         fig_Ni <- ssd_plot(sens, Nissd.pred, ribbon = TRUE,
                            label = "PlotLabel",
                           color = "Model.used") +
-          ggtitle(paste("Row: ", input$row)) +
+          ggtitle(paste("Row: ", input$myrow)) +
           labs(subtitle = "Nickel species sensitivity distribution",
                caption = paste("SSD for DOC =", round(myDOC,1), " pH =", round(mypH,1), 
                                " Calcium =", round(myCa,1), " Magnesium =", round(myMg,1))) +
@@ -119,7 +119,7 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
                 plot.caption = element_text(hjust = 0)
                 )
 
-          p_name <- paste0("Ni_SSD_", input$row)
+          p_name <- paste0("Ni_SSD_", input$myrow)
           temp <- c(names(plots), p_name)
           
           plots <<- append(plots, list(fig_Ni))
@@ -177,14 +177,14 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
           
         } else {
           
-          print(paste0("Plotting Zn row ", input$row))
+          print(paste0("Plotting Zn row ", input$myrow))
           
           Znssd.pred <- predict(res, ci = TRUE)
           
           fig_Zn <- ssd_plot(sens, Znssd.pred, ribbon = TRUE,
                              label = "Taxonomic Group as per Table 6",
                              color = "Model used") +
-            ggtitle(paste("Row: ", input$row)) +
+            ggtitle(paste("Row: ", input$myrow)) +
             labs(subtitle = "Zinc species sensitivity distribution",
                  caption = paste("SSD for DOC =", round(myDOC,1), " pH =", round(mypH,1), 
                                  " Hardness =", round(myH,1))) +
@@ -197,7 +197,7 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
                   plot.caption = element_text(hjust = 0)
             )
           
-          p_name <- paste0("Zn_SSD_", input$row)
+          p_name <- paste0("Zn_SSD_", input$myrow)
           temp <- c(names(plots), p_name)
           
           plots <<- append(plots, list(fig_Zn))
@@ -236,7 +236,7 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
     if ("Ni" %in% metals) {
       
       Ni.output <- myTMF.df |>
-        dplyr::group_split(row) |>
+        dplyr::group_split(myrow) |>
         purrr::map(DoNiSSDPlots)
      # message <- "Complete"
     }
@@ -244,7 +244,7 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
     if ("Zn" %in% metals) {
       
       Zn.output <- myTMF.df |>
-        dplyr::group_split(row) |>
+        dplyr::group_split(myrow) |>
         purrr::map(DoZnSSDPlots) 
     }
     
