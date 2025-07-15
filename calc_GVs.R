@@ -405,7 +405,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       
       tMLR[is.na(tMLR)] <- 0  
       
-      sens <- merge(sens,tMLR,by.x="Model used",by.y="type")
+      sens <- merge(sens,tMLR,by.x="Model.used",by.y="type")
       
       # Apply generic equation form
       sens$Conc <- exp(sens$Sensitivity + sens$DOC*log(myDOC) + sens$H*log(myH) +
