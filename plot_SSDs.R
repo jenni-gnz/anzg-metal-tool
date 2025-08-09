@@ -163,7 +163,7 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
         tMLR[is.na(tMLR)] <- 0                                        # Zero out coefficients that are NA - will mean that these parts of the general full
         
         # Equation below do not contribute to the formula
-        sens <- merge(sens,tMLR,by.x="Model used",by.y="type")
+        sens <- merge(sens,tMLR,by.x="Model.used",by.y="type")
         
         # Apply generic equation form
         sens$Conc <- exp(sens$Sensitivity + sens$DOC*log(myDOC) + sens$H*log(myH) +
@@ -182,8 +182,8 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
           Znssd.pred <- predict(res, ci = TRUE)
           
           fig_Zn <- ssd_plot(sens, Znssd.pred, ribbon = TRUE,
-                             label = "Taxonomic Group as per Table 6",
-                             color = "Model used") +
+                             label = "PlotLabel",
+                             color = "Model.used") +
             ggtitle(paste("Row: ", input$myrow)) +
             labs(subtitle = "Zinc species sensitivity distribution",
                  caption = paste("SSD for DOC =", round(myDOC,1), " pH =", round(mypH,1), 

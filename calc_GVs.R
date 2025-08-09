@@ -405,7 +405,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       
       tMLR[is.na(tMLR)] <- 0  
       
-      sens <- merge(sens,tMLR,by.x="Model used",by.y="type")
+      sens <- merge(sens,tMLR,by.x="Model.used",by.y="type")
       
       # Apply generic equation form
       sens$Conc <- exp(sens$Sensitivity + sens$DOC*log(myDOC) + sens$H*log(myH) +
@@ -423,8 +423,8 @@ calc_GVs <- function(df, options, updateProgress=NULL){
         
         GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=10)[,3]))
         GV_temp <- GV_temp |>
-          dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=1),
-                                               TRUE ~ signif(.x, 2))))
+          dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=2),
+                                               TRUE ~ signif(.x, 3))))
         
         rownames(GV_temp) <- NULL
         
