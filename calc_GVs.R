@@ -423,8 +423,8 @@ calc_GVs <- function(df, options, updateProgress=NULL){
         
         GV_temp = as.data.frame(t(ssd_hc(res, percent=pcs_vals, ci=FALSE, nboot=10)[,3]))
         GV_temp <- GV_temp |>
-          dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=2),
-                                               TRUE ~ signif(.x, 3))))
+          dplyr::mutate(across(is.numeric, ~case_when(.x <1 ~ round(.x, digits=3),
+                                               TRUE ~ signif(.x, 4))))
         
         rownames(GV_temp) <- NULL
         
@@ -448,7 +448,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
                       ZnBio = case_when(is.na(ZnPC95) ~ NA,
                                         is.na(ZnBioF) ~ NA,
                                         !is.numeric(Zinc) ~ NA,
-                                        is.numeric(Zinc) ~ signif(Zinc*ZnBioF,2)   # Bioavailable Zn
+                                        is.numeric(Zinc) ~ signif(Zinc*ZnBioF,4)   # Bioavailable Zn
                                         )
                       )
     }
@@ -460,7 +460,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
         x = gsub("PC","",p)
         col = paste0("Zn",p)
         myoutput <- myoutput |>
-          dplyr::mutate("Zn_HQ{x}" := ifelse((is.na(.data[[col]])|is.na(Zinc)), NA, signif(Zinc/.data[[col]],2)))
+          dplyr::mutate("Zn_HQ{x}" := ifelse((is.na(.data[[col]])|is.na(Zinc)), NA, signif(Zinc/.data[[col]],4)))
       }
     }
     
@@ -574,7 +574,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       names(Alloutput) <- gsub("ZnBio", "Zn_bioavailable", names(Alloutput))
       
       ZnDGV_vals_sub = as.data.frame(t(ZnDGV_vals[pcs]))
-      ZnDGV_vals_sub <- ZnDGV_vals_sub |> mutate(across(is.numeric, signif, digits=2))
+      ZnDGV_vals_sub <- ZnDGV_vals_sub |> mutate(across(is.numeric, signif, digits=4))
       names(ZnDGV_vals_sub) <- paste0("Zn_DGV",names(ZnDGV_vals_sub))
       names(ZnDGV_vals_sub) <- gsub("PC", "", names(ZnDGV_vals_sub))
       
