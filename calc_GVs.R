@@ -128,7 +128,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       # If both pH and hardness columns are in the input dataset
       
       if (is.na(input$pH) | is.na(input$Hardness)) {
-        CuNote <- "pH and/or hardness not provided, PC may or may not be applicable"
+        CuNote <- "pH and/or hardness not provided, GV may or may not be applicable"
         do_calcs <- TRUE
         
       } else if (input$DOC>30 | input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
@@ -157,7 +157,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       # Either pH or hardness columns are missing from the input dataset, can
       # still do calcs but note that GV values may or may not be applicable
       
-      CuNote <- "pH and/or hardness not provided, PC may or may not be applicable"
+      CuNote <- "pH and/or hardness not provided, GV may or may not be applicable"
       do_calcs <- TRUE
       
     }
@@ -514,6 +514,11 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       Alloutput <- Alloutput |> relocate(names(CuDGV_vals_sub), .after=paste0("Cu_BAGV",last(gsub("PC","",pcs))))
       Alloutput <- Alloutput |> relocate(CuNote, .after = last_col())
       
+      Alloutput <- Alloutput |> mutate(across(contains("Cu_DGV"), ~ case_when(
+        grepl("applicability limit", CuNote) ~ NA,
+        TRUE ~ .x
+      )))
+      
       i = nrow(summary)
       summary[i+1,"metal"] <<- "Copper"
       summary[i+1,"nExcluded"] <<- nrow(Cu.output[which(Cu.output$CuNote=="DOC missing"),])
@@ -547,6 +552,11 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       Alloutput <- cbind(Alloutput,NiDGV_vals_sub)
       Alloutput <- Alloutput |> relocate(names(NiDGV_vals_sub), .after=paste0("Ni_BAGV",last(gsub("PC","",pcs))))
       Alloutput <- Alloutput |> relocate(NiNote, .after = last_col())
+      
+      Alloutput <- Alloutput |> mutate(across(contains("Ni_DGV"), ~ case_when(
+        grepl("applicability limit", NiNote) ~ NA,
+        TRUE ~ .x
+      )))
       
       i = nrow(summary)
       summary[i+1,"metal"] <<- "Nickel"
@@ -583,6 +593,11 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       Alloutput <- cbind(Alloutput,ZnDGV_vals_sub)
       Alloutput <- Alloutput |> relocate(names(ZnDGV_vals_sub), .after=paste0("Zn_BAGV",last(gsub("PC","",pcs))))
       Alloutput <- Alloutput |> relocate(ZnNote, .after = last_col())
+      
+      Alloutput <- Alloutput |> mutate(across(contains("Zn_DGV"), ~ case_when(
+        grepl("applicability limit", ZnNote) ~ NA,
+        TRUE ~ .x
+      )))
       
       i = nrow(summary)
       summary[i+1,"metal"] <<- "Zinc"
