@@ -511,6 +511,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       names(CuDGV_vals_sub) <- gsub("PC", "", names(CuDGV_vals_sub))
       
       Alloutput <- cbind(Alloutput,CuDGV_vals_sub)
+      Alloutput <- Alloutput |> relocate(names(CuDGV_vals_sub), .after=paste0("Cu_BAGV",last(gsub("PC","",pcs))))
       Alloutput <- Alloutput |> relocate(CuNote, .after = last_col())
       
       i = nrow(summary)
@@ -544,6 +545,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       names(NiDGV_vals_sub) <- gsub("PC", "", names(NiDGV_vals_sub))
       
       Alloutput <- cbind(Alloutput,NiDGV_vals_sub)
+      Alloutput <- Alloutput |> relocate(names(NiDGV_vals_sub), .after=paste0("Ni_BAGV",last(gsub("PC","",pcs))))
       Alloutput <- Alloutput |> relocate(NiNote, .after = last_col())
       
       i = nrow(summary)
@@ -579,6 +581,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       names(ZnDGV_vals_sub) <- gsub("PC", "", names(ZnDGV_vals_sub))
       
       Alloutput <- cbind(Alloutput,ZnDGV_vals_sub)
+      Alloutput <- Alloutput |> relocate(names(ZnDGV_vals_sub), .after=paste0("Zn_BAGV",last(gsub("PC","",pcs))))
       Alloutput <- Alloutput |> relocate(ZnNote, .after = last_col())
       
       i = nrow(summary)
