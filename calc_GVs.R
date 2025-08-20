@@ -607,6 +607,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       
     }
     
+    Alloutput <- Alloutput %>% select(-myrow)
     return(Alloutput)
     
   }
