@@ -41,18 +41,14 @@ calc_GVs <- function(df, options, updateProgress=NULL){
   ### For each metal, there are 4 values for each country. 
   ### Depending on the PCs selected, we need to provide these values with the returned table
 
-  CuDGVvals_all <- data.frame("nz" = c("PC99" = 0.439, "PC95" = 0.732, "PC90" = 0.896, "PC80" = 1.28),
-                              "aus" = c("PC99" = 0.439, "PC95" = 0.732, "PC90" = 0.896, "PC80" = 1.28))
+  CuDGVvals_all <- data.frame("nz" = c("PC99" = 0.53, "PC95" = 0.73, "PC90" = 0.89, "PC80" = 1.4),
+                              "aus" = c("PC99" = 0.53, "PC95" = 0.73, "PC90" = 0.89, "PC80" = 1.4))
   
   NiDGVvals_all <- data.frame("aus" = c("PC99" = 0.66, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
                               "nz" = c("PC99" = 0.39, "PC95" = 2.3, "PC90" = 5.0, "PC80" = 11))
   
-  
-  #-----------------------------------------
-  # THESE WILL NEED TO BE UPDATED, USING NI VALUES FOR NOW...
-  
-  ZnDGVvals_all <- data.frame("aus" = c("PC99" = 0.66, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
-                              "nz" = c("PC99" = 0.39, "PC95" = 2.3, "PC90" = 5.0, "PC80" = 11))
+  ZnDGVvals_all <- data.frame("aus" = c("PC99" = 2.6, "PC95" = 6.7, "PC90" = 9.9, "PC80" = 15),
+                              "nz" = c("PC99" = 1.7, "PC95" = 4.5, "PC90" = 6.8, "PC80" = 11))
   #------------------------------------------
   
   
@@ -360,8 +356,8 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       DOCnote <- case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
                            input$DOC>15 ~ "DOC above upper applicability limit",
                            TRUE ~ NA)
-      pHnote <- case_when(input$pH<6.7 ~ "pH below lower applicability limit",
-                          input$pH>8.1 ~ "pH above upper applicability limit",
+      pHnote <- case_when(input$pH<6.0 ~ "pH below lower applicability limit",
+                          input$pH>8.3 ~ "pH above upper applicability limit",
                           TRUE ~ NA)
       Hnote <- case_when(input$Hardness<26 ~ "Hardness below lower applicability limit",
                          input$Hardness>370 ~ "Hardness above upper applicability limit",
