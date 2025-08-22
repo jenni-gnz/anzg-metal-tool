@@ -350,7 +350,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       GV[1,GV_labels] = NA
       GV[1,"ZnNote"] = ZnNote
       
-    } else if (input$DOC<0.5 | input$DOC>15 | input$pH<6.7 | input$pH>8.1 |
+    } else if (input$DOC<0.5 | input$DOC>15 | input$pH<6.0 | input$pH>8.3 |
                input$Hardness<26 | input$Hardness>370) {
       
       DOCnote <- case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
@@ -369,22 +369,6 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       GV[1,"ZnNote"] = ZnNote
       
     } else {
-      
-      # if(input$DOC>40 | input$pH>8.5 | input$Hardness>529){
-      #   ZnNote <- "TMF(s) outside applicable model range"
-      #   
-      # } else if (input$DOC>15 | input$pH >8.1 | input$Hardness> 370){
-      #   ZnNote <- "TMF(s) outside applicable model range"
-      #   
-      # } else if (input$DOC<0.3 | input$pH<5.6 | input$Hardness<5) {
-      #   ZnNote <- "TMF(s) outside applicable model range"
-      #   
-      # } else if (input$DOC<0.5 | input$pH<6.7| input$Hardness<26) {
-      #   ZnNote <- "TMF(s) outside applicable model range"
-      #   
-      # } else {
-      #   ZnNote <- "TMFs in applicable range, DGV suitable"
-      # }
       
       # myDOC <- min(max(input$DOC, 0.5), 15)                 # Use this if we want to crop the TMF data to the MLR range
       # myH   <- min(max(input$H, 20), 440)
