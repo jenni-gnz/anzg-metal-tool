@@ -341,7 +341,7 @@ ui <- fluidPage(
                               downloadButton("downloadGVs", h4("Download results"), width="280px",
                                              style="color:white; background-color:#376894; border-color:#376894"),
                               br(), #br(),
-                              column(width=5, style="padding-top:10px", helpText("This exports a comma-separated (csv) file with your results and input data")),
+                              column(width=5, style="padding-top:10px", helpText("This exports a spreadsheet (.xlsx) file with your results and input data")),
                               br(),
                               
                               # actionButton("SSDplots", width="280px",
