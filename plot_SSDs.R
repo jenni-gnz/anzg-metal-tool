@@ -2,7 +2,7 @@
 #              ********  Cu, Zn & Ni DGV adjuster  *********    
 #######################################################################
 # Created: May 2024
-# Authors: Jenni Gadd, Caroline Fraser (LWP), Sharleen Yalden
+# Authors: Jenni Gadd, Sharleen Yalden
 
 # Edited to work with R Shiny tool Oct 2024
 
@@ -12,6 +12,8 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
   ## Libraries and data files needed
   library(tidyverse)                   ## Required
   library(ssdtools)                    ## Required
+  library(latex2exp)                   ## Required for greek numbers
+  options(scipen = 8)                  ## To avoid scientific numbers
   
   # Read coefficients and species data ################################
   
@@ -106,6 +108,9 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
         fig_Ni <- ssd_plot(sens, Nissd.pred, ribbon = TRUE,
                            label = "PlotLabel",
                           color = "Model.used") +
+          scale_x_continuous(TeX("Dissolved nickel ($\\mu g$/L)"),
+                             breaks = c(1, 10, 100, 1000, 10000)) +
+          scale_color_manual(name = "Model used") +
           ggtitle(paste("Row: ", input$myrow)) +
           labs(subtitle = "Nickel species sensitivity distribution",
                caption = paste("SSD for DOC =", round(myDOC,1), " pH =", round(mypH,1), 
@@ -184,6 +189,9 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
           fig_Zn <- ssd_plot(sens, Znssd.pred, ribbon = TRUE,
                              label = "PlotLabel",
                              color = "Model.used") +
+            scale_x_continuous(TeX("Dissolved zinc ($\\mu g$/L)"),
+                               breaks = c(1, 10, 100, 1000, 10000)) +
+            scale_color_manual(name = "Model used") +
             ggtitle(paste("Row: ", input$myrow)) +
             labs(subtitle = "Zinc species sensitivity distribution",
                  caption = paste("SSD for DOC =", round(myDOC,1), " pH =", round(mypH,1), 
