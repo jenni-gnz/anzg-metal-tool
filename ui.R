@@ -222,7 +222,7 @@ ui <- fluidPage(
                                                            Do you want to estimate the bioavailable metal concentration?'
                                                            ),
                                                           popover(bs_icon("info-circle"),
-                                                          "These can be compared to the tier 1 DGV. 
+                                                          "These can be compared to the DGV \nin a Tier 1 assessment. 
                                         \nYou'll need to supply metal concentrations 
                                         \nand select the country where you are applying these"))        
                                                                   
@@ -230,7 +230,7 @@ ui <- fluidPage(
 
                                radioButtons("country", label = span("Select your country for application:", 
                                                                     popover(bs_icon("info-circle"),
-                                         "Country of application is required for comparing bioavailable metals to tier 1 DGVs \n 
+                                         "Country of application is required for comparing bioavailable metals to DGVs. \n 
                                          Only one country can be selected at a time")),                           
                                                     choices = c("Australia" = "aus", "New Zealand" = "nz")),
                                        
@@ -353,19 +353,9 @@ ui <- fluidPage(
                               #   #"false", # always hide the download button
                               downloadButton("downloadssds", "Download SSDs", icon = icon("images"), width="280px",
                                               style="color:white; background-color:#376894; border-color:#376894"),
-                              #),
-                              # useShinyjs(),
-                              # 
-                              #   downloadButton("downloadPlots")
-                              # ),
-                              # actionButton("button", "MakePlots"),
-                              # #gt_output(outputId = "table"),
-                              #br(), br(),
-                              column(width=5, style="padding-top:10px", helpText("Generate species sensitivity distribution (SSD) plots for each sample for nickel and zinc & download these in a zip file.",
+                              
+                              column(width=5, style="padding-top:10px", helpText("Generate species sensitivity distribution (SSD) plots for each sample for nickel and zinc and download these in a zip file.",
                                                        br(), "This takes ~1-2 mins for 10 rows of data")),
-                              #helpText("This exports a zip file containing species sensitivity distribution (SSD) plots",
-                              #         br(), 
-                              #         "Expect this to take around 1-2 minutes for every 10 rows of data")
                               
                               )
                        ),
