@@ -18,7 +18,8 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
   # Read coefficients and species data ################################
   
   metals = options$metals
-
+  pcs = options$pcs
+  
   # pcs_all = c("PC99", "PC95", "PC90", "PC80")
   # pcs_vals_all = c(1, 5, 10, 20)
   # 
@@ -105,16 +106,21 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
         
         Nissd.pred <- predict(res, ci = TRUE)
         
+        BAGV_95 <- ssd_hc(res, percent = c(5))
+        
         fig_Ni <- ssd_plot(sens, Nissd.pred, ribbon = TRUE,
                            label = "PlotLabel",
                           color = "Model.used") +
           scale_x_continuous(TeX("Dissolved nickel ($\\mu g$/L)"),
                              breaks = c(1, 10, 100, 1000, 10000)) +
-          scale_color_manual(name = "Model used") +
+        
           ggtitle(paste("Row: ", input$myrow)) +
           labs(subtitle = "Nickel species sensitivity distribution",
-               caption = paste("SSD for DOC =", round(myDOC,1), " pH =", round(mypH,1), 
-                               " Calcium =", round(myCa,1), " Magnesium =", round(myMg,1))) +
+               caption = bquote("SSD produced"~ .(format(Sys.Date(), "%d-%m-%Y"))* ", DOC:"~ .(round(myDOC,1))~
+                                                  "mg/L, pH:"~ .(round(mypH,1)) * 
+                                                  ", Calcium:"~ .(round(myCa,1))~"mg/L, Magnesium:"~.(round(myMg,1))~ "mg/L,
+                                                  Nickel BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"),
+               colour = "Model used") +
           theme_bw() +
           theme(legend.position.inside = c(0.2, 0.8),
                 legend.background = element_rect(color = "black", linewidth = 0.1),
@@ -161,7 +167,7 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
       } else {
         ZnNote <- "TMFs in applicable range, DGV suitable"
         
-        myDOC <- input$DOC
+        myDOC <- max(input$DOC, 0.5)                                      # Adds a floor for zinc
         mypH  <- input$pH
         myH  <- input$Hardness
         
@@ -186,16 +192,20 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
           
           Znssd.pred <- predict(res, ci = TRUE)
           
+          BAGV_95 <- ssd_hc(res, percent = c(5))
+          
           fig_Zn <- ssd_plot(sens, Znssd.pred, ribbon = TRUE,
                              label = "PlotLabel",
                              color = "Model.used") +
             scale_x_continuous(TeX("Dissolved zinc ($\\mu g$/L)"),
                                breaks = c(1, 10, 100, 1000, 10000)) +
-            scale_color_manual(name = "Model used") +
             ggtitle(paste("Row: ", input$myrow)) +
             labs(subtitle = "Zinc species sensitivity distribution",
-                 caption = paste("SSD for DOC =", round(myDOC,1), " pH =", round(mypH,1), 
-                                 " Hardness =", round(myH,1))) +
+                 caption = bquote("SSD produced"~ .(format(Sys.Date(), "%d-%m-%Y"))*", DOC:"~ .(round(myDOC,1))~
+                                    "mg/L, pH:"~ .(round(mypH,1)) * 
+                                    ", Hardness:"~ .(round(mypH,1))*" mg/L CaCO"[3]*
+                                    ", Zinc BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"),
+                 colour = "Model used") +
             theme_bw() +
             theme(legend.position.inside = c(0.2, 0.8),
                   legend.background = element_rect(color = "black", linewidth = 0.1),
