@@ -350,10 +350,11 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       GV[1,GV_labels] = NA
       GV[1,"ZnNote"] = ZnNote
       
-    } else if (input$DOC<0.5 | input$DOC>15 | input$pH<6.0 | input$pH>8.3 |
+    } else if (#input$DOC<0.5 | 
+               input$DOC>15 | input$pH<6.0 | input$pH>8.3 |
                input$Hardness<26 | input$Hardness>370) {
       
-      DOCnote <- case_when(input$DOC<0.5 ~ "DOC below lower applicability limit",
+      DOCnote <- case_when(#input$DOC<0.5 ~ "DOC below lower applicability limit",
                            input$DOC>15 ~ "DOC above upper applicability limit",
                            TRUE ~ NA)
       pHnote <- case_when(input$pH<6.0 ~ "pH below lower applicability limit",
@@ -376,7 +377,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       
       ZnNote <- "TMF data in range, GV suitable"
       
-      myDOC <- input$DOC                                      # Use this if we want to calculate anyway & decide on issues later
+      myDOC <- max(input$DOC, 0.5)                                      # Adds a floor for zinc
       myH   <- input$Hardness
       mypH  <- input$pH
       
