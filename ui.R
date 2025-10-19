@@ -374,7 +374,7 @@ ui <- fluidPage(
     nav_spacer(),
 #     #5. User guide and links ------------------------------------------------------------
     nav_menu(
-         title = h5("User guide & links"),
+         title = h5("Links"),
          align = "right",
          nav_item(tags$a("User guide", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
          nav_item(tags$a("Information on DGV development", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
