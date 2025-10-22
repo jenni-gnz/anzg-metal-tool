@@ -164,7 +164,7 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
     } else {
       
       if (#input$DOC<0.5 |
-          input$DOC>15 |  input$pH<6.7 |input$pH>8.1 |
+          input$DOC>15 |  input$pH<6.0 |input$pH>8.3 |
           input$Hardness<26 | input$Hardness>370) {
         ZnNote <- "TMF(s) outside applicable model range"
         
