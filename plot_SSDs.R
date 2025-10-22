@@ -186,9 +186,7 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
         
         # Fit ssd functions and extract protection values
         res <- try(ssd_fit_bcanz(sens), silent = FALSE)
-        print(res)
-        print(class(res))
-        
+       
         if(isTRUE(class(res)=="try-error")) {                             # if data cannot be fitted, NA is recorded
           print(paste0("Error plotting ", input$myrow))
           ### Don't save a figure?
