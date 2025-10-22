@@ -393,6 +393,9 @@ calc_GVs <- function(df, options, updateProgress=NULL){
                          sens$pH*mypH + sens$DOC.pH*log(myDOC)*mypH)
       
       # Note: column must be called Conc for ssdtools
+      print(input$myrow)
+      print(sens[,c("Species","Conc")])
+      
       
       # Fit ssd function and extract protection values
       res <- try(ssd_fit_bcanz(sens), silent=FALSE)

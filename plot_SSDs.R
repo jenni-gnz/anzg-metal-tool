@@ -108,19 +108,22 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
         
         BAGV_95 <- ssd_hc(res, percent = c(5))
         
-        fig_Ni <- ssd_plot(sens, Nissd.pred, ribbon = TRUE,
-                           label = "PlotLabel",
-                          color = "Model.used") +
-          scale_x_continuous(TeX("Dissolved nickel ($\\mu g$/L)"),
+        # fig_Ni <- ssd_plot(sens, Nissd.pred, ribbon = TRUE,
+        #                    label = "PlotLabel",
+        #                    color = "Model.used") +
+         fig_Ni <-  ssd_plot_cdf(res, average = NA, #ssd_plot(sens, Nissd.pred, ribbon = FALSE,
+                               label = "PlotLabel",
+                               shape = "Model.used",
+                               ylab="Species potentially affected (%)") +
+          scale_x_continuous(TeX("Nickel ($\\mu g$/L)"),
                              breaks = c(1, 10, 100, 1000, 10000)) +
-        
-          ggtitle(paste("Row: ", input$myrow)) +
-          labs(subtitle = "Nickel species sensitivity distribution",
-               caption = bquote("SSD produced"~ .(format(Sys.Date(), "%d-%m-%Y"))* ", DOC:"~ .(round(myDOC,1))~
-                                                  "mg/L, pH:"~ .(round(mypH,1)) * 
+           labs(title = paste("Row: ", input$myrow),
+               subtitle = bquote("Nickel species sensitivity distribution produced"~ .(format(Sys.Date(), "%d-%m-%Y"))),
+               caption = bquote("pH:"~ .(round(mypH,1)) * 
+                                  ", DOC:"~ .(round(myDOC,1))~"mg/L, "* 
                                                   ", Calcium:"~ .(round(myCa,1))~"mg/L, Magnesium:"~.(round(myMg,1))~ "mg/L,
                                                   Nickel BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"),
-               colour = "Model used") +
+               shape = "Model used") +
           theme_bw() +
           theme(legend.position.inside = c(0.2, 0.8),
                 legend.background = element_rect(color = "black", linewidth = 0.1),
@@ -160,7 +163,8 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
       
     } else {
       
-      if (input$DOC<0.5 |input$DOC>15 |  input$pH<6.7 |input$pH>8.1 |
+      if (#input$DOC<0.5 |
+          input$DOC>15 |  input$pH<6.7 |input$pH>8.1 |
           input$Hardness<26 | input$Hardness>370) {
         ZnNote <- "TMF(s) outside applicable model range"
         
@@ -182,8 +186,11 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
         
         # Fit ssd functions and extract protection values
         res <- try(ssd_fit_bcanz(sens), silent = FALSE)
+        print(res)
+        print(class(res))
         
         if(isTRUE(class(res)=="try-error")) {                             # if data cannot be fitted, NA is recorded
+          print(paste0("Error plotting ", input$myrow))
           ### Don't save a figure?
           
         } else {
@@ -194,18 +201,20 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
           
           BAGV_95 <- ssd_hc(res, percent = c(5))
           
-          fig_Zn <- ssd_plot(sens, Znssd.pred, ribbon = TRUE,
+          fig_Zn <- ssd_plot_cdf(res, average = NA, #ssd_plot(sens, Znssd.pred, ribbon = FALSE,
                              label = "PlotLabel",
-                             color = "Model.used") +
-            scale_x_continuous(TeX("Dissolved zinc ($\\mu g$/L)"),
+                             shape = "Model.used",
+                             ylab="Species potentially affected (%)") +
+            scale_x_continuous(TeX("Zinc ($\\mu g$/L)"),
                                breaks = c(1, 10, 100, 1000, 10000)) +
-            ggtitle(paste("Row: ", input$myrow)) +
-            labs(subtitle = "Zinc species sensitivity distribution",
-                 caption = bquote("SSD produced"~ .(format(Sys.Date(), "%d-%m-%Y"))*", DOC:"~ .(round(myDOC,1))~
-                                    "mg/L, pH:"~ .(round(mypH,1)) * 
-                                    ", Hardness:"~ .(round(mypH,1))*" mg/L CaCO"[3]*
+
+            labs(title = paste("Row: ", input$myrow),
+                 subtitle = bquote("Zinc species sensitivity distribution produced"~ .(format(Sys.Date(), "%d-%m-%Y"))),
+                 caption = bquote("pH:"~ .(round(mypH,1)) *
+                                    ", DOC:"~ .(round(myDOC,1))~
+                                    "mg/L, Hardness:"~ .(round(myH,1))*" mg/L CaCO"[3]*
                                     ", Zinc BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"),
-                 colour = "Model used") +
+                 shape = "Model used") +
             theme_bw() +
             theme(legend.position.inside = c(0.2, 0.8),
                   legend.background = element_rect(color = "black", linewidth = 0.1),
