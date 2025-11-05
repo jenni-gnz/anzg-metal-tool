@@ -127,10 +127,13 @@ calc_GVs <- function(df, options, updateProgress=NULL){
         CuNote <- "pH and/or hardness not provided, GV may or may not be applicable"
         do_calcs <- TRUE
         
-      } else if (input$DOC>30 | input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
-        
-        DOCnote <-case_when(input$DOC>30 ~ "DOC above upper applicability limit",
+      } else if (input$DOC > 20) { 
+        DOCnote <-case_when(input$DOC>20 ~ "DOC above upper applicability limit",
                             TRUE ~ NA)
+      
+      } else if (input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
+        
+        
         pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
                             input$pH>8.5 ~ "pH above upper applicability limit",
                            TRUE ~ NA)
@@ -163,9 +166,10 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       for (p in pcs_calc) {
         
         DGV_cu <- CuDGV_vals[p]
-        GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(input$DOC/0.5)^1.00 <1,
-                                       round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),1),
-                                       signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),2))
+        myDOC <- min(input$DOC, 20)    
+        GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(myDOC/0.5)^0.7 <1,
+                                       round(max(DGV_cu, DGV_cu*(myDOC/0.5)^0.7),1),
+                                       signif(max(DGV_cu, DGV_cu*(myDOC/0.5)^0.7),2))
       }
      
     }
@@ -394,11 +398,13 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       
       # Note: column must be called Conc for ssdtools
       print(input$myrow)
-      print(sens[,c("Species","Conc")])
+      print(sens[,c("Species", "Sensitivity", "Conc")])
       
       
       # Fit ssd function and extract protection values
-      res <- try(ssd_fit_bcanz(sens), silent=FALSE)
+      res <- try(ssd_fit_bcanz(sens, 
+                               dists = c('gamma', 'lgumbel', 'llogis', 'lnorm', 'weibull')),
+                 silent = FALSE)
       
       if (isTRUE(class(res)=="try-error")) {                              # if data cannot be fitted, NA is recorded
         GV[GV_labels] = NA
