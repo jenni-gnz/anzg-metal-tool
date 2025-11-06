@@ -398,7 +398,8 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       
       
       # Fit ssd function and extract protection values
-      res <- try(ssd_fit_bcanz(sens), silent=FALSE)
+      #res <- try(ssd_fit_bcanz(sens), silent=FALSE)
+      res <- try(ssd_fit_bcanz(sens, dists = c('gamma', 'lgumbel', 'llogis', 'lnorm', 'weibull')), silent = FALSE)
       
       if (isTRUE(class(res)=="try-error")) {                              # if data cannot be fitted, NA is recorded
         GV[GV_labels] = NA
