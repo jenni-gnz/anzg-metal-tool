@@ -121,8 +121,8 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
                subtitle = bquote("Nickel species sensitivity distribution produced"~ .(format(Sys.Date(), "%d-%m-%Y"))),
                caption = bquote("pH:"~ .(round(mypH,1)) * 
                                   ", DOC:"~ .(round(myDOC,1))~"mg/L, "* 
-                                                  ", Calcium:"~ .(round(myCa,1))~"mg/L, Magnesium:"~.(round(myMg,1))~ "mg/L,
-                                                  Nickel BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"),
+                                                  "Calcium:"~ .(round(myCa,1))~"mg/L, Magnesium:"~.(round(myMg,1))~ "mg/L,"~
+                                                  " Nickel BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"),
                shape = "Model used") +
           theme_bw() +
           theme(legend.position.inside = c(0.2, 0.8),
@@ -185,7 +185,10 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
                            sens$pH*mypH + sens$DOC.pH*log(myDOC)*mypH)
         
         # Fit ssd functions and extract protection values
-        res <- try(ssd_fit_bcanz(sens), silent = FALSE)
+        res <- try(ssd_fit_bcanz(sens, 
+                                 dists = c('gamma', 'lgumbel', 'llogis', 'lnorm', 'weibull')
+                                ),
+                   silent = FALSE)
        
         if(isTRUE(class(res)=="try-error")) {                             # if data cannot be fitted, NA is recorded
           print(paste0("Error plotting ", input$myrow))
