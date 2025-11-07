@@ -166,9 +166,11 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       for (p in pcs_calc) {
         
         DGV_cu <- CuDGV_vals[p]
-        myDOC <- min(input$DOC, 20)    
+        myDOC <- min(input$DOC, 20)                                 # adds a ceiling, use 20 if DOC exceeds 20 
+        myDOC <- max(myDOC, 0.5)                                    # adds a floor, use 0.5 if DOC is less than 0.5
+        
         GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(myDOC/0.5)^0.7 <1,
-                                       round(max(DGV_cu, DGV_cu*(myDOC/0.5)^0.7),1),
+                                       round(max(DGV_cu, DGV_cu*(myDOC/0.5)^0.7),1),  # this already implements the floor
                                        signif(max(DGV_cu, DGV_cu*(myDOC/0.5)^0.7),2))
       }
      
