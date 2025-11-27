@@ -1,6 +1,6 @@
 # This is the server logic of a Shiny web application for calculating the
-# Australia and New Zealand metal guideline values. It follows a similar format
-# to the Fish IBI Calculator (https://mfenz.shinyapps.io/fish-ibi-calculator/)
+# Australia and New Zealand metal guideline values. 
+#
 # You can run the application by clicking 'Run App' above.
 #
 # Find out more about building applications with Shiny here:
