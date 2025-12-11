@@ -415,8 +415,8 @@ server <- function(input, output, session) {
       
       if (!is.na(value)) {
         if (grepl("HQ",name) & value > 1) {
-          color <- "#e00000"
-          fontWeight <- "bold"
+         # color <- "#e00000"
+          #fontWeight <- "bold"
         }
       }
       
