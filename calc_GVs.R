@@ -47,8 +47,8 @@ calc_GVs <- function(df, options, updateProgress=NULL){
   NiDGVvals_all <- data.frame("aus" = c("PC99" = 0.66, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
                               "nz" = c("PC99" = 0.39, "PC95" = 2.3, "PC90" = 5.0, "PC80" = 11))
   
-  ZnDGVvals_all <- data.frame("aus" = c("PC99" = 2.6, "PC95" = 6.7, "PC90" = 9.9, "PC80" = 15),
-                              "nz" = c("PC99" = 1.7, "PC95" = 4.5, "PC90" = 6.8, "PC80" = 11))
+  ZnDGVvals_all <- data.frame("aus" = c("PC99" = 1.9, "PC95" = 5.2, "PC90" = 8.2, "PC80" = 15),
+                              "nz" = c("PC99" = 1.5, "PC95" = 4.1, "PC90" = 6.4, "PC80" = 11))
   #------------------------------------------
   
   
