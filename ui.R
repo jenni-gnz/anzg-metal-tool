@@ -41,16 +41,17 @@ ui <- fluidPage(
   useShinyjs(),
 
   tags$header(id="header",
-              tags$table(style="width:100%; background-color:#154c79;",
-                         tags$tr(tags$td(style="width:33%"
-                                         ),
-                                 tags$td(style="width:33%; height:120px", align="center",
-                                         h1(id="main-title", style="color:white;",
+              tags$table(style="width:100%; background-color:#FFFFF;",  # "it was #154c79
+                         tags$tr(tags$td(style="width:35%",
+                                         tags$a(href="https://www.waterquality.gov.au/anz-guidelines", 
+                                                tags$img(src='ANZG-logo.jpg',height='100',width='400')),                                         ),
+                                 tags$td(style="width:40%; height:120px", align="center",
+                                         h1(id="main-title", style="color:grey30;",
                          #                   "ANZG metal freshwater guideline value calculator")
                                          "Metals Bioavailability Tool")
                          ),
-                                 tags$td(style="width:33%"
-                                         )
+                                  tags$td(style="width:25%"
+                                          )
                                  )
                          )
               ),
@@ -390,9 +391,10 @@ ui <- fluidPage(
     br(), br(), br(), br(), br(), br(), br(), br(), br(), br(),
     tags$footer(id='footer',
                 tags$table(style="width:100%; background-color:#154c79;",
-                           tags$tr(tags$td(style="width:33%"),
-                                   tags$td(style="width:33%; height:80px", align="center", p(style="color:white", "Footer with space for logos etc")),
-                                   tags$td(style="width:33%")
+                           tags$tr(tags$td(style="width:10%"),
+                                   tags$td(style="width:80%; height:80px", align="center", 
+                                           p(style="color:white", "Tool developed with funding from Metals Environmental Research Associations")),
+                                   tags$td(style="width:10%")
                                    )
                            )
                 )
