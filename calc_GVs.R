@@ -135,7 +135,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
         do_calcs <- TRUE
        # GV[1,"CuNote"] = CuNote
       
-      } else if (input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
+    #  } else if (input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
         
         
 
