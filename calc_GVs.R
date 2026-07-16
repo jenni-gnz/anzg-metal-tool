@@ -129,11 +129,11 @@ calc_GVs <- function(df, options, updateProgress=NULL){
         do_calcs <- TRUE
         
 
-      } else if (input$DOC > 20) { 
-        CuNote <-case_when(input$DOC>20 ~ "DOC above upper applicability limit",
-                            TRUE ~ NA)
-        do_calcs <- TRUE
-       # GV[1,"CuNote"] = CuNote
+      # } else if (input$DOC > 20) { 
+      #   CuNote <-case_when(input$DOC>20 ~ "DOC above upper applicability limit",
+      #                       TRUE ~ NA)
+      #   do_calcs <- TRUE
+        # GV[1,"CuNote"] = CuNote
       
     #  } else if (input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
         
@@ -151,7 +151,7 @@ calc_GVs <- function(df, options, updateProgress=NULL){
                             input$Hardness >340 ~ "Hardness above upper applicability limit",
                           TRUE ~ NA)
         
-        CuNote <- paste(na.omit(c(pHnote, Hnote)), collapse = ", ")
+        CuNote <- paste(na.omit(c(DOCnote, pHnote, Hnote)), collapse = ", ")
         
         GV[1,GV_labels] = NA
        # GV[1,"CuNote"] = CuNote
