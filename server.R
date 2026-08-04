@@ -457,6 +457,14 @@ server <- function(input, output, session) {
       paste("MyDGVs-", Sys.Date(), ".xlsx", sep="")
     },
     content = function(file) {
+     
+      # --- ROUND HARDNESS TO 3 SIGNIFICANT FIGURES -------------------------
+      if ("Hardness" %in% names(results)) {
+        results$Hardness <- ifelse(results$Hardness < 100, 
+                                    signif(results$Hardness, 2),
+                                    signif(results$Hardness, 3))
+      }
+      # -
       #write.csv(results, file, row.names=FALSE)
       write_xlsx(list(readme = add_units,
                       gvs = results), file)
