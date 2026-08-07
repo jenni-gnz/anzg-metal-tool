@@ -176,9 +176,9 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       for (p in pcs_calc) {
         
         DGV_cu <- CuDGV_vals[p]
-        GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(input$DOC/0.5)^1.00 <1,
-                                       round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),1),
-                                       signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^1.00),2))
+        GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(input$DOC/0.5)^0.74 <1,
+                                       round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^0.74),1),
+                                       signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^0.74),2))
       }
      
     }
