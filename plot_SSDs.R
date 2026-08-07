@@ -121,8 +121,9 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
                subtitle = bquote("Nickel species sensitivity distribution produced"~ .(format(Sys.Date(), "%d-%m-%Y"))),
                caption = bquote("pH:"~ .(round(mypH,1)) * 
                                   ", DOC:"~ .(round(myDOC,1))~"mg/L, "* 
-                                                  ", Calcium:"~ .(round(myCa,1))~"mg/L, Magnesium:"~.(round(myMg,1))~ "mg/L,
-                                                  Nickel BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"),
+                                                  "Calcium:"~ .(round(myCa,1))~"mg/L, Magnesium:"~.(round(myMg,1))
+                                                  ~ "mg/"L"#, Nickel BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"
+                                ),
                shape = "Model used") +
           theme_bw() +
           theme(legend.position.inside = c(0.2, 0.8),
@@ -131,7 +132,19 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
                 legend.key.size = unit(0.5, 'cm'),
                 plot.caption.position = "plot",
                 plot.caption = element_text(hjust = 0)
-                )
+                ) +
+           
+           # --- Add dashed 95% protection line ---
+           geom_hcintersect(xintercept = BAGV_95$est, yintercept = 0.05, linetype = 4) 
+           
+         geom_text(data = data.frame(x = BAGV_95$est, y = 0.06),
+                   aes(x = BAGV_95$est, y = 0.06),
+                   label = paste0("BAGV 95 = ", round(myBAGV_95,1), " µg/L"),
+                   # size = 3,
+                   vjust = 0, hjust = 1 
+         )
+          
+         # --------------------------------------
 
           p_name <- paste0("Ni_SSD_", input$myrow)
           temp <- c(names(plots), p_name)
@@ -199,6 +212,8 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
           Znssd.pred <- predict(res, ci = TRUE)
           
           BAGV_95 <- ssd_hc(res, percent = c(5))
+          myBAGV_95 <- BAGV_95$est
+          #BAGV_label <- bquote("BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L")
           
           fig_Zn <- ssd_plot_cdf(res, average = NA, #ssd_plot(sens, Znssd.pred, ribbon = FALSE,
                              label = "PlotLabel",
@@ -211,8 +226,9 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
                  subtitle = bquote("Zinc species sensitivity distribution produced"~ .(format(Sys.Date(), "%d-%m-%Y"))),
                  caption = bquote("pH:"~ .(round(mypH,1)) *
                                     ", DOC:"~ .(round(myDOC,1))~
-                                    "mg/L, Hardness:"~ .(round(myH,1))*" mg/L CaCO"[3]*
-                                    ", Zinc BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"),
+                                    "mg/L, Hardness:"~ .(round(myH,1))*" mg/L CaCO"[3]#*
+                                   # ", Zinc BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"
+                                    ),
                  shape = "Model used") +
             theme_bw() +
             theme(legend.position.inside = c(0.2, 0.8),
@@ -221,7 +237,16 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
                   legend.key.size = unit(0.5, 'cm'),
                   plot.caption.position = "plot",
                   plot.caption = element_text(hjust = 0)
-            )
+            ) +
+            # --- Add dashed 95% protection line ---
+            geom_hcintersect(xintercept = BAGV_95$est, yintercept = 0.05, linetype = 4) +
+            
+            geom_text(data = data.frame(x = BAGV_95$est, y = 0.06),
+              aes(x = BAGV_95$est, y = 0.06),
+             label = paste0("BAGV 95 = ", round(myBAGV_95,1), " µg/L"),
+              # size = 3,
+               vjust = 0, hjust = 1 
+             )
           
           p_name <- paste0("Zn_SSD_", input$myrow)
           temp <- c(names(plots), p_name)

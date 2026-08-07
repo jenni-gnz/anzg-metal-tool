@@ -184,7 +184,9 @@ server <- function(input, output, session) {
     
     # Get selected options
     
-    GV_options = list("metals"=input$metals, "calc_biof"=input$calc_biof, "rcr" = input$rcr)
+    GV_options = list("metals"=input$metals, 
+                      "calc_biof"=input$calc_biof, 
+                      "rcr" = input$rcr)
     
     # Call function to check the data
     
@@ -350,7 +352,8 @@ server <- function(input, output, session) {
                       "calc_biof"=input$calc_biof,
                       "pcs"=input$pcs,
                       "rcr"=input$rcr,
-                      "country"=input$country)
+                      "country"=input$country,
+                      "calc_ci" = input$calc_ci)
     
     # Call function to calculate GVs
     
@@ -533,7 +536,8 @@ server <- function(input, output, session) {
       
       pnames = paste0(names(plots), ".png")
       for (i in seq_along(plots)) {
-        ggsave(file.path(temp_directory, pnames[i]), plots[[i]], "png")
+        ggsave(file.path(temp_directory, pnames[i]), plots[[i]], "png", 
+               width = 10, height = 9, dpi = 300)
       }
       
       # Zip file and save to user specified location
