@@ -107,10 +107,8 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
         Nissd.pred <- predict(res, ci = TRUE)
         
         BAGV_95 <- ssd_hc(res, percent = c(5))
+        myBAGV_95 <- BAGV_95$est
         
-        # fig_Ni <- ssd_plot(sens, Nissd.pred, ribbon = TRUE,
-        #                    label = "PlotLabel",
-        #                    color = "Model.used") +
          fig_Ni <-  ssd_plot_cdf(res, average = NA, #ssd_plot(sens, Nissd.pred, ribbon = FALSE,
                                label = "PlotLabel",
                                shape = "Model.used",
@@ -121,8 +119,8 @@ plot_SSDs <- function(df, options, updateProgress=NULL){
                subtitle = bquote("Nickel species sensitivity distribution produced"~ .(format(Sys.Date(), "%d-%m-%Y"))),
                caption = bquote("pH:"~ .(round(mypH,1)) * 
                                   ", DOC:"~ .(round(myDOC,1))~"mg/L, "* 
-                                                  "Calcium:"~ .(round(myCa,1))~"mg/L, Magnesium:"~.(round(myMg,1))
-                                                  ~ "mg/"L"#, Nickel BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"
+                                  "Calcium:"~ .(round(myCa,1))~"mg/L, Magnesium:"~.(round(myMg,1))
+                                                  ~ "mg/L"#, Nickel BAGV"[95]~.(round(BAGV_95$est,1))~mu*"g/L"
                                 ),
                shape = "Model used") +
           theme_bw() +

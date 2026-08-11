@@ -139,16 +139,16 @@ calc_GVs <- function(df, options, updateProgress=NULL){
         
         
 
-      } else if (input$DOC>30 | input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
+      } else if (input$DOC>20 | input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>400) {
         
-        DOCnote <-case_when(input$DOC>30 ~ "DOC above upper applicability limit",
+        DOCnote <-case_when(input$DOC>20 ~ "DOC above upper applicability limit",
                             TRUE ~ NA)
 
         pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
                             input$pH>8.5 ~ "pH above upper applicability limit",
                            TRUE ~ NA)
         Hnote <-case_when(input$Hardness<2 ~ "Hardness below lower applicability limit",
-                            input$Hardness >340 ~ "Hardness above upper applicability limit",
+                            input$Hardness >400 ~ "Hardness above upper applicability limit",
                           TRUE ~ NA)
         
         CuNote <- paste(na.omit(c(DOCnote, pHnote, Hnote)), collapse = ", ")
@@ -176,9 +176,9 @@ calc_GVs <- function(df, options, updateProgress=NULL){
       for (p in pcs_calc) {
         
         DGV_cu <- CuDGV_vals[p]
-        GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(input$DOC/0.5)^0.74 <1,
-                                       round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^0.74),1),
-                                       signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^0.74),2))
+        GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(input$DOC/0.5)^0.6971 <1,
+                                       round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^0.6971),1),
+                                       signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^0.6971),2))
       }
      
     }
