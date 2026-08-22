@@ -41,8 +41,8 @@ calc_GVs <- function(df, options, updateProgress=NULL){
   ### For each metal, there are 4 values for each country. 
   ### Depending on the PCs selected, we need to provide these values with the returned table
 
-  CuDGVvals_all <- data.frame("nz" = c("PC99" = 0.53, "PC95" = 0.73, "PC90" = 0.89, "PC80" = 1.4),
-                              "aus" = c("PC99" = 0.53, "PC95" = 0.73, "PC90" = 0.89, "PC80" = 1.4))
+  CuDGVvals_all <- data.frame("nz" = c("PC99" = 0.533, "PC95" = 0.733, "PC90" = 0.886, "PC80" = 1.38),
+                              "aus" = c("PC99" = 0.533, "PC95" = 0.733, "PC90" = 0.886, "PC80" = 1.38))
   
   NiDGVvals_all <- data.frame("aus" = c("PC99" = 0.66, "PC95" = 3.4, "PC90" = 6.9, "PC80" = 14),
                               "nz" = c("PC99" = 0.39, "PC95" = 2.3, "PC90" = 5.0, "PC80" = 11))
@@ -129,34 +129,30 @@ calc_GVs <- function(df, options, updateProgress=NULL){
         do_calcs <- TRUE
         
 
-      # } else if (input$DOC > 20) { 
-      #   CuNote <-case_when(input$DOC>20 ~ "DOC above upper applicability limit",
-      #                       TRUE ~ NA)
-      #   do_calcs <- TRUE
-        # GV[1,"CuNote"] = CuNote
-      
-    #  } else if (input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>340) {
+      } else if (input$pH<6 | input$pH>8.5 | input$Hardness<5 | input$Hardness>400) {
         
         
 
-      } else if (input$DOC>20 | input$pH<6 | input$pH>8.5 | input$Hardness<2 | input$Hardness>400) {
+   #   } else if (input$DOC>20 | input$pH<6 | input$pH>8.5 | input$Hardness<5 | input$Hardness>400) {
         
-        DOCnote <-case_when(input$DOC>20 ~ "DOC above upper applicability limit",
-                            TRUE ~ NA)
-
         pHnote <-case_when(input$pH<6 ~ "pH below lower applicability limit",
                             input$pH>8.5 ~ "pH above upper applicability limit",
                            TRUE ~ NA)
-        Hnote <-case_when(input$Hardness<2 ~ "Hardness below lower applicability limit",
+        Hnote <-case_when(input$Hardness<5 ~ "Hardness below lower applicability limit",
                             input$Hardness >400 ~ "Hardness above upper applicability limit",
                           TRUE ~ NA)
         
-        CuNote <- paste(na.omit(c(DOCnote, pHnote, Hnote)), collapse = ", ")
+        CuNote <- paste(na.omit(c(pHnote, Hnote)), collapse = ", ")
         
         GV[1,GV_labels] = NA
        # GV[1,"CuNote"] = CuNote
         
-      } else {
+         } else if (input$DOC > 20) { 
+           CuNote <-"DOC above upper applicability limit"
+           do_calcs <- TRUE
+         #GV[1,"CuNote"] = CuNote
+        
+        } else {
         CuNote <- "TMF data in range, GV suitable"
         do_calcs <- TRUE
       }
@@ -174,11 +170,11 @@ calc_GVs <- function(df, options, updateProgress=NULL){
     if (do_calcs) {
       
       for (p in pcs_calc) {
-        
+        AdjDOC <- ifelse(input$DOC > 20, 20, input$DOC)
         DGV_cu <- CuDGV_vals[p]
-        GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(input$DOC/0.5)^0.6971 <1,
-                                       round(max(DGV_cu, DGV_cu*(input$DOC/0.5)^0.6971),1),
-                                       signif(max(DGV_cu, DGV_cu*(input$DOC/0.5)^0.6971),2))
+        GV[1,paste0("Cu",p)] <- ifelse(DGV_cu*(AdjDOC/0.5)^0.697 <1,
+                                       round(max(DGV_cu, DGV_cu*(AdjDOC/0.5)^0.697),1),
+                                       signif(max(DGV_cu, DGV_cu*(AdjDOC/0.5)^0.697),2))
       }
      
     }
