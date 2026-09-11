@@ -203,18 +203,31 @@ ui <- fluidPage(
                                          
                                   ),
                                   br(),
-                                  checkboxInput("rcr",
-                                                value = FALSE,
-                                                label = span(HTML('<p 
+                               #    checkboxInput("calc_ci",
+                               #                  value = FALSE,
+                               #                  label = span(HTML('<p 
+                               #                                    style="position:  relative; top: -36px; left: 30px;"> 
+                               #                                    Do you want to calculate confidence intervals (CIs) for BAGVs? '
+                               #                                    ), 
+                               #                              popover(bs_icon("info-circle"),
+                               #                                      "Confidence intervals require bootstrapping and may take several minutes for large datasets.",
+                               # )
+                               #        )
+                               #           )
+                               ),
+                        column(width=5, align = "left",
+                               br(),
+                               checkboxInput("rcr",
+                                             value = FALSE,
+                                             label = span(HTML('<p 
                                                                   style="position:  relative; top: -36px; left: 30px;"> 
                                                                   Do you want to calculate hazard quotients (HQs)? '
-                                                                  ), 
-                                                            popover(bs_icon("info-circle"),
-                                                                    "These indicate where risks to aquatic ecosystems are possible. \nYou'll need to supply metal concentrations",
-                               )
-                                      )
-                                         )),
-                        column(width=5, align = "left",
+                                             ), 
+                                             popover(bs_icon("info-circle"),
+                                                     "These indicate where risks to aquatic ecosystems are possible. \nYou'll need to supply metal concentrations",
+                                             )
+                                             )
+                               ),
                                br(),
                                 checkboxInput("calc_biof",
                                                      value = FALSE,
@@ -377,8 +390,8 @@ ui <- fluidPage(
     nav_menu(
          title = h5("Links"),
          align = "right",
-         nav_item(tags$a("User guide", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
-         nav_item(tags$a("Information on DGV development", href = "https://www.waterquality.gov.au/anz-guidelines/about")),
+         nav_item(tags$a("Guidance", href = "https://www.waterquality.gov.au/anz-guidelines/resources/publications/guidance-using-bioavailability-based-metal-guideline-values")),
+         nav_item(tags$a("Information on DGV development", href = "https://www.waterquality.gov.au/anz-guidelines/resources/publications/guidance-using-bioavailability-based-metal-guideline-values-part-2")),
          nav_item(tags$a("ANZG website", href = "https://www.waterquality.gov.au/anz-guidelines/about"))
     ),
     
