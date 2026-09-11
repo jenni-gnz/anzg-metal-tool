@@ -51,7 +51,7 @@ to do the calculations you have chosen.
 &nbsp; &nbsp; &nbsp; &nbsp; If you select this option, you must provide dissolved metal concentrations (in &micro;g/L).\
 &nbsp; e. &nbsp;*Select your country for application*\
 &nbsp; &nbsp; &nbsp; &nbsp; Select the country that the output will be applied in.\
-&nbsp; &nbsp; &nbsp; &nbsp; The DGVs at Tier 1 of the <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default" target="_blank"> Tiered Assessment Framework</a>
+&nbsp; &nbsp; &nbsp; &nbsp; The DGVs at Tier 1 of the <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default/water-quality-toxicants/local-conditions#tiered-assessment-framework" target="_blank"> Tiered Assessment Framework</a>
 are associated with 2 different countries: Australia and New Zealand.
 
 3\. Check data

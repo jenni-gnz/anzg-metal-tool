@@ -1,3 +1,3 @@
 Answers to common questions about issues you might have with your data and ways to resolve them
-can be found on the <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default" target="_blank"> Metal Bioavailability - Tiered Assessment Framework & Metals Bioavailability Tool</a>
-web page on the ANZG website.
+can be found on the <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default/water-quality-toxicants/local-conditions#tiered-assessment-framework" target="_blank"> Metal Bioavailability - Tiered Assessment Framework & Metals Bioavailability Tool</a>
+web page on the ANZG website or in the <a href="https://www.waterquality.gov.au/anz-guidelines/resources/publications/guidance-using-bioavailability-based-metal-guideline-values" target="_blank"> guidance document.

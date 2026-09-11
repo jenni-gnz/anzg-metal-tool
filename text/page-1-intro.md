@@ -1,9 +1,9 @@
 The Metals Bioavailability Tool helps you estimate potential risks to freshwater aquatic environments posed by some dissolved metals after considering bioavailability.
 
-You should use the Metals Bioavailability Tool in the context of the guidance provided about <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default" target="_blank"> metal bioavailability, the Tiered Assessment Framework and the Metals Bioavailability Tool</a>
+You should use the Metals Bioavailability Tool in the context of the guidance provided about <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default/water-quality-toxicants/local-conditions#metal-bioavailability-and-default-guideline-values" target="_blank"> metal bioavailability, the Tiered Assessment Framework and the Metals Bioavailability Tool</a>
 on the Australian & New Zealand Guidelines for Fresh & Marine Water Quality (ANZG) website.
 
-You can use the Metals Bioavailability Tool at Tier 2 of the ANZG <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default" target="_blank"> Tiered Assessment Framework</a>
+You can use the Metals Bioavailability Tool at Tier 2 of the ANZG <a href="https://www.waterquality.gov.au/anz-guidelines/guideline-values/default/water-quality-toxicants/local-conditions#tiered-assessment-framework" target="_blank"> Tiered Assessment Framework</a>
 to help assess potential risks to your waterbody.
 
 The Metals Bioavailability Tool can calculate:
