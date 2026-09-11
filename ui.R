@@ -390,7 +390,7 @@ ui <- fluidPage(
     nav_menu(
          title = h5("Links"),
          align = "right",
-         nav_item(tags$a("Guidance", href = "https://www.waterquality.gov.au/anz-guidelines/resources/publications/guidance-using-bioavailability-based-metal-guideline-values",target="_blank")),
+         nav_item(tags$a("Guidance for bioavailability-based metal DGVs", href = "https://www.waterquality.gov.au/anz-guidelines/resources/publications/guidance-using-bioavailability-based-metal-guideline-values",target="_blank")),
          nav_item(tags$a("Information on DGV development", target="_blank", href = "https://www.waterquality.gov.au/anz-guidelines/resources/publications/guidance-using-bioavailability-based-metal-guideline-values-part-2")),
          nav_item(tags$a("ANZG website",target="_blank", href = "https://www.waterquality.gov.au/anz-guidelines/about"))
     ),
