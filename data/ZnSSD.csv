@@ -1,0 +1,26 @@
+,Species,Sensitivity,EC10.at.index,ToxStat,PlotLabel,Model.used
+1,Alathyria profuga,5.314460959,8.949281722,NEC,Molluscs,Invertebrate
+2,Brachionus calyciflorus,7.555009786,84.10971704,EC10,Rotifers,Invertebrate
+3,Ceriodaphnia dubia,6.592020043,32.1088714,EC10,Crustaceans,Invertebrate
+4,Ceriodaphnia reticulata,6.679765142,35.05356982,NOEC,Crustaceans,Invertebrate
+5,Chlorella sp. (PNG isolate),2.009397332,3.906369825,EC10,Green algae,Chlorella
+6,Chlorella sp. (Kakadu isolate),6.992380578,569.9745755,EC10,Green algae,Chlorella
+7,Cucumerunio novaehollandiae,4.803635335,5.369569033,NEC,Molluscs,Invertebrate
+8,Daphnia magna,6.669209092,34.68548875,EC10,Crustaceans,Invertebrate
+9,Daphnia thomsoni,6.241194924,22.60807719,EC10,Crustaceans,Invertebrate
+10,Echyridella menziesii,8.233459291,165.7650803,EC20,Molluscs,Invertebrate
+11,Hyalella azteca,6.939243573,45.43832395,NOEC,Crustaceans,Invertebrate
+12,Hyridella australis,4.838726655,5.561339356,NEC,Molluscs,Invertebrate
+13,Hyridella depressa,4.977988722,6.392344087,NEC,Molluscs,Invertebrate
+14,Hyridella drapeta,5.073298902,7.031578496,NEC,Molluscs,Invertebrate
+15,Lampsilis siliquoidea,6.354755007,25.32690636,EC10,Molluscs,Invertebrate
+16,Lymnaea stagnalis,8.277181354,173.1734459,EC10,Molluscs,Invertebrate
+17,Neocloeon triangulifer,5.137061201,7.494530718,EC20,Insects,Invertebrate
+18,Oncorhynchus mykiss,1.706328857,78.7783218,EC10,Fish,Fish
+19,Physa gyrina,8.798346084,291.6219874,NOEC,Molluscs,Invertebrate
+20,Pimephales promelas,1.5415624,66.81124453,NOEC,Fish,Fish
+21,Prosopium williamsoni,2.317479113,145.152964,EC20,Fish,Fish
+22,Rhithrogena hageni,10.4994131,1598.027633,EC10,Insects,Invertebrate
+23,Salmo trutta,2.59723298,192.0089486,EC10,Fish,Fish
+24,Velesunio ambiguus,5.38345383,9.588516131,NEC,Molluscs,Invertebrate
+25,Raphidocelis subcapitata,9.561091,18.6588419,EC10,Green algae,Algae
